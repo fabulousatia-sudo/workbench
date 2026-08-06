@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>🌿 我的生活工作台 💼</title>
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --surface: #ffffff;
+      --surface-2: #f1ecf8;
+      --text: #3a3540;
+      --text-2: #8a8198;
+      --primary: #9b8bc9;
+      --primary-deep: #7a68b0;
+      --primary-light: #ede8f7;
+      --accent-green: #7bae8e;
+      --accent-orange: #e0a458;
+      --accent-red: #d9735f;
+      --accent-blue: #7c98c4;
+      --accent-pink: #d29bb8;
+      --border: #ece7f2;
+      --shadow: 0 2px 8px rgba(123, 104, 176, 0.06);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+      padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    }
+    .container { max-width: 1080px; margin: 0 auto; padding: 16px; }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px; flex-wrap: wrap; gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 44px; height: 44px; border-radius: 13px;
+      background: linear-gradient(135deg, #b3a4e0, #9b8bc9);
+      display: grid; place-items: center; font-size: 22px;
+      box-shadow: 0 3px 10px rgba(155, 139, 201, .35);
+    }
+    .brand h1 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: .5px; }
+    .brand p { margin: 0; font-size: 12px; color: var(--text-2); }
+    .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      border: none; border-radius: var(--radius-sm); padding: 8px 13px;
+      font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      min-height: 38px; transition: transform .05s, opacity .15s; font-weight: 600;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 2px 6px rgba(155,139,201,.3); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-danger { background: #fdf0ed; color: var(--accent-red); border: 1px solid #f6d8d1; }
+    .btn-sm { padding: 6px 11px; font-size: 13px; min-height: 34px; }
+
+    .backup-bar {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 11px 14px; display: flex; gap: 8px; align-items: center; justify-content: space-between;
+      margin-bottom: 14px; flex-wrap: wrap; box-shadow: var(--shadow);
+    }
+    .backup-hint { font-size: 13px; color: var(--text-2); }
+    .backup-count { color: var(--primary-deep); font-weight: 800; }
+
+    .main-layout { display: grid; grid-template-columns: 168px 1fr; gap: 16px; }
+    .side-nav {
+      position: sticky; top: 16px; height: fit-content;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 10px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px;
+    }
+    .nav-tab {
+      border: none; background: transparent; border-radius: var(--radius-sm); padding: 11px 12px;
+      text-align: left; font-size: 14px; cursor: pointer; color: var(--text-2); display: flex; align-items: center; gap: 9px;
+      min-height: 44px; font-weight: 600;
+    }
+    .nav-tab.active { background: var(--primary-light); color: var(--primary-deep); }
+    .nav-tab .emoji { font-size: 18px; }
+
+    .content { min-width: 0; }
+    .panel { display: none; }
+    .panel.active { display: block; animation: fade .2s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+    .section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow);
+    }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; flex-wrap: wrap; }
+    .section h3 { margin: 0; font-size: 17px; display: flex; align-items: center; gap: 8px; font-weight: 800; }
+    .section h3 .emoji { font-size: 20px; }
+
+    .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    input, select, textarea {
+      border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px;
+      font-size: 16px; font-family: inherit; background: #fff; color: var(--text); outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    input[type="text"], input[type="number"], input[type="date"] { flex: 1; min-width: 120px; }
+    select { min-width: 92px; }
+    textarea { width: 100%; resize: vertical; min-height: 72px; }
+
+    .list { display: flex; flex-direction: column; gap: 8px; }
+    .list-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 11px 13px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+      background: #fff; font-size: 14px;
+    }
+    .list-item.done { opacity: .6; background: var(--surface-2); }
+    .list-item-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .checkbox {
+      width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px;
+      cursor: pointer; display: grid; place-items: center; flex-shrink: 0; transition: .15s;
+    }
+    .checkbox.checked { background: var(--accent-green); border-color: var(--accent-green); }
+    .checkbox svg { width: 13px; height: 13px; color: #fff; }
+    .item-title { word-break: break-word; font-weight: 600; }
+    .item-title.strike { text-decoration: line-through; }
+    .item-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--surface-2); color: var(--text-2); font-weight: 600; }
+    .badge.p0 { background: #fdf0ed; color: var(--accent-red); }
+    .badge.p1 { background: #fdf4e9; color: var(--accent-orange); }
+    .badge.p2 { background: #eaf4ee; color: var(--accent-green); }
+    .badge.life { background: #eaf3ee; color: var(--accent-green); }
+    .badge.work { background: var(--primary-light); color: var(--primary-deep); }
+    .badge.expire { background: #fdf0ed; color: var(--accent-red); }
+    .badge.soon { background: #fdf4e9; color: var(--accent-orange); }
+    .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .btn-del { background: #fdf0ed; color: var(--accent-red); border: 1px solid #f6d8d1; }
+
+    .habit-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; }
+    .habit-info { flex: 1; min-width: 0; }
+    .habit-name { font-weight: 700; font-size: 14px; }
+    .habit-streak { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+    .heat-map { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 9px; }
+    .heat-cell { width: 18px; height: 18px; border-radius: 5px; background: var(--surface-2); position: relative; cursor: pointer; }
+    .heat-cell.l1 { background: #ddd2f0; }
+    .heat-cell.l2 { background: #c0acdf; }
+    .heat-cell.l3 { background: var(--primary); }
+    .heat-cell.today { box-shadow: inset 0 0 0 2px var(--primary-deep); }
+    .heat-cell::after {
+      content: attr(data-date); position: absolute; bottom: 135%; left: 50%; transform: translateX(-50%);
+      background: var(--text); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px;
+      white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s;
+    }
+    .heat-cell:hover::after { opacity: 1; }
+
+    .home-group { margin-bottom: 14px; }
+    .home-group-title { font-size: 13px; font-weight: 800; color: var(--text-2); margin: 0 0 8px; display: flex; align-items: center; gap: 6px; }
+    .home-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 13px; border-radius: var(--radius-sm); background: var(--surface-2); margin-bottom: 7px; font-size: 14px;
+    }
+    .home-item.overdue { background: #fdf0ed; border: 1px solid #f6d8d1; }
+    .home-item.expired { background: #fdf0ed; border: 1px solid #f6d8d1; }
+    .home-item .meta { color: var(--text-2); font-size: 12px; margin-left: 6px; }
+    .home-item .tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--primary-light); color: var(--primary-deep); white-space: nowrap; font-weight: 700; }
+    .home-empty { color: var(--text-2); font-size: 13px; text-align: center; padding: 14px; background: var(--surface-2); border-radius: var(--radius-sm); }
+
+    .phrase-list { display: grid; gap: 11px; }
+    .phrase-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 13px; background: #fff; }
+    .phrase-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 7px; }
+    .phrase-title { font-weight: 700; font-size: 14px; }
+    .phrase-content { font-size: 13px; color: var(--text-2); white-space: pre-wrap; word-break: break-word; }
+    .phrase-actions { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+    .phrase-attach { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 7px; margin-top: 9px; }
+    .phrase-attach img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); }
+    .attach-mini { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-2); }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(58, 53, 64, .42); display: none;
+      place-items: center; z-index: 100; padding: 16px;
+    }
+    .modal-overlay.show { display: grid; }
+    .modal { background: var(--surface); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 440px; box-shadow: 0 12px 44px rgba(0,0,0,.18); max-height: 88vh; overflow-y: auto; }
+    .modal h4 { margin: 0 0 14px; font-size: 17px; }
+    .modal p { margin: 0 0 16px; color: var(--text-2); font-size: 14px; }
+    .modal .form-row { margin-bottom: 10px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+    .attach-pick { font-size: 13px; color: var(--primary-deep); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; margin-top: 4px; }
+
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(255,255,255,.95); backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border); display: none;
+      padding-bottom: env(safe-area-inset-bottom); z-index: 50;
+    }
+    .bottom-nav-inner { display: flex; justify-content: space-around; }
+    .bottom-tab {
+      flex: 1; border: none; background: transparent; padding: 8px 4px 9px;
+      font-size: 12px; color: var(--text-2); cursor: pointer; display: flex; flex-direction: column;
+      align-items: center; gap: 3px; min-height: 58px; font-weight: 700;
+    }
+    .bottom-tab.active { color: var(--primary-deep); }
+    .bottom-tab .emoji { font-size: 21px; }
+
+    .toast {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%) translateY(-20px);
+      background: var(--text); color: #fff; padding: 10px 16px; border-radius: var(--radius-sm);
+      font-size: 13px; opacity: 0; pointer-events: none; transition: all .2s; z-index: 200; max-width: 80vw;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .sync-dot.on { background: var(--accent-green); }
+    .sync-dot.off { background: var(--text-2); }
+    .sync-dot.busy { background: var(--accent-orange); animation: pulse 1s infinite; }
+    .sync-dot.err { background: var(--accent-red); }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+    .sync-status-text { font-size: 12px; color: var(--text-2); display: flex; align-items: center; gap: 5px; }
+    .sync-code-box {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 10px 12px; font-family: monospace; font-size: 14px; word-break: break-all;
+      margin: 8px 0; cursor: pointer; position: relative;
+    }
+    .sync-code-box:hover { background: var(--primary-light); }
+    .sync-code-hint { font-size: 11px; color: var(--text-2); margin-top: -4px; margin-bottom: 8px; }
+    .sync-section { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
+    .sync-section h5 { margin: 0 0 8px; font-size: 14px; color: var(--text); }
+
+    @media (max-width: 768px) {
+      .container { padding: 12px; }
+      .main-layout { grid-template-columns: 1fr; }
+      .side-nav { display: none; }
+      .bottom-nav { display: block; }
+      body { padding-bottom: calc(74px + env(safe-area-inset-bottom)); }
+      .brand h1 { font-size: 18px; }
+      .section { padding: 14px; }
+    }
+    @media (min-width: 769px) { .bottom-nav { display: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🌿</div>
+        <div>
+          <h1>我的生活工作台</h1>
+          <p>习惯 · 购物 · 待办 · 自动任务 · 话术</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-secondary btn-sm" id="syncBtn" onclick="openSyncModal()">☁️ 同步</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportData()">⬇️ 导出</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">⬆️ 导入</button>
+        <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)">
+        <button class="btn btn-danger btn-sm" onclick="showClearModal()">🗑️ 清空</button>
+      </div>
+    </header>
+
+    <div class="backup-bar">
+      <div class="backup-hint" id="backupHint">💾 数据存在本浏览器，请定期导出备份。<span id="dataCount">已记录 0 条</span></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="sync-status-text" id="syncStatusBar"><span class="sync-dot off"></span> 未同步</span>
+        <button class="btn btn-secondary btn-sm" onclick="loadDemoData()">✨ 示例</button>
+      </div>
+    </div>
+
+    <div class="main-layout">
+      <nav class="side-nav">
+        <button class="nav-tab active" data-tab="home" onclick="switchTab('home')">
+          <span class="emoji">🏠</span> 首页
+        </button>
+        <button class="nav-tab" data-tab="life" onclick="switchTab('life')">
+          <span class="emoji">🌿</span> 生活
+        </button>
+        <button class="nav-tab" data-tab="work" onclick="switchTab('work')">
+          <span class="emoji">💼</span> 工作
+        </button>
+      </nav>
+
+      <main class="content">
+        <!-- 首页 -->
+        <div class="panel active" id="panel-home">
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">🌞</span> 今天要处理</h3>
+            </div>
+            <div id="homeList"></div>
+          </div>
+        </div>
+
+        <!-- 生活 -->
+        <div class="panel" id="panel-life">
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">🌿</span> 生活待办</h3>
+              <button class="btn btn-primary btn-sm" onclick="openLifeTodoModal()">＋ 加待办</button>
+            </div>
+            <div class="form-row" id="lifeTodoForm" style="display:none;">
+              <input type="text" id="lifeTodoTitle" placeholder="待办内容，如：给猫买罐头">
+              <input type="date" id="lifeTodoDate">
+              <select id="lifeTodoPriority">
+                <option value="p0">紧急</option>
+                <option value="p1" selected>重要</option>
+                <option value="p2">普通</option>
+              </select>
+              <button class="btn btn-primary" onclick="addLifeTodo()">添加</button>
+            </div>
+            <div class="list" id="lifeTodoList"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">✅</span> 习惯打卡</h3>
+              <button class="btn btn-primary btn-sm" onclick="openHabitModal()">＋ 加习惯</button>
+            </div>
+            <div class="list" id="habitList"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">🛒</span> 购物清单</h3>
+            </div>
+            <div class="form-row">
+              <input type="text" id="shopName" placeholder="物品名称" onkeydown="if(event.key==='Enter') addShopping()">
+              <input type="number" id="shopQty" placeholder="数量" min="1" value="1" onkeydown="if(event.key==='Enter') addShopping()">
+              <button class="btn btn-primary" onclick="addShopping()">添加</button>
+            </div>
+            <div class="list" id="shoppingList"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">⏰</span> 临期提醒</h3>
+              <button class="btn btn-primary btn-sm" onclick="openExpiringModal()">＋ 加记录</button>
+            </div>
+            <div class="form-row" id="expiringForm" style="display:none;">
+              <input type="text" id="expName" placeholder="物品，如：鲜牛奶">
+              <input type="date" id="expDate">
+              <select id="expCat">
+                <option value="食品">🍱 食品</option>
+                <option value="药品">💊 药品</option>
+                <option value="零食">🍪 零食</option>
+                <option value="其他">📦 其他</option>
+              </select>
+              <button class="btn btn-primary" onclick="addExpiring()">添加</button>
+            </div>
+            <div class="list" id="expiringList"></div>
+          </div>
+        </div>
+
+        <!-- 工作 -->
+        <div class="panel" id="panel-work">
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">💼</span> 工作待办</h3>
+              <button class="btn btn-primary btn-sm" onclick="openWorkTodoModal()">＋ 加待办</button>
+            </div>
+            <div class="form-row" id="workTodoForm" style="display:none;">
+              <input type="text" id="workTodoTitle" placeholder="工作事项，如：提交季度报告">
+              <input type="date" id="workTodoDate">
+              <select id="workTodoPriority">
+                <option value="p0">紧急</option>
+                <option value="p1" selected>重要</option>
+                <option value="p2">普通</option>
+              </select>
+              <button class="btn btn-primary" onclick="addWorkTodo()">添加</button>
+            </div>
+            <div class="list" id="workTodoList"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">🔄</span> 工作自动任务</h3>
+              <span class="badge work">已同步自 WorkBuddy</span>
+            </div>
+            <div class="form-row">
+              <input type="text" id="autoTitle" placeholder="任务名称，如：换床单" onkeydown="if(event.key==='Enter') addAutoTask()">
+              <input type="number" id="autoDays" placeholder="周期（天）" min="1" value="14" onkeydown="if(event.key==='Enter') addAutoTask()">
+              <button class="btn btn-primary" onclick="addAutoTask()">添加</button>
+            </div>
+            <div class="list" id="autoTaskList"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">💬</span> 工作话术库</h3>
+              <button class="btn btn-primary btn-sm" onclick="openPhraseModal()">＋ 加话术</button>
+            </div>
+            <div class="phrase-list" id="phraseList"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="bottom-tab active" data-tab="home" onclick="switchTab('home')">
+        <span class="emoji">🏠</span> 首页
+      </button>
+      <button class="bottom-tab" data-tab="life" onclick="switchTab('life')">
+        <span class="emoji">🌿</span> 生活
+      </button>
+      <button class="bottom-tab" data-tab="work" onclick="switchTab('work')">
+        <span class="emoji">💼</span> 工作
+      </button>
+    </div>
+  </nav>
+
+  <!-- 习惯弹窗 -->
+  <div class="modal-overlay" id="habitModal">
+    <div class="modal">
+      <h4>✅ 添加习惯</h4>
+      <input type="text" id="habitName" placeholder="习惯名称，如：喝水 8 杯" style="width:100%;margin-bottom:10px;">
+      <select id="habitColor" style="width:100%;margin-bottom:14px;">
+        <option value="green">💚 绿色</option>
+        <option value="purple">💜 浅紫</option>
+        <option value="orange">🧡 橙色</option>
+        <option value="blue">💙 蓝色</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('habitModal')">取消</button>
+        <button class="btn btn-primary" onclick="addHabit()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 生活待办弹窗 -->
+  <div class="modal-overlay" id="lifeTodoModal">
+    <div class="modal">
+      <h4>🌿 加生活待办</h4>
+      <input type="text" id="mLifeTitle" placeholder="如：取快递 / 给猫买罐头" style="width:100%;margin-bottom:10px;">
+      <input type="date" id="mLifeDate" style="width:100%;margin-bottom:10px;">
+      <select id="mLifePrio" style="width:100%;margin-bottom:14px;">
+        <option value="p0">🔴 紧急</option>
+        <option value="p1" selected>🟠 重要</option>
+        <option value="p2">🟢 普通</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('lifeTodoModal')">取消</button>
+        <button class="btn btn-primary" onclick="addLifeTodoFromModal()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 工作待办弹窗 -->
+  <div class="modal-overlay" id="workTodoModal">
+    <div class="modal">
+      <h4>💼 加工作待办</h4>
+      <input type="text" id="mWorkTitle" placeholder="如：提交季度报告" style="width:100%;margin-bottom:10px;">
+      <input type="date" id="mWorkDate" style="width:100%;margin-bottom:10px;">
+      <select id="mWorkPrio" style="width:100%;margin-bottom:14px;">
+        <option value="p0">🔴 紧急</option>
+        <option value="p1" selected>🟠 重要</option>
+        <option value="p2">🟢 普通</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('workTodoModal')">取消</button>
+        <button class="btn btn-primary" onclick="addWorkTodoFromModal()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 临期弹窗 -->
+  <div class="modal-overlay" id="expiringModal">
+    <div class="modal">
+      <h4>⏰ 加临期记录</h4>
+      <input type="text" id="mExpName" placeholder="如：鲜牛奶 / 感冒药" style="width:100%;margin-bottom:10px;">
+      <input type="date" id="mExpDate" style="width:100%;margin-bottom:10px;">
+      <select id="mExpCat" style="width:100%;margin-bottom:14px;">
+        <option value="食品">🍱 食品</option>
+        <option value="药品">💊 药品</option>
+        <option value="零食">🍪 零食</option>
+        <option value="其他">📦 其他</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('expiringModal')">取消</button>
+        <button class="btn btn-primary" onclick="addExpiringFromModal()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 话术弹窗 -->
+  <div class="modal-overlay" id="phraseModal">
+    <div class="modal">
+      <h4>💬 加话术</h4>
+      <input type="text" id="phraseTitle" placeholder="标题，如：请假模板" style="width:100%;margin-bottom:10px;">
+      <input type="text" id="phraseCategory" placeholder="分类，如：工作沟通" style="width:100%;margin-bottom:10px;">
+      <textarea id="phraseContent" placeholder="在此输入话术内容..."></textarea>
+      <div class="phrase-attach" id="phraseAttachPreview"></div>
+      <div class="attach-pick" onclick="document.getElementById('phraseFile').click()">🖼️ 添加图片附件（最多 9 张）</div>
+      <input type="file" id="phraseFile" accept="image/*" multiple style="display:none" onchange="handlePhraseFiles(event)">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('phraseModal')">取消</button>
+        <button class="btn btn-primary" onclick="addPhrase()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 清空确认 -->
+  <div class="modal-overlay" id="clearModal">
+    <div class="modal">
+      <h4>🗑️ 清空所有数据？</h4>
+      <p>这会删除工作台里的全部记录且无法撤销，建议先导出备份。</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('clearModal')">取消</button>
+        <button class="btn btn-danger" onclick="clearAllData()">确认清空</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="syncModal">
+    <div class="modal">
+      <h4>☁️ 云端同步</h4>
+      <div id="syncModalBody"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('syncModal')">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const PREFIX = 'wb_life_v2_';
+    const KEYS = {
+      habits: PREFIX + 'habits',
+      shopping: PREFIX + 'shopping',
+      lifeTodos: PREFIX + 'lifeTodos',
+      expiring: PREFIX + 'expiring',
+      workTodos: PREFIX + 'workTodos',
+      autoTasks: PREFIX + 'autoTasks',
+      phrases: PREFIX + 'phrases',
+      initialized: PREFIX + 'initialized',
+      syncApiKey: PREFIX + 'sync_apikey',
+      syncBinId: PREFIX + 'sync_binid',
+      syncLastPush: PREFIX + 'sync_lastpush',
+      syncLastPull: PREFIX + 'sync_lastpull'
+    };
+    const COLORS = { green: '#7bae8e', purple: '#9b8bc9', orange: '#e0a458', blue: '#7c98c4' };
+
+    let data = { habits: [], shopping: [], lifeTodos: [], expiring: [], workTodos: [], autoTasks: [], phrases: [] };
+    let phraseDraftAttach = [];
+
+    function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+    function fmtDate(d) { return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split('T')[0]; }
+    function todayStr() { return fmtDate(new Date()); }
+    function addDays(dateInput, days) {
+      const d = typeof dateInput === 'string' ? new Date(dateInput + 'T00:00:00') : new Date(dateInput.getTime());
+      d.setDate(d.getDate() + days);
+      return fmtDate(d);
+    }
+    function diffDays(a, b) { return Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000); }
+
+    function loadData() {
+      data.habits = JSON.parse(localStorage.getItem(KEYS.habits) || '[]');
+      data.shopping = JSON.parse(localStorage.getItem(KEYS.shopping) || '[]');
+      data.lifeTodos = JSON.parse(localStorage.getItem(KEYS.lifeTodos) || '[]');
+      data.expiring = JSON.parse(localStorage.getItem(KEYS.expiring) || '[]');
+      data.workTodos = JSON.parse(localStorage.getItem(KEYS.workTodos) || '[]');
+      data.autoTasks = JSON.parse(localStorage.getItem(KEYS.autoTasks) || '[]');
+      data.phrases = JSON.parse(localStorage.getItem(KEYS.phrases) || '[]');
+      if (!localStorage.getItem(KEYS.initialized)) { loadDemoData(); localStorage.setItem(KEYS.initialized, '1'); }
+      renderAll();
+      syncInit();
+    }
+
+    function save() {
+      localStorage.setItem(KEYS.habits, JSON.stringify(data.habits));
+      localStorage.setItem(KEYS.shopping, JSON.stringify(data.shopping));
+      localStorage.setItem(KEYS.lifeTodos, JSON.stringify(data.lifeTodos));
+      localStorage.setItem(KEYS.expiring, JSON.stringify(data.expiring));
+      localStorage.setItem(KEYS.workTodos, JSON.stringify(data.workTodos));
+      localStorage.setItem(KEYS.autoTasks, JSON.stringify(data.autoTasks));
+      localStorage.setItem(KEYS.phrases, JSON.stringify(data.phrases));
+      renderAll();
+      syncPushDebounced();
+    }
+
+    function loadDemoData() {
+      const t = todayStr();
+      const y = addDays(t, -1);
+      data.habits = [
+        { id: genId(), name: '喝水 8 杯', color: 'blue', records: [{ date: y, done: true }, { date: t, done: false }] },
+        { id: genId(), name: '运动 30 分钟', color: 'green', records: [{ date: y, done: false }, { date: t, done: false }] },
+        { id: genId(), name: '阅读 20 页', color: 'purple', records: [{ date: y, done: true }, { date: t, done: false }] }
+      ];
+      data.shopping = [
+        { id: genId(), name: '纯牛奶', quantity: 2, bought: false, createdAt: t },
+        { id: genId(), name: '鸡蛋（30枚）', quantity: 1, bought: false, createdAt: t },
+        { id: genId(), name: '洗衣液', quantity: 1, bought: true, createdAt: y }
+      ];
+      data.lifeTodos = [
+        { id: genId(), title: '取快递（丰巢柜）', dueDate: y, priority: 'p0', done: false, createdAt: y },
+        { id: genId(), title: '给猫买罐头', dueDate: t, priority: 'p1', done: false, createdAt: t },
+        { id: genId(), title: '预约周末体检', dueDate: addDays(t, 4), priority: 'p2', done: false, createdAt: t }
+      ];
+      data.expiring = [
+        { id: genId(), name: '鲜牛奶', category: '食品', expireDate: y, note: '已过期，别喝了', createdAt: y },
+        { id: genId(), name: '感冒药', category: '药品', expireDate: addDays(t, 5), note: '还剩 5 天', createdAt: t },
+        { id: genId(), name: '薯片', category: '零食', expireDate: addDays(t, 20), note: '', createdAt: t }
+      ];
+      data.workTodos = [
+        { id: genId(), title: '交本月水电费报销', dueDate: y, priority: 'p0', done: false, createdAt: y },
+        { id: genId(), title: '写本周工作周报', dueDate: t, priority: 'p1', done: false, createdAt: t },
+        { id: genId(), title: '整理项目文档', dueDate: addDays(t, 3), priority: 'p2', done: false, createdAt: t }
+      ];
+      data.autoTasks = [
+        { id: genId(), title: '恒力石化积极信号监控', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 15:25' },
+        { id: genId(), title: '美团每日自动领券', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 9:30' },
+        { id: genId(), title: 'Regina 持仓每日收盘汇报', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 17:00' },
+        { id: genId(), title: '天山铝业积极信号监控', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 15:15' },
+        { id: genId(), title: '达沃新闻发布 - 14点', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 14:00' },
+        { id: genId(), title: '聚秀周报每周二提醒', intervalDays: 7, lastDone: addDays(t, -2), nextDate: addDays(t, 5), note: '每周二 16:00' },
+        { id: genId(), title: '检查瑞幸 switchProduct 修复状态', intervalDays: 30, lastDone: addDays(t, -5), nextDate: addDays(t, 25), note: '每月 1 号' },
+        { id: genId(), title: '聚世碳科技月报月度生成', intervalDays: 30, lastDone: addDays(t, 1), nextDate: addDays(t, 29), note: '每月 5 号（已暂停）' }
+      ];
+      data.phrases = [
+        { id: genId(), title: '请假模板', category: '工作沟通', content: '领导好，因个人原因，我拟于 X 月 X 日请假一天，手头工作已安排妥当，望批准。', attachments: [] },
+        { id: genId(), title: '委婉拒绝', category: '沟通技巧', content: '谢谢你的邀请/好意，但我近期时间安排比较紧，这次恐怕无法参加，下次有机会再一起。', attachments: [] },
+        { id: genId(), title: '催进度', category: '工作沟通', content: '你好，想跟进一下 XXX 的进度，预计什么时候可以给我反馈？若有困难随时沟通。', attachments: [] }
+      ];
+      save();
+      showToast('✨ 已恢复示例数据');
+      localLastModified = Date.now();
+    }
+
+    function totalCount() {
+      return data.habits.length + data.shopping.length + data.lifeTodos.length + data.expiring.length + data.workTodos.length + data.autoTasks.length + data.phrases.length;
+    }
+
+    function renderAll() {
+      renderHome();
+      renderLifeTodos(); renderHabits(); renderShopping(); renderExpiring();
+      renderWorkTodos(); renderAutoTasks(); renderPhrases();
+      document.getElementById('dataCount').textContent = `已记录 ${totalCount()} 条`;
+      if (totalCount() >= 30) document.getElementById('backupHint').innerHTML = `💾 数据已积累 <span class="backup-count">${totalCount()}</span> 条，建议导出备份。`;
+      updateSyncStatusBar();
+    }
+
+    /* ---------- 首页：今天要处理 ---------- */
+    function renderHome() {
+      const el = document.getElementById('homeList');
+      const t = todayStr();
+      let html = '';
+      const groups = [];
+
+      const lifeTodoItems = data.lifeTodos.filter(x => !x.done && x.dueDate <= t);
+      if (lifeTodoItems.length) {
+        let g = `<div class="home-group"><div class="home-group-title">🌿 生活待办</div>`;
+        lifeTodoItems.forEach(x => {
+          const overdue = x.dueDate < t;
+          g += `<div class="home-item ${overdue ? 'overdue' : ''}"><div style="flex:1;min-width:0;"><span class="item-title">${x.title}</span><span class="meta">${overdue ? '逾期 ' + Math.abs(diffDays(x.dueDate, t)) + ' 天' : '今天'}</span></div><button class="btn btn-primary btn-sm" onclick="doneLifeTodo('${x.id}')">完成</button></div>`;
+        });
+        g += `</div>`; groups.push(g);
+      }
+
+      const workTodoItems = data.workTodos.filter(x => !x.done && x.dueDate <= t);
+      if (workTodoItems.length) {
+        let g = `<div class="home-group"><div class="home-group-title">💼 工作待办</div>`;
+        workTodoItems.forEach(x => {
+          const overdue = x.dueDate < t;
+          g += `<div class="home-item ${overdue ? 'overdue' : ''}"><div style="flex:1;min-width:0;"><span class="item-title">${x.title}</span><span class="meta">${overdue ? '逾期 ' + Math.abs(diffDays(x.dueDate, t)) + ' 天' : '今天'}</span></div><button class="btn btn-primary btn-sm" onclick="doneWorkTodo('${x.id}')">完成</button></div>`;
+        });
+        g += `</div>`; groups.push(g);
+      }
+
+      const autoItems = data.autoTasks.filter(x => diffDays(t, x.nextDate) <= 2);
+      if (autoItems.length) {
+        let g = `<div class="home-group"><div class="home-group-title">🔄 自动任务</div>`;
+        autoItems.forEach(x => {
+          const d = diffDays(t, x.nextDate);
+          g += `<div class="home-item ${d < 0 ? 'overdue' : ''}"><div style="flex:1;min-width:0;"><span class="item-title">${x.title}</span><span class="meta">${d < 0 ? '逾期 ' + Math.abs(d) + ' 天' : (d === 0 ? '今天该做' : d + ' 天后')}</span></div><button class="btn btn-primary btn-sm" onclick="doneAutoTask('${x.id}')">完成</button></div>`;
+        });
+        g += `</div>`; groups.push(g);
+      }
+
+      const habitItems = data.habits.filter(h => { const r = h.records.find(x => x.date === t); return !r || !r.done; });
+      if (habitItems.length) {
+        let g = `<div class="home-group"><div class="home-group-title">✅ 习惯打卡</div>`;
+        habitItems.forEach(h => {
+          g += `<div class="home-item"><div style="flex:1;min-width:0;"><span class="item-title">${h.name}</span><span class="meta">今日未打卡</span></div><button class="btn btn-primary btn-sm" onclick="toggleHabitDate('${h.id}', '${t}')">打卡</button></div>`;
+        });
+        g += `</div>`; groups.push(g);
+      }
+
+      const expiringItems = data.expiring.filter(x => diffDays(t, x.expireDate) <= 7);
+      if (expiringItems.length) {
+        let g = `<div class="home-group"><div class="home-group-title">⏰ 临期提醒</div>`;
+        expiringItems.forEach(x => {
+          const d = diffDays(t, x.expireDate);
+          g += `<div class="home-item ${d < 0 ? 'expired' : ''}"><div style="flex:1;min-width:0;"><span class="item-title">${x.name}</span><span class="meta">${d < 0 ? '已过期 ' + Math.abs(d) + ' 天' : '剩 ' + d + ' 天'} · ${x.category}</span></div><button class="btn btn-sm btn-del" onclick="deleteExpiring('${x.id}')">已处理</button></div>`;
+        });
+        g += `</div>`; groups.push(g);
+      }
+
+      if (!groups.length) { el.innerHTML = '<div class="home-empty">🎉 今天没有待处理事项，享受生活吧～</div>'; return; }
+      el.innerHTML = groups.join('');
+    }
+
+    /* ---------- 习惯 ---------- */
+    function renderHabits() {
+      const list = document.getElementById('habitList');
+      if (!data.habits.length) { list.innerHTML = '<div class="home-empty">还没有习惯，点右上角添加 🌱</div>'; return; }
+      const t = todayStr();
+      list.innerHTML = data.habits.map(h => {
+        const rec = h.records.find(r => r.date === t);
+        const done = rec && rec.done;
+        return `
+        <div class="habit-row">
+          <div class="habit-info">
+            <div class="habit-name" style="color:${COLORS[h.color] || COLORS.purple}">${h.name}</div>
+            <div class="habit-streak">🔥 连续 ${calcStreak(h.records)} 天 · 点方块切换</div>
+            <div class="heat-map">${heatCells(h.records, h.id)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+            <button class="btn ${done ? 'btn-secondary' : 'btn-primary'}" onclick="toggleHabitDate('${h.id}', '${t}')">${done ? '已打卡' : '打卡'}</button>
+            <button class="btn btn-sm btn-del" onclick="deleteHabit('${h.id}')">删除</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    function calcStreak(records) {
+      const t = todayStr(); let s = 0;
+      for (let i = 0; i < 365; i++) {
+        const d = addDays(t, -i);
+        const r = records.find(x => x.date === d);
+        if (r && r.done) s++;
+        else if (i === 0 && (!r || !r.done)) continue;
+        else break;
+      }
+      return s;
+    }
+    function heatCells(records, habitId) {
+      const t = todayStr(); const cells = [];
+      for (let i = 29; i >= 0; i--) {
+        const d = addDays(t, -i);
+        const rec = records.find(r => r.date === d);
+        const done = rec && rec.done;
+        const level = done ? 'l3' : '';
+        const isToday = d === t;
+        cells.push(`<div class="heat-cell ${level} ${isToday ? 'today' : ''}" data-date="${d.slice(5)}" data-habit="${habitId}" onclick="toggleHabitDateFromEvent(this, '${d}')"></div>`);
+      }
+      return cells.join('');
+    }
+    function toggleHabitDate(id, date) {
+      const h = data.habits.find(x => x.id === id); if (!h) return;
+      const rec = h.records.find(r => r.date === date);
+      if (rec) rec.done = !rec.done; else h.records.push({ date, done: true });
+      save();
+    }
+    function toggleHabitDateFromEvent(el, date) { const id = el.dataset.habit; if (id) toggleHabitDate(id, date); }
+    function openHabitModal() { document.getElementById('habitModal').classList.add('show'); document.getElementById('habitName').focus(); }
+    function addHabit() {
+      const name = document.getElementById('habitName').value.trim();
+      const color = document.getElementById('habitColor').value;
+      if (!name) { showToast('请输入习惯名称'); return; }
+      data.habits.push({ id: genId(), name, color, records: [] });
+      document.getElementById('habitName').value = '';
+      closeModal('habitModal'); save();
+    }
+    function deleteHabit(id) {
+      if (!confirm('删除这个习惯？历史打卡记录也会一并移除。')) return;
+      data.habits = data.habits.filter(x => x.id !== id); save();
+    }
+
+    /* ---------- 购物 ---------- */
+    function renderShopping() {
+      const list = document.getElementById('shoppingList');
+      if (!data.shopping.length) { list.innerHTML = '<div class="home-empty">购物清单空空如也 🛒</div>'; return; }
+      list.innerHTML = data.shopping.map(s => `
+        <div class="list-item ${s.bought ? 'done' : ''}">
+          <div class="list-item-left">
+            <div class="checkbox ${s.bought ? 'checked' : ''}" onclick="toggleShopping('${s.id}')">${s.bought ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}</div>
+            <div><div class="item-title ${s.bought ? 'strike' : ''}">${s.name}</div><div class="item-badges"><span class="badge">× ${s.quantity}</span></div></div>
+          </div>
+          <div class="item-actions"><button class="btn btn-sm btn-del" onclick="deleteShopping('${s.id}')">删除</button></div>
+        </div>`).join('');
+    }
+    function addShopping() {
+      const name = document.getElementById('shopName').value.trim();
+      const qty = parseInt(document.getElementById('shopQty').value) || 1;
+      if (!name) { showToast('请输入物品名称'); return; }
+      data.shopping.push({ id: genId(), name, quantity: qty, bought: false, createdAt: todayStr() });
+      document.getElementById('shopName').value = ''; document.getElementById('shopQty').value = '1'; save();
+    }
+    function toggleShopping(id) { const s = data.shopping.find(x => x.id === id); if (s) { s.bought = !s.bought; save(); } }
+    function deleteShopping(id) { data.shopping = data.shopping.filter(x => x.id !== id); save(); }
+
+    /* ---------- 生活待办 ---------- */
+    function renderLifeTodos() {
+      const list = document.getElementById('lifeTodoList');
+      const sorted = [...data.lifeTodos].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+      if (!sorted.length) { list.innerHTML = '<div class="home-empty">暂无生活待办 🌿</div>'; return; }
+      const t = todayStr();
+      list.innerHTML = sorted.map(x => {
+        const overdue = !x.done && x.dueDate < t;
+        const map = { p0: '🔴 紧急', p1: '🟠 重要', p2: '🟢 普通' };
+        return `
+        <div class="list-item ${x.done ? 'done' : ''}">
+          <div class="list-item-left">
+            <div class="checkbox ${x.done ? 'checked' : ''}" onclick="toggleLifeTodo('${x.id}')">${x.done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}</div>
+            <div><div class="item-title ${x.done ? 'strike' : ''}">${x.title}</div>
+            <div class="item-badges"><span class="badge ${x.priority}">${map[x.priority]}</span><span class="badge life" style="${overdue ? 'background:#fdf0ed;color:#d9735f;' : ''}">${overdue ? '逾期' : x.dueDate}</span></div></div>
+          </div>
+          <div class="item-actions"><button class="btn btn-sm btn-del" onclick="deleteLifeTodo('${x.id}')">删除</button></div>
+        </div>`;
+      }).join('');
+    }
+    function openLifeTodoModal() {
+      document.getElementById('mLifeDate').value = todayStr();
+      document.getElementById('lifeTodoModal').classList.add('show');
+      document.getElementById('mLifeTitle').focus();
+    }
+    function addLifeTodo() {
+      const title = document.getElementById('lifeTodoTitle').value.trim();
+      const date = document.getElementById('lifeTodoDate').value || todayStr();
+      const priority = document.getElementById('lifeTodoPriority').value;
+      if (!title) { showToast('请输入内容'); return; }
+      data.lifeTodos.push({ id: genId(), title, dueDate: date, priority, done: false, createdAt: todayStr() });
+      document.getElementById('lifeTodoTitle').value = '';
+      toggleForm('lifeTodoForm', false); save();
+    }
+    function addLifeTodoFromModal() {
+      const title = document.getElementById('mLifeTitle').value.trim();
+      const date = document.getElementById('mLifeDate').value || todayStr();
+      const priority = document.getElementById('mLifePrio').value;
+      if (!title) { showToast('请输入内容'); return; }
+      data.lifeTodos.push({ id: genId(), title, dueDate: date, priority, done: false, createdAt: todayStr() });
+      document.getElementById('mLifeTitle').value = '';
+      closeModal('lifeTodoModal'); save();
+    }
+    function toggleLifeTodo(id) { const x = data.lifeTodos.find(t => t.id === id); if (x) { x.done = !x.done; save(); } }
+    function doneLifeTodo(id) { const x = data.lifeTodos.find(t => t.id === id); if (x) { x.done = true; save(); } }
+    function deleteLifeTodo(id) { data.lifeTodos = data.lifeTodos.filter(x => x.id !== id); save(); }
+
+    /* ---------- 临期提醒 ---------- */
+    function renderExpiring() {
+      const list = document.getElementById('expiringList');
+      const sorted = [...data.expiring].sort((a, b) => new Date(a.expireDate) - new Date(b.expireDate));
+      if (!sorted.length) { list.innerHTML = '<div class="home-empty">暂无临期记录 ⏰</div>'; return; }
+      const t = todayStr();
+      list.innerHTML = sorted.map(x => {
+        const d = diffDays(t, x.expireDate);
+        const cls = d < 0 ? 'expired' : (d <= 7 ? 'soon' : '');
+        const label = d < 0 ? `已过期 ${Math.abs(d)} 天` : (d === 0 ? '今天到期' : `剩 ${d} 天`);
+        return `
+        <div class="list-item ${d < 0 ? 'done' : ''}">
+          <div class="list-item-left">
+            <div><div class="item-title">${catEmoji(x.category)} ${x.name}</div>
+            <div class="item-badges"><span class="badge ${cls}">${label}</span><span class="badge">${x.expireDate}</span>${x.note ? `<span class="badge">${x.note}</span>` : ''}</div></div>
+          </div>
+          <div class="item-actions"><button class="btn btn-sm btn-del" onclick="deleteExpiring('${x.id}')">删除</button></div>
+        </div>`;
+      }).join('');
+    }
+    function catEmoji(c) { return { '食品': '🍱', '药品': '💊', '零食': '🍪', '其他': '📦' }[c] || '📦'; }
+    function openExpiringModal() {
+      document.getElementById('mExpDate').value = todayStr();
+      document.getElementById('expiringModal').classList.add('show');
+      document.getElementById('mExpName').focus();
+    }
+    function addExpiring() {
+      const name = document.getElementById('expName').value.trim();
+      const date = document.getElementById('expDate').value;
+      const cat = document.getElementById('expCat').value;
+      if (!name || !date) { showToast('请填写名称和日期'); return; }
+      data.expiring.push({ id: genId(), name, category: cat, expireDate: date, note: '', createdAt: todayStr() });
+      document.getElementById('expName').value = '';
+      toggleForm('expiringForm', false); save();
+    }
+    function addExpiringFromModal() {
+      const name = document.getElementById('mExpName').value.trim();
+      const date = document.getElementById('mExpDate').value;
+      const cat = document.getElementById('mExpCat').value;
+      if (!name || !date) { showToast('请填写名称和日期'); return; }
+      data.expiring.push({ id: genId(), name, category: cat, expireDate: date, note: '', createdAt: todayStr() });
+      document.getElementById('mExpName').value = '';
+      closeModal('expiringModal'); save();
+    }
+    function deleteExpiring(id) { data.expiring = data.expiring.filter(x => x.id !== id); save(); }
+
+    /* ---------- 工作待办 ---------- */
+    function renderWorkTodos() {
+      const list = document.getElementById('workTodoList');
+      const sorted = [...data.workTodos].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+      if (!sorted.length) { list.innerHTML = '<div class="home-empty">暂无工作待办 💼</div>'; return; }
+      const t = todayStr();
+      list.innerHTML = sorted.map(x => {
+        const overdue = !x.done && x.dueDate < t;
+        const map = { p0: '🔴 紧急', p1: '🟠 重要', p2: '🟢 普通' };
+        return `
+        <div class="list-item ${x.done ? 'done' : ''}">
+          <div class="list-item-left">
+            <div class="checkbox ${x.done ? 'checked' : ''}" onclick="toggleWorkTodo('${x.id}')">${x.done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}</div>
+            <div><div class="item-title ${x.done ? 'strike' : ''}">${x.title}</div>
+            <div class="item-badges"><span class="badge ${x.priority}">${map[x.priority]}</span><span class="badge work" style="${overdue ? 'background:#fdf0ed;color:#d9735f;' : ''}">${overdue ? '逾期' : x.dueDate}</span></div></div>
+          </div>
+          <div class="item-actions"><button class="btn btn-sm btn-del" onclick="deleteWorkTodo('${x.id}')">删除</button></div>
+        </div>`;
+      }).join('');
+    }
+    function openWorkTodoModal() {
+      document.getElementById('mWorkDate').value = todayStr();
+      document.getElementById('workTodoModal').classList.add('show');
+      document.getElementById('mWorkTitle').focus();
+    }
+    function addWorkTodo() {
+      const title = document.getElementById('workTodoTitle').value.trim();
+      const date = document.getElementById('workTodoDate').value || todayStr();
+      const priority = document.getElementById('workTodoPriority').value;
+      if (!title) { showToast('请输入内容'); return; }
+      data.workTodos.push({ id: genId(), title, dueDate: date, priority, done: false, createdAt: todayStr() });
+      document.getElementById('workTodoTitle').value = '';
+      toggleForm('workTodoForm', false); save();
+    }
+    function addWorkTodoFromModal() {
+      const title = document.getElementById('mWorkTitle').value.trim();
+      const date = document.getElementById('mWorkDate').value || todayStr();
+      const priority = document.getElementById('mWorkPrio').value;
+      if (!title) { showToast('请输入内容'); return; }
+      data.workTodos.push({ id: genId(), title, dueDate: date, priority, done: false, createdAt: todayStr() });
+      document.getElementById('mWorkTitle').value = '';
+      closeModal('workTodoModal'); save();
+    }
+    function toggleWorkTodo(id) { const x = data.workTodos.find(t => t.id === id); if (x) { x.done = !x.done; save(); } }
+    function doneWorkTodo(id) { const x = data.workTodos.find(t => t.id === id); if (x) { x.done = true; save(); } }
+    function deleteWorkTodo(id) { data.workTodos = data.workTodos.filter(x => x.id !== id); save(); }
+
+    /* ---------- 自动任务 ---------- */
+    function renderAutoTasks() {
+      const list = document.getElementById('autoTaskList');
+      const sorted = [...data.autoTasks].sort((a, b) => new Date(a.nextDate) - new Date(b.nextDate));
+      if (!sorted.length) { list.innerHTML = '<div class="home-empty">暂无自动任务 🔄</div>'; return; }
+      const t = todayStr();
+      list.innerHTML = sorted.map(x => {
+        const d = diffDays(t, x.nextDate);
+        let status = `${d} 天后`;
+        if (d < 0) status = `逾期 ${Math.abs(d)} 天`;
+        else if (d === 0) status = '今天';
+        return `
+        <div class="list-item">
+          <div class="list-item-left">
+            <div><div class="item-title">${x.title}</div>
+            <div class="item-badges"><span class="badge">🔁 每 ${x.intervalDays} 天</span><span class="badge ${d <= 0 ? 'expire' : ''}">下次：${x.nextDate}（${status}）</span>${x.note ? `<span class="badge">${x.note}</span>` : ''}</div></div>
+          </div>
+          <div class="item-actions">
+            <button class="btn btn-primary btn-sm" onclick="doneAutoTask('${x.id}')">完成</button>
+            <button class="btn btn-sm btn-del" onclick="deleteAutoTask('${x.id}')">删除</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    function addAutoTask() {
+      const title = document.getElementById('autoTitle').value.trim();
+      const days = parseInt(document.getElementById('autoDays').value);
+      if (!title || !days) { showToast('请填写完整'); return; }
+      data.autoTasks.push({ id: genId(), title, intervalDays: days, lastDone: todayStr(), nextDate: addDays(todayStr(), days), note: '' });
+      document.getElementById('autoTitle').value = ''; document.getElementById('autoDays').value = '14'; save();
+    }
+    function doneAutoTask(id) {
+      const x = data.autoTasks.find(t => t.id === id);
+      if (x) { x.lastDone = todayStr(); x.nextDate = addDays(todayStr(), x.intervalDays); save(); showToast('✅ 已记录完成'); }
+    }
+    function deleteAutoTask(id) { data.autoTasks = data.autoTasks.filter(x => x.id !== id); save(); }
+
+    /* ---------- 话术库（含附件） ---------- */
+    function renderPhrases() {
+      const list = document.getElementById('phraseList');
+      if (!data.phrases.length) { list.innerHTML = '<div class="home-empty">暂无话术 💬</div>'; return; }
+      list.innerHTML = data.phrases.map(p => {
+        const att = p.attachments || [];
+        const attHtml = att.length ? `<div class="phrase-attach">${att.map(a => `<img src="${a.data}" alt="${escapeAttr(a.name)}" onclick="window.open('${a.data}')">`).join('')}</div>` : '';
+        return `
+        <div class="phrase-card">
+          <div class="phrase-top"><div class="phrase-title">💬 ${p.title}</div><span class="badge work">${p.category || '未分类'}</span></div>
+          <div class="phrase-content">${escapeHtml(p.content)}</div>
+          ${attHtml}
+          <div class="phrase-actions">
+            <button class="btn btn-primary btn-sm" onclick="copyPhrase('${p.id}')">📋 复制${att.length ? ` (+${att.length}附件)` : ''}</button>
+            <button class="btn btn-sm btn-del" onclick="deletePhrase('${p.id}')">删除</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+    function openPhraseModal() {
+      phraseDraftAttach = [];
+      renderPhraseAttachPreview();
+      document.getElementById('phraseTitle').value = '';
+      document.getElementById('phraseCategory').value = '';
+      document.getElementById('phraseContent').value = '';
+      document.getElementById('phraseModal').classList.add('show');
+      document.getElementById('phraseTitle').focus();
+    }
+    function handlePhraseFiles(event) {
+      const files = Array.from(event.target.files);
+      files.forEach(file => {
+        if (phraseDraftAttach.length >= 9) { showToast('最多 9 张附件'); return; }
+        compressImage(file, 800, (dataUrl, name) => {
+          phraseDraftAttach.push({ name, data: dataUrl });
+          renderPhraseAttachPreview();
+        });
+      });
+      event.target.value = '';
+    }
+    function renderPhraseAttachPreview() {
+      const box = document.getElementById('phraseAttachPreview');
+      box.innerHTML = phraseDraftAttach.map((a, i) => `<img src="${a.data}" alt="${escapeAttr(a.name)}" onclick="phraseDraftAttach.splice(${i},1);renderPhraseAttachPreview()">`).join('');
+    }
+    function compressImage(file, maxW, cb) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > maxW) { h = h * maxW / w; w = maxW; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          cb(canvas.toDataURL('image/jpeg', 0.85), file.name);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+    function addPhrase() {
+      const title = document.getElementById('phraseTitle').value.trim();
+      const category = document.getElementById('phraseCategory').value.trim();
+      const content = document.getElementById('phraseContent').value;
+      if (!title || !content) { showToast('请填写标题和内容'); return; }
+      data.phrases.push({ id: genId(), title, category, content, attachments: phraseDraftAttach.slice() });
+      closeModal('phraseModal'); save();
+    }
+    function copyPhrase(id) {
+      const p = data.phrases.find(x => x.id === id); if (!p) return;
+      const att = p.attachments || [];
+      const tip = att.length ? `\n\n（本话术附带 ${att.length} 个图片附件，请在卡片中查看/点开）` : '';
+      navigator.clipboard.writeText(p.content + tip).then(() => showToast('📋 已复制' + (att.length ? `（含${att.length}附件提示）` : ''))).catch(() => showToast('复制失败'));
+    }
+    function deletePhrase(id) { data.phrases = data.phrases.filter(x => x.id !== id); save(); }
+
+    /* ---------- 工具 ---------- */
+    function escapeHtml(str) { return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
+    function escapeAttr(str) { return String(str).replace(/"/g, '&quot;'); }
+    function switchTab(tab) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + tab).classList.add('active');
+      document.querySelectorAll('.nav-tab, .bottom-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    }
+    function toggleForm(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+    function showClearModal() { document.getElementById('clearModal').classList.add('show'); }
+    function clearAllData() {
+      Object.values(KEYS).forEach(k => {
+        if (k !== KEYS.syncApiKey && k !== KEYS.syncBinId && k !== KEYS.syncLastPush && k !== KEYS.syncLastPull) {
+          localStorage.removeItem(k);
+        }
+      });
+      data = { habits: [], shopping: [], lifeTodos: [], expiring: [], workTodos: [], autoTasks: [], phrases: [] };
+      localLastModified = Date.now();
+      closeModal('clearModal'); renderAll(); syncPushDebounced();
+      showToast('🗑️ 已清空全部数据');
+    }
+    function exportData() {
+      const payload = { version: 2, exportAt: new Date().toISOString(), data };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `生活工作台备份_${todayStr()}.json`; a.click();
+      URL.revokeObjectURL(url); showToast('⬇️ 备份已导出');
+    }
+    function importData(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const payload = JSON.parse(e.target.result);
+          const imp = payload.data || payload;
+          ['habits', 'shopping', 'lifeTodos', 'expiring', 'workTodos', 'autoTasks', 'phrases'].forEach(k => { if (imp[k]) data[k] = imp[k]; });
+          localLastModified = Date.now();
+          save(); showToast('⬆️ 数据已恢复');
+        } catch (err) { showToast('文件解析失败'); }
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    /* ---------- 云端同步 (jsonbin.io) ---------- */
+    const SYNC_BASE = 'https://api.jsonbin.io/v3/b';
+    let syncState = { status: 'off', lastPush: 0, lastPull: 0, pushTimer: null, pulling: false };
+    let localLastModified = Date.now();
+
+    function getSyncConfig() {
+      return {
+        apiKey: localStorage.getItem(KEYS.syncApiKey) || '',
+        binId: localStorage.getItem(KEYS.syncBinId) || ''
+      };
+    }
+
+    function isSyncConfigured() {
+      const c = getSyncConfig();
+      return c.apiKey && c.binId;
+    }
+
+    function updateSyncStatusBar() {
+      const bar = document.getElementById('syncStatusBar');
+      const btn = document.getElementById('syncBtn');
+      if (!bar || !btn) return;
+      const c = getSyncConfig();
+      if (!c.apiKey || !c.binId) {
+        bar.innerHTML = '<span class="sync-dot off"></span> 未同步';
+        btn.textContent = '☁️ 同步';
+        return;
+      }
+      const dot = syncState.status === 'busy' ? 'busy' : syncState.status === 'err' ? 'err' : 'on';
+      const label = syncState.status === 'busy' ? '同步中...' : syncState.status === 'err' ? '同步失败' : '已同步';
+      const lastTime = syncState.lastPush > syncState.lastPull ? syncState.lastPush : syncState.lastPull;
+      const timeStr = lastTime ? ' · ' + timeAgo(lastTime) : '';
+      bar.innerHTML = '<span class="sync-dot ' + dot + '"></span> ' + label + timeStr;
+      btn.textContent = syncState.status === 'busy' ? '⏳ 同步中' : '☁️ 已同步';
+    }
+
+    function timeAgo(ts) {
+      const diff = Date.now() - ts;
+      if (diff < 60000) return '刚刚';
+      if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
+      if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
+      return Math.floor(diff / 86400000) + '天前';
+    }
+
+    function openSyncModal() {
+      document.getElementById('syncModal').classList.add('show');
+      renderSyncModalBody();
+    }
+
+    function renderSyncModalBody() {
+      const body = document.getElementById('syncModalBody');
+      const c = getSyncConfig();
+      if (c.apiKey && c.binId) {
+        body.innerHTML = `
+          <p>已连接云端同步，手机和电脑数据自动保持一致。</p>
+          <div class="sync-section">
+            <h5>📋 你的同步码</h5>
+            <div class="sync-code-box" onclick="copySyncCode()">${escapeHtml(c.binId)}</div>
+            <p class="sync-code-hint">点击复制 → 在另一台设备打开工作台 → 输入此同步码即可配对</p>
+          </div>
+          <div class="sync-section">
+            <h5>📊 同步状态</h5>
+            <p style="font-size:13px;">
+              上次推送: ${syncState.lastPush ? new Date(syncState.lastPush).toLocaleString('zh-CN') : '无'}<br>
+              上次拉取: ${syncState.lastPull ? new Date(syncState.lastPull).toLocaleString('zh-CN') : '无'}
+            </p>
+            <button class="btn btn-primary btn-sm" onclick="syncPull(true)">🔄 立即同步</button>
+            <button class="btn btn-danger btn-sm" onclick="syncDisconnect()" style="margin-left:6px;">断开同步</button>
+          </div>
+          <div class="sync-section">
+            <h5>更换 API Key</h5>
+            <div class="form-row" style="display:flex;gap:6px;">
+              <input type="password" id="newSyncKey" placeholder="输入新的 jsonbin.io API Key" style="flex:1;font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);">
+              <button class="btn btn-secondary btn-sm" onclick="updateSyncKey()">更新</button>
+            </div>
+          </div>
+        `;
+      } else {
+        body.innerHTML = `
+          <p>开启云端同步后，手机和电脑的数据自动保持一致，无需手动导出导入。</p>
+          <div class="sync-section">
+            <h5>第 1 步：输入 API Key</h5>
+            <p style="font-size:13px;">到 <a href="https://jsonbin.io" target="_blank" style="color:var(--primary-deep);">jsonbin.io</a> 免费注册 → 登录后首页复制你的 API Key</p>
+            <input type="password" id="syncKeyInput" placeholder="粘贴你的 jsonbin.io API Key" style="width:100%;font-size:14px;padding:9px 11px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;">
+          </div>
+          <div class="sync-section">
+            <h5>第 2 步：创建或连接</h5>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="syncCreate()" style="flex:1;min-width:140px;">🆕 创建新同步</button>
+              <button class="btn btn-secondary" onclick="showConnectForm()" style="flex:1;min-width:140px;">🔗 连接已有同步</button>
+            </div>
+            <div id="connectForm" style="display:none;margin-top:10px;">
+              <input type="text" id="syncCodeInput" placeholder="输入同步码（另一台设备上的）" style="width:100%;font-size:14px;padding:9px 11px;border-radius:8px;border:1px solid var(--border);margin-bottom:8px;">
+              <button class="btn btn-primary btn-sm" onclick="syncConnect()" style="width:100%;">🔗 连接并拉取数据</button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function showConnectForm() {
+      document.getElementById('connectForm').style.display = 'block';
+    }
+
+    async function syncCreate() {
+      const apiKey = document.getElementById('syncKeyInput').value.trim();
+      if (!apiKey) { showToast('请先输入 API Key'); return; }
+      syncState.status = 'busy'; updateSyncStatusBar();
+      try {
+        const payload = buildSyncPayload();
+        const res = await fetch(SYNC_BASE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey, 'X-Bin-Name': 'workbench-sync' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) { const e = await res.text(); throw new Error('HTTP ' + res.status + ': ' + e); }
+        const json = await res.json();
+        const binId = json.metadata.id;
+        localStorage.setItem(KEYS.syncApiKey, apiKey);
+        localStorage.setItem(KEYS.syncBinId, binId);
+        syncState.status = 'on'; syncState.lastPush = Date.now();
+        localStorage.setItem(KEYS.syncLastPush, String(syncState.lastPush));
+        updateSyncStatusBar(); renderSyncModalBody();
+        showToast('✅ 云端同步已开启！同步码: ' + binId);
+      } catch(e) {
+        syncState.status = 'err'; updateSyncStatusBar();
+        showToast('创建失败: ' + e.message);
+      }
+    }
+
+    async function syncConnect() {
+      const apiKey = document.getElementById('syncKeyInput').value.trim();
+      const binId = document.getElementById('syncCodeInput').value.trim();
+      if (!apiKey) { showToast('请先输入 API Key'); return; }
+      if (!binId) { showToast('请输入同步码'); return; }
+      syncState.status = 'busy'; updateSyncStatusBar();
+      try {
+        const res = await fetch(SYNC_BASE + '/' + binId + '/latest', {
+          headers: { 'X-Master-Key': apiKey }
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        const cloud = json.record;
+        if (cloud && cloud.data) {
+          applyCloudData(cloud);
+        }
+        localStorage.setItem(KEYS.syncApiKey, apiKey);
+        localStorage.setItem(KEYS.syncBinId, binId);
+        syncState.status = 'on'; syncState.lastPull = Date.now();
+        localStorage.setItem(KEYS.syncLastPull, String(syncState.lastPull));
+        save();
+        renderSyncModalBody();
+        showToast('✅ 已连接同步，数据已拉取！');
+      } catch(e) {
+        syncState.status = 'err'; updateSyncStatusBar();
+        showToast('连接失败: ' + e.message);
+      }
+    }
+
+    function buildSyncPayload() {
+      return { version: 2, lastModified: Date.now(), data: data };
+    }
+
+    function applyCloudData(cloud) {
+      if (!cloud || !cloud.data) return false;
+      const cloudTime = cloud.lastModified || 0;
+      if (cloudTime > localLastModified) {
+        ['habits', 'shopping', 'lifeTodos', 'expiring', 'workTodos', 'autoTasks', 'phrases'].forEach(k => {
+          if (cloud.data[k]) data[k] = cloud.data[k];
+        });
+        localLastModified = cloudTime;
+        localStorage.setItem(KEYS.habits, JSON.stringify(data.habits));
+        localStorage.setItem(KEYS.shopping, JSON.stringify(data.shopping));
+        localStorage.setItem(KEYS.lifeTodos, JSON.stringify(data.lifeTodos));
+        localStorage.setItem(KEYS.expiring, JSON.stringify(data.expiring));
+        localStorage.setItem(KEYS.workTodos, JSON.stringify(data.workTodos));
+        localStorage.setItem(KEYS.autoTasks, JSON.stringify(data.autoTasks));
+        localStorage.setItem(KEYS.phrases, JSON.stringify(data.phrases));
+        renderAll();
+        return true;
+      }
+      return false;
+    }
+
+    function syncPushDebounced() {
+      if (!isSyncConfigured()) return;
+      if (syncState.pushTimer) clearTimeout(syncState.pushTimer);
+      syncState.pushTimer = setTimeout(() => syncPush(), 2000);
+    }
+
+    async function syncPush() {
+      if (!isSyncConfigured()) return;
+      if (syncState.status === 'busy') { syncState.pushTimer = setTimeout(() => syncPush(), 3000); return; }
+      const c = getSyncConfig();
+      syncState.status = 'busy'; updateSyncStatusBar();
+      try {
+        const payload = buildSyncPayload();
+        localLastModified = payload.lastModified;
+        const res = await fetch(SYNC_BASE + '/' + c.binId, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'X-Master-Key': c.apiKey },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        syncState.status = 'on'; syncState.lastPush = Date.now();
+        localStorage.setItem(KEYS.syncLastPush, String(syncState.lastPush));
+        updateSyncStatusBar();
+      } catch(e) {
+        syncState.status = 'err'; updateSyncStatusBar();
+      }
+    }
+
+    async function syncPull(manual) {
+      if (!isSyncConfigured()) { if (manual) showToast('请先开启同步'); return; }
+      if (syncState.pulling) return;
+      const c = getSyncConfig();
+      syncState.pulling = true;
+      if (manual) { syncState.status = 'busy'; updateSyncStatusBar(); }
+      try {
+        const res = await fetch(SYNC_BASE + '/' + c.binId + '/latest', {
+          headers: { 'X-Master-Key': c.apiKey }
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const json = await res.json();
+        const cloud = json.record;
+        const updated = applyCloudData(cloud);
+        syncState.status = 'on'; syncState.lastPull = Date.now();
+        localStorage.setItem(KEYS.syncLastPull, String(syncState.lastPull));
+        updateSyncStatusBar();
+        if (manual) {
+          if (updated) { showToast('✅ 已从云端拉取最新数据'); renderSyncModalBody(); }
+          else { showToast('✅ 本地已是最新'); renderSyncModalBody(); }
+        }
+        if (!updated && cloud && cloud.lastModified > localLastModified) {
+          syncPush();
+        }
+      } catch(e) {
+        syncState.status = 'err'; updateSyncStatusBar();
+        if (manual) showToast('同步失败: ' + e.message);
+      } finally {
+        syncState.pulling = false;
+      }
+    }
+
+    function syncInit() {
+      const c = getSyncConfig();
+      syncState.lastPush = parseInt(localStorage.getItem(KEYS.syncLastPush) || '0');
+      syncState.lastPull = parseInt(localStorage.getItem(KEYS.syncLastPull) || '0');
+      if (c.apiKey && c.binId) {
+        syncState.status = 'on';
+        updateSyncStatusBar();
+        setTimeout(() => syncPull(false), 1500);
+        setInterval(() => syncPull(false), 60000);
+      } else {
+        updateSyncStatusBar();
+      }
+    }
+
+    function syncDisconnect() {
+      localStorage.removeItem(KEYS.syncApiKey);
+      localStorage.removeItem(KEYS.syncBinId);
+      localStorage.removeItem(KEYS.syncLastPush);
+      localStorage.removeItem(KEYS.syncLastPull);
+      syncState = { status: 'off', lastPush: 0, lastPull: 0, pushTimer: null, pulling: false };
+      updateSyncStatusBar(); renderSyncModalBody();
+      showToast('已断开云端同步（本地数据不受影响）');
+    }
+
+    function updateSyncKey() {
+      const newKey = document.getElementById('newSyncKey').value.trim();
+      if (!newKey) { showToast('请输入新的 API Key'); return; }
+      localStorage.setItem(KEYS.syncApiKey, newKey);
+      showToast('API Key 已更新');
+      renderSyncModalBody();
+      syncPull(true);
+    }
+
+    function copySyncCode() {
+      const binId = localStorage.getItem(KEYS.syncBinId);
+      if (!binId) return;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(binId).then(() => showToast('📋 同步码已复制！'));
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = binId; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('📋 同步码已复制！');
+      }
+    }
+
+    document.getElementById('lifeTodoDate').value = todayStr();
+    document.getElementById('workTodoDate').value = todayStr();
+    document.getElementById('expDate').value = todayStr();
+    loadData();
+  </script>
+</body>
+</html>
