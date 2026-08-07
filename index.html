@@ -534,7 +534,9 @@
                 <div class="settings-label">API Key</div>
                 <div class="settings-desc">到 platform.moonshot.cn 获取</div>
               </div>
-              <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk-..." onchange="saveKimiKey()">
+              <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk-..." onchange="saveKimiKey()" style="max-width:240px;">
+              <button class="btn btn-secondary btn-sm" onclick="toggleKimiKeyVisibility()" id="kimiKeyToggleBtn" style="flex:0;">👁️</button>
+              <button class="btn btn-primary btn-sm" onclick="testKimiKey()" id="kimiKeyTestBtn" style="flex:0;">🔍 测试</button>
             </div>
             <div id="kimiKeyStatus" style="margin-top:8px;font-size:13px;"></div>
           </div>
@@ -1821,7 +1823,15 @@
 
         displayQaResult(result, qaScene);
       } catch (e) {
-        document.getElementById('qaResultArea').innerHTML = `<div style="color:var(--accent-red);font-size:13px;">⚠️ 分析失败: ${escapeHtml(e.message)}<br><br>请检查 API Key 是否正确，或稍后重试。</div>`;
+        let hint = '';
+        if (e.message.includes('401')) {
+          hint = '<br><br><strong style="color:var(--accent-red);">API Key 无效！</strong><br>到「设置 → KIMI API 配置」检查 Key 是否正确，或点「🔍 测试」按钮验证。';
+        } else if (e.message.includes('402')) {
+          hint = '<br><br>账户余额不足，请到 platform.moonshot.cn 充值。';
+        } else if (e.message.includes('429')) {
+          hint = '<br><br>请求过于频繁，稍后再试。';
+        }
+        document.getElementById('qaResultArea').innerHTML = `<div style="color:var(--accent-red);font-size:13px;">⚠️ 分析失败: ${escapeHtml(e.message)}${hint}</div>`;
       } finally {
         btn.disabled = false; btn.textContent = '🔍 分析';
       }
@@ -1900,6 +1910,50 @@
         document.getElementById('kimiKeyStatus').innerHTML = '<span style="color:var(--accent-green);">✅ API Key 已配置（' + key.slice(0, 6) + '...' + key.slice(-4) + '）</span>';
       } else {
         document.getElementById('kimiKeyStatus').innerHTML = '<span style="color:var(--text-2);">未配置，QA 分析器将无法使用</span>';
+      }
+    }
+
+    function toggleKimiKeyVisibility() {
+      const input = document.getElementById('kimiKeyInput');
+      const btn = document.getElementById('kimiKeyToggleBtn');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    async function testKimiKey() {
+      const key = localStorage.getItem(KEYS.kimiApiKey);
+      if (!key) { showToast('请先填写 API Key'); return; }
+      const btn = document.getElementById('kimiKeyTestBtn');
+      const status = document.getElementById('kimiKeyStatus');
+      btn.disabled = true; btn.textContent = '⏳ 测试中...';
+      status.innerHTML = '<span style="color:var(--text-2);">⏳ 正在连接 KIMI...</span>';
+      try {
+        const res = await fetch('https://api.moonshot.cn/v1/models', {
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + key }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const modelNames = (data.data || []).map(m => m.id).join(', ');
+          status.innerHTML = '<span style="color:var(--accent-green);">✅ Key 有效！可用模型：' + escapeHtml(modelNames.slice(0, 80)) + (modelNames.length > 80 ? '...' : '') + '</span>';
+        } else {
+          const errText = await res.text();
+          let msg = 'HTTP ' + res.status;
+          try { const j = JSON.parse(errText); msg = j.error?.message || j.message || msg; } catch(_) {}
+          status.innerHTML = '<span style="color:var(--accent-red);">❌ ' + escapeHtml(msg) + '</span>';
+          if (res.status === 401) {
+            status.innerHTML += '<br><span style="color:var(--text-2);font-size:12px;">可能原因：① Key 错误或过期 ② Key 未启用 ③ 余额不足（少数情况）</span>';
+          }
+        }
+      } catch (e) {
+        status.innerHTML = '<span style="color:var(--accent-red);">❌ 网络错误：' + escapeHtml(e.message) + '</span>';
+      } finally {
+        btn.disabled = false; btn.textContent = '🔍 测试';
       }
     }
 
