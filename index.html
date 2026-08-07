@@ -528,18 +528,74 @@
             <div class="section-header">
               <h3><span class="emoji">🤖</span> KIMI API 配置</h3>
             </div>
-            <p class="settings-desc">配置 KIMI（Moonshot AI）API Key 后，QA 话术分析器可直接在工作台内调用 AI 分析聊天记录。</p>
+            <p class="settings-desc">配置 Kimi Code API Key 后，QA 话术分析器可直接在工作台内调用 AI 分析聊天记录。</p>
             <div class="settings-row">
               <div>
                 <div class="settings-label">API Key</div>
-                <div class="settings-desc">到 platform.moonshot.cn 创建「通用型」API Key（sk- 开头）</div>
+                <div class="settings-desc">到 kimi.com/code 控制台创建，sk-kimi- 开头</div>
               </div>
-              <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk- 开头（不是 sk-kimi-）" oninput="saveKimiKey()" onchange="saveKimiKey()" style="max-width:240px;">
+              <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk-kimi-..." oninput="saveKimiKey()" onchange="saveKimiKey()" style="max-width:240px;">
               <button class="btn btn-secondary btn-sm" onclick="toggleKimiKeyVisibility()" id="kimiKeyToggleBtn" style="flex:0;">👁️</button>
               <button class="btn btn-secondary btn-sm" onclick="clearKimiKey()" title="清空当前 Key 后重新粘贴" style="flex:0;">🗑️ 清除</button>
               <button class="btn btn-primary btn-sm" onclick="testKimiKey()" id="kimiKeyTestBtn" style="flex:0;">🔍 测试</button>
             </div>
             <div id="kimiKeyStatus" style="margin-top:8px;font-size:13px;"></div>
+            <div class="settings-row" style="margin-top:16px;">
+              <div>
+                <div class="settings-label">API 代理地址</div>
+                <div class="settings-desc">浏览器无法直接访问 api.kimi.com（跨域限制），需填一个代理地址转发请求。<br>部署方法见下方说明。</div>
+              </div>
+              <input type="text" class="settings-input" id="kimiProxyInput" placeholder="https://your-proxy.workers.dev" oninput="saveKimiProxy()" onchange="saveKimiProxy()" style="max-width:300px;">
+            </div>
+            <div id="kimiProxyStatus" style="margin-top:8px;font-size:13px;"></div>
+            <div style="margin-top:12px;padding:12px;background:var(--bg-2);border-radius:8px;font-size:13px;line-height:1.8;">
+              <strong>📋 代理部署步骤（一次性，约 3 分钟）：</strong><br>
+              1. 打开 <a href="https://dash.cloudflare.com/sign-up" target="_blank" style="color:var(--primary);">Cloudflare 注册页</a>，用邮箱免费注册（不需要绑卡）<br>
+              2. 登录后进入 <a href="https://dash.cloudflare.com/" target="_blank" style="color:var(--primary);">控制台</a> → 左侧「Workers & Pages」<br>
+              3. 点「Create Worker」→ 取名如 <code>kimi-proxy</code> → 点「Deploy」<br>
+              4. 部署后点「Edit code」→ 删除默认代码 → 粘贴代理代码（见下方）→ 「Save and deploy」<br>
+              5. 复制 Worker 地址（形如 <code>https://kimi-proxy.你的名.workers.dev</code>）→ 粘贴到上方输入框<br>
+              6. 点「🔍 测试」验证<br><br>
+              <details><summary style="cursor:pointer;color:var(--primary);">点击展开代理代码（复制这段）</summary>
+              <textarea readonly style="width:100%;height:200px;margin-top:8px;font-size:11px;" onclick="this.select()">export default {
+  async fetch(request) {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Authorization, Content-Type",
+    };
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
+    const url = new URL(request.url);
+    const targetUrl = "https://api.kimi.com" + url.pathname + url.search;
+    const fetchOpts = {
+      method: request.method,
+      headers: {
+        Authorization: request.headers.get("Authorization") || "",
+        "Content-Type": request.headers.get("Content-Type") || "application/json",
+      },
+    };
+    if (request.method === "POST" || request.method === "PUT" || request.method === "PATCH") {
+      fetchOpts.body = await request.text();
+    }
+    try {
+      const resp = await fetch(targetUrl, fetchOpts);
+      const body = await resp.text();
+      return new Response(body, {
+        status: resp.status,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    } catch (e) {
+      return new Response(
+        JSON.stringify({ error: { message: "Proxy error: " + e.message } }),
+        { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+  },
+};</textarea>
+              </details>
+            </div>
           </div>
 
           <div class="section">
@@ -836,6 +892,7 @@
       syncLastPush: PREFIX + 'sync_lastpush',
       syncLastPull: PREFIX + 'sync_lastpull',
       kimiApiKey: PREFIX + 'kimi_apikey',
+      kimiProxy: PREFIX + 'kimi_proxy',
       clients: PREFIX + 'clients',
       transactions: PREFIX + 'transactions'    };
     const COLORS = { green: '#7bae8e', purple: '#9b8bc9', orange: '#e0a458', blue: '#7c98c4' };
@@ -1805,14 +1862,14 @@
       }
 
       try {
-        const res = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+        const res = await fetch(getApiUrl('/chat/completions'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + apiKey
           },
           body: JSON.stringify({
-            model: 'kimi-k3',
+            model: 'kimi-for-coding',
             messages: messages,
             temperature: 0.3,
             max_tokens: 2000
@@ -1832,11 +1889,13 @@
       } catch (e) {
         let hint = '';
         if (e.message.includes('401')) {
-          hint = '<br><br><strong style="color:var(--accent-red);">API Key 无效！</strong><br>请确认用的是 platform.moonshot.cn 创建的<strong>通用型 API Key（sk- 开头）</strong>，不是 Kimi Code 订阅 key（sk-kimi- 开头）。<br>到「设置 → KIMI API 配置」重新粘贴后点「🔍 测试」验证。';
+          hint = '<br><br><strong style="color:var(--accent-red);">API Key 无效！</strong><br>到「设置 → KIMI API 配置」检查 Key 是否正确，或点「🔍 测试」按钮验证。<br>注意：必须是 Kimi Code 控制台（kimi.com/code）创建的 Key。';
         } else if (e.message.includes('402')) {
-          hint = '<br><br>账户余额不足，请到 Kimi 控制台充值。';
+          hint = '<br><br>额度不足，请到 Kimi Code 控制台查看用量。';
         } else if (e.message.includes('429')) {
           hint = '<br><br>请求过于频繁，稍后再试。';
+        } else if (e.message.includes('Failed to fetch') || e.message.includes('NetworkError') || e.message.includes('网络')) {
+          hint = '<br><br><strong style="color:var(--accent-red);">网络错误！</strong><br>请到「设置 → KIMI API 配置」部署代理并填入代理地址，否则浏览器无法访问 api.kimi.com。';
         }
         document.getElementById('qaResultArea').innerHTML = `<div style="color:var(--accent-red);font-size:13px;">⚠️ 分析失败: ${escapeHtml(e.message)}${hint}</div>`;
       } finally {
@@ -1897,7 +1956,37 @@
       navigator.clipboard.writeText(lastQaResult).then(() => showToast('已复制'));
     }
 
-    /* ---------- KIMI API Key ---------- */
+    /* ---------- KIMI API Key + Proxy ---------- */
+    function getApiUrl(path) {
+      const proxy = (document.getElementById('kimiProxyInput') || {}).value?.trim() || localStorage.getItem(KEYS.kimiProxy) || '';
+      if (proxy) {
+        return proxy.replace(/\/$/, '') + path;
+      }
+      // 无代理时直连（浏览器会 CORS 失败，但保留 fallback）
+      return 'https://api.kimi.com/coding/v1' + path;
+    }
+
+    function saveKimiProxy() {
+      const val = document.getElementById('kimiProxyInput').value.trim();
+      if (val) {
+        localStorage.setItem(KEYS.kimiProxy, val);
+        document.getElementById('kimiProxyStatus').innerHTML = '<span style="color:var(--accent-green);">✅ 代理地址已保存</span>';
+      } else {
+        localStorage.removeItem(KEYS.kimiProxy);
+        document.getElementById('kimiProxyStatus').innerHTML = '<span style="color:var(--text-2);">未配置，浏览器将无法直接访问 API</span>';
+      }
+    }
+
+    function loadKimiProxyStatus() {
+      const val = localStorage.getItem(KEYS.kimiProxy);
+      if (val) {
+        document.getElementById('kimiProxyInput').value = val;
+        document.getElementById('kimiProxyStatus').innerHTML = '<span style="color:var(--accent-green);">✅ 代理地址已配置（' + escapeHtml(val) + '）</span>';
+      } else {
+        document.getElementById('kimiProxyStatus').innerHTML = '<span style="color:var(--accent-red);">⚠️ 未配置代理，请按下方步骤部署后填入地址</span>';
+      }
+    }
+
     function saveKimiKey() {
       const key = document.getElementById('kimiKeyInput').value.trim();
       if (key) {
@@ -1951,7 +2040,7 @@
       btn.disabled = true; btn.textContent = '⏳ 测试中...';
       status.innerHTML = '<span style="color:var(--text-2);">⏳ 正在连接 KIMI...</span>';
       try {
-        const res = await fetch('https://api.moonshot.cn/v1/models', {
+        const res = await fetch(getApiUrl('/models'), {
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + key }
         });
@@ -1965,11 +2054,16 @@
           try { const j = JSON.parse(errText); msg = j.error?.message || j.message || msg; } catch(_) {}
           status.innerHTML = '<span style="color:var(--accent-red);">❌ ' + escapeHtml(msg) + '</span>';
           if (res.status === 401) {
-            status.innerHTML += '<br><span style="color:var(--text-2);font-size:12px;">可能原因：① Key 错误或过期 ② Key 未启用 ③ 用了 Kimi Code 的 sk-kimi- key（请改用 platform.moonshot.cn 的通用 sk- key）</span>';
+            status.innerHTML += '<br><span style="color:var(--text-2);font-size:12px;">可能原因：① Key 错误或过期 ② Key 未启用 ③ 代理地址未配置（浏览器无法直接访问 api.kimi.com）</span>';
           }
         }
       } catch (e) {
-        status.innerHTML = '<span style="color:var(--accent-red);">❌ 网络错误：' + escapeHtml(e.message) + '</span>';
+        const proxy = localStorage.getItem(KEYS.kimiProxy);
+        let proxyHint = '';
+        if (!proxy) {
+          proxyHint = '<br><span style="color:var(--text-2);font-size:12px;">⚠️ 未配置代理地址，浏览器无法访问 api.kimi.com。请按下方步骤部署 Cloudflare Worker 代理。</span>';
+        }
+        status.innerHTML = '<span style="color:var(--accent-red);">❌ 网络错误：' + escapeHtml(e.message) + '</span>' + proxyHint;
       } finally {
         btn.disabled = false; btn.textContent = '🔍 测试';
       }
@@ -1988,7 +2082,7 @@
     function showClearModal() { document.getElementById('clearModal').classList.add('show'); }
     function clearAllData() {
       Object.values(KEYS).forEach(k => {
-        if (!k.startsWith('wb_life_v2_sync') && k !== KEYS.kimiApiKey) {
+        if (!k.startsWith('wb_life_v2_sync') && k !== KEYS.kimiApiKey && k !== KEYS.kimiProxy) {
           localStorage.removeItem(k);
         }
       });
@@ -2330,6 +2424,7 @@
     document.getElementById('expDate').value = todayStr();
     loadData();
     loadKimiKeyStatus();
+    loadKimiProxyStatus();
   </script>
 </body>
 </html>
