@@ -532,7 +532,7 @@
             <div class="settings-row">
               <div>
                 <div class="settings-label">API Key</div>
-                <div class="settings-desc">到 platform.moonshot.cn 获取</div>
+                <div class="settings-desc">到 Kimi Code 控制台（kimi.com/code）获取</div>
               </div>
               <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk-..." oninput="saveKimiKey()" onchange="saveKimiKey()" style="max-width:240px;">
               <button class="btn btn-secondary btn-sm" onclick="toggleKimiKeyVisibility()" id="kimiKeyToggleBtn" style="flex:0;">👁️</button>
@@ -1805,14 +1805,14 @@
       }
 
       try {
-        const res = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+        const res = await fetch('https://api.kimi.com/coding/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + apiKey
           },
           body: JSON.stringify({
-            model: qaImages.length ? 'moonshot-v1-8k-vision-preview' : 'moonshot-v1-8k',
+            model: 'kimi-for-coding',
             messages: messages,
             temperature: 0.3,
             max_tokens: 2000
@@ -1834,7 +1834,7 @@
         if (e.message.includes('401')) {
           hint = '<br><br><strong style="color:var(--accent-red);">API Key 无效！</strong><br>到「设置 → KIMI API 配置」检查 Key 是否正确，或点「🔍 测试」按钮验证。';
         } else if (e.message.includes('402')) {
-          hint = '<br><br>账户余额不足，请到 platform.moonshot.cn 充值。';
+          hint = '<br><br>账户余额不足，请到 Kimi 控制台充值。';
         } else if (e.message.includes('429')) {
           hint = '<br><br>请求过于频繁，稍后再试。';
         }
@@ -1951,7 +1951,7 @@
       btn.disabled = true; btn.textContent = '⏳ 测试中...';
       status.innerHTML = '<span style="color:var(--text-2);">⏳ 正在连接 KIMI...</span>';
       try {
-        const res = await fetch('https://api.moonshot.cn/v1/models', {
+        const res = await fetch('https://api.kimi.com/coding/v1/models', {
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + key }
         });
