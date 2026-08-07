@@ -534,7 +534,7 @@
                 <div class="settings-label">API Key</div>
                 <div class="settings-desc">到 platform.moonshot.cn 获取</div>
               </div>
-              <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk-..." onchange="saveKimiKey()" style="max-width:240px;">
+              <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk-..." oninput="saveKimiKey()" onchange="saveKimiKey()" style="max-width:240px;">
               <button class="btn btn-secondary btn-sm" onclick="toggleKimiKeyVisibility()" id="kimiKeyToggleBtn" style="flex:0;">👁️</button>
               <button class="btn btn-primary btn-sm" onclick="testKimiKey()" id="kimiKeyTestBtn" style="flex:0;">🔍 测试</button>
             </div>
@@ -1769,7 +1769,13 @@
     async function runQaAnalysis() {
       const text = document.getElementById('qaInputText').value.trim();
       if (!text && !qaImages.length) { showToast('请输入聊天记录或上传截图'); return; }
-      const apiKey = localStorage.getItem(KEYS.kimiApiKey);
+      // 从 input 直接读最新值，不依赖 onchange 是否已触发
+      let apiKey = document.getElementById('kimiKeyInput').value.trim();
+      if (apiKey) {
+        localStorage.setItem(KEYS.kimiApiKey, apiKey);
+      } else {
+        apiKey = localStorage.getItem(KEYS.kimiApiKey);
+      }
       if (!apiKey) { showToast('请先在设置中配置 KIMI API Key'); switchTab('settings'); return; }
 
       const btn = document.getElementById('qaAnalyzeBtn');
@@ -1926,8 +1932,12 @@
     }
 
     async function testKimiKey() {
-      const key = localStorage.getItem(KEYS.kimiApiKey);
+      // 直接从 input 读，不依赖 onchange 是否已触发
+      const inputEl = document.getElementById('kimiKeyInput');
+      const key = inputEl.value.trim();
       if (!key) { showToast('请先填写 API Key'); return; }
+      // 强制保存到 localStorage，确保后续函数也能用
+      localStorage.setItem(KEYS.kimiApiKey, key);
       const btn = document.getElementById('kimiKeyTestBtn');
       const status = document.getElementById('kimiKeyStatus');
       btn.disabled = true; btn.textContent = '⏳ 测试中...';
