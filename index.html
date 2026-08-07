@@ -532,9 +532,9 @@
             <div class="settings-row">
               <div>
                 <div class="settings-label">API Key</div>
-                <div class="settings-desc">到 Kimi Code 控制台（kimi.com/code）获取</div>
+                <div class="settings-desc">到 platform.moonshot.cn 创建「通用型」API Key（sk- 开头）</div>
               </div>
-              <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk-..." oninput="saveKimiKey()" onchange="saveKimiKey()" style="max-width:240px;">
+              <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk- 开头（不是 sk-kimi-）" oninput="saveKimiKey()" onchange="saveKimiKey()" style="max-width:240px;">
               <button class="btn btn-secondary btn-sm" onclick="toggleKimiKeyVisibility()" id="kimiKeyToggleBtn" style="flex:0;">👁️</button>
               <button class="btn btn-secondary btn-sm" onclick="clearKimiKey()" title="清空当前 Key 后重新粘贴" style="flex:0;">🗑️ 清除</button>
               <button class="btn btn-primary btn-sm" onclick="testKimiKey()" id="kimiKeyTestBtn" style="flex:0;">🔍 测试</button>
@@ -1805,14 +1805,14 @@
       }
 
       try {
-        const res = await fetch('https://api.kimi.com/coding/v1/chat/completions', {
+        const res = await fetch('https://api.moonshot.cn/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + apiKey
           },
           body: JSON.stringify({
-            model: 'kimi-for-coding',
+            model: 'kimi-k3',
             messages: messages,
             temperature: 0.3,
             max_tokens: 2000
@@ -1832,7 +1832,7 @@
       } catch (e) {
         let hint = '';
         if (e.message.includes('401')) {
-          hint = '<br><br><strong style="color:var(--accent-red);">API Key 无效！</strong><br>到「设置 → KIMI API 配置」检查 Key 是否正确，或点「🔍 测试」按钮验证。';
+          hint = '<br><br><strong style="color:var(--accent-red);">API Key 无效！</strong><br>请确认用的是 platform.moonshot.cn 创建的<strong>通用型 API Key（sk- 开头）</strong>，不是 Kimi Code 订阅 key（sk-kimi- 开头）。<br>到「设置 → KIMI API 配置」重新粘贴后点「🔍 测试」验证。';
         } else if (e.message.includes('402')) {
           hint = '<br><br>账户余额不足，请到 Kimi 控制台充值。';
         } else if (e.message.includes('429')) {
@@ -1951,7 +1951,7 @@
       btn.disabled = true; btn.textContent = '⏳ 测试中...';
       status.innerHTML = '<span style="color:var(--text-2);">⏳ 正在连接 KIMI...</span>';
       try {
-        const res = await fetch('https://api.kimi.com/coding/v1/models', {
+        const res = await fetch('https://api.moonshot.cn/v1/models', {
           method: 'GET',
           headers: { 'Authorization': 'Bearer ' + key }
         });
@@ -1965,7 +1965,7 @@
           try { const j = JSON.parse(errText); msg = j.error?.message || j.message || msg; } catch(_) {}
           status.innerHTML = '<span style="color:var(--accent-red);">❌ ' + escapeHtml(msg) + '</span>';
           if (res.status === 401) {
-            status.innerHTML += '<br><span style="color:var(--text-2);font-size:12px;">可能原因：① Key 错误或过期 ② Key 未启用 ③ 余额不足（少数情况）</span>';
+            status.innerHTML += '<br><span style="color:var(--text-2);font-size:12px;">可能原因：① Key 错误或过期 ② Key 未启用 ③ 用了 Kimi Code 的 sk-kimi- key（请改用 platform.moonshot.cn 的通用 sk- key）</span>';
           }
         }
       } catch (e) {
