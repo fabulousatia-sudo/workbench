@@ -536,6 +536,7 @@
               </div>
               <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk-..." oninput="saveKimiKey()" onchange="saveKimiKey()" style="max-width:240px;">
               <button class="btn btn-secondary btn-sm" onclick="toggleKimiKeyVisibility()" id="kimiKeyToggleBtn" style="flex:0;">👁️</button>
+              <button class="btn btn-secondary btn-sm" onclick="clearKimiKey()" title="清空当前 Key 后重新粘贴" style="flex:0;">🗑️ 清除</button>
               <button class="btn btn-primary btn-sm" onclick="testKimiKey()" id="kimiKeyTestBtn" style="flex:0;">🔍 测试</button>
             </div>
             <div id="kimiKeyStatus" style="margin-top:8px;font-size:13px;"></div>
@@ -1917,6 +1918,13 @@
       } else {
         document.getElementById('kimiKeyStatus').innerHTML = '<span style="color:var(--text-2);">未配置，QA 分析器将无法使用</span>';
       }
+    }
+
+    function clearKimiKey() {
+      document.getElementById('kimiKeyInput').value = '';
+      localStorage.removeItem(KEYS.kimiApiKey);
+      document.getElementById('kimiKeyStatus').innerHTML = '<span style="color:var(--text-2);">已清空，请重新粘贴完整 Key</span>';
+      showToast('已清空，请重新粘贴');
     }
 
     function toggleKimiKeyVisibility() {
