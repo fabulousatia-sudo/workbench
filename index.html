@@ -140,21 +140,6 @@
     .work-subsection { margin-bottom: 14px; }
     .work-subsection:last-child { margin-bottom: 0; }
     .work-subtitle { font-size: 13px; font-weight: 800; color: var(--text-2); margin-bottom: 8px; padding-left: 2px; }
-    .workflow-card { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; margin-bottom: 8px; }
-    .workflow-main { flex: 1; min-width: 0; }
-    .workflow-title { font-weight: 700; font-size: 14px; }
-    .workflow-desc { font-size: 12px; color: var(--text-2); margin-top: 3px; }
-    .workflow-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
-    .workflow-logs { margin: 0 0 14px 4px; }
-    .workflow-log-title { font-size: 11px; color: var(--text-2); font-weight: 700; margin-bottom: 5px; }
-    .workflow-log-item { display: flex; gap: 10px; font-size: 12px; color: var(--text-2); cursor: pointer; padding: 4px 0; }
-    .workflow-log-item:hover { color: var(--primary-deep); }
-    .workflow-log-preview { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .workflow-input-group { margin-bottom: 12px; }
-    .workflow-input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
-    .workflow-image-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 7px; margin-bottom: 6px; }
-    .workflow-image-preview img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); }
-    #workflowOutputText { font-family: inherit; font-size: 13px; }
 
     .habit-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; }
     .habit-info { flex: 1; min-width: 0; }
@@ -246,6 +231,80 @@
     .sync-section { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
     .sync-section h5 { margin: 0 0 8px; font-size: 14px; color: var(--text); }
 
+    /* ---- 看板：客户状态 ---- */
+    .client-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 12px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .client-card .client-name { font-weight: 700; font-size: 15px; }
+    .client-card .client-meta { font-size: 12px; color: var(--text-2); display: flex; gap: 8px; flex-wrap: wrap; }
+    .client-card .client-actions { margin-left: auto; display: flex; gap: 6px; }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 700; white-space: nowrap;
+    }
+    .status-active { background: #e8f5e9; color: #2e7d32; }
+    .status-watch { background: #fff3e0; color: #e65100; }
+    .status-done { background: #e8eaf6; color: #283593; }
+    .status-sleep { background: #f5f5f5; color: #757575; }
+    .client-filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .client-filter-btn {
+      border: 1px solid var(--border); background: var(--surface); border-radius: 20px;
+      padding: 5px 14px; font-size: 13px; cursor: pointer; color: var(--text-2); font-weight: 600; min-height: 34px;
+    }
+    .client-filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .overdue-text { color: var(--accent-red); font-weight: 600; }
+    .tx-amount { color: var(--accent-red); font-weight: 700; }
+
+    /* ---- 看板：成交数据 ---- */
+    .tx-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tx-table th { text-align: left; padding: 8px 10px; border-bottom: 2px solid var(--border); color: var(--text-2); font-weight: 700; font-size: 12px; white-space: nowrap; }
+    .tx-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    .tx-table tr:hover { background: var(--surface-2); }
+    .tx-amount { font-weight: 700; color: var(--accent-red); }
+    .tx-card { display: none; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .stat-card { background: var(--surface-2); border-radius: var(--radius-sm); padding: 12px 14px; text-align: center; }
+    .stat-card .stat-val { font-size: 22px; font-weight: 800; color: var(--primary-deep); }
+    .stat-card .stat-label { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+    .chart-box { background: var(--surface-2); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 14px; }
+    .chart-box h4 { margin: 0 0 10px; font-size: 14px; color: var(--text); }
+    .chart-svg { width: 100%; height: auto; display: block; }
+
+    /* ---- QA 分析器 ---- */
+    .qa-analyzer { background: var(--surface-2); border: 1px dashed var(--primary); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 14px; }
+    .qa-analyzer textarea { width: 100%; min-height: 100px; border-radius: 8px; border: 1px solid var(--border); padding: 10px; font-size: 14px; font-family: inherit; resize: vertical; background: var(--surface); color: var(--text); }
+    .qa-scene-select { display: flex; gap: 6px; margin: 10px 0; flex-wrap: wrap; }
+    .qa-scene-btn {
+      border: 1px solid var(--border); background: var(--surface); border-radius: 20px;
+      padding: 5px 12px; font-size: 13px; cursor: pointer; color: var(--text-2); font-weight: 600; min-height: 34px;
+    }
+    .qa-scene-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .qa-result { background: var(--surface); border-radius: 8px; border: 1px solid var(--border); padding: 12px; margin-top: 10px; }
+    .qa-result-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; color: var(--primary-deep); }
+    .qa-result-body { font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
+    .qa-loading { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-size: 14px; }
+    .qa-loading .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---- 设置面板 ---- */
+    .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-label { font-size: 14px; font-weight: 600; }
+    .settings-desc { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+    .settings-input { flex: 1; max-width: 280px; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 14px; }
+
+    /* ---- 表格在窄屏改成卡片 ---- */
+    @media (max-width: 768px) {
+      .tx-table { display: none; }
+      .tx-card { display: block; }
+      .tx-card-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; }
+      .tx-card-item .tx-row { display: flex; justify-content: space-between; font-size: 13px; padding: 2px 0; }
+      .tx-card-item .tx-row .tx-label { color: var(--text-2); }
+      .tx-card-item .tx-row .tx-val { font-weight: 600; }
+      .tx-card-item .tx-actions { display: flex; gap: 6px; margin-top: 6px; }
+    }
+
     @media (max-width: 768px) {
       .container { padding: 12px; }
       .main-layout { grid-template-columns: 1fr; }
@@ -295,6 +354,12 @@
         </button>
         <button class="nav-tab" data-tab="work" onclick="switchTab('work')">
           <span class="emoji">💼</span> 工作
+        </button>
+        <button class="nav-tab" data-tab="dashboard" onclick="switchTab('dashboard')">
+          <span class="emoji">📊</span> 看板
+        </button>
+        <button class="nav-tab" data-tab="settings" onclick="switchTab('settings')">
+          <span class="emoji">⚙️</span> 设置
         </button>
       </nav>
 
@@ -396,19 +461,6 @@
 
           <div class="section">
             <div class="section-header">
-              <h3><span class="emoji">🔄</span> 工作自动任务</h3>
-              <span class="badge work">已同步自 WorkBuddy</span>
-            </div>
-            <div class="form-row">
-              <input type="text" id="autoTitle" placeholder="任务名称，如：换床单" onkeydown="if(event.key==='Enter') addAutoTask()">
-              <input type="number" id="autoDays" placeholder="周期（天）" min="1" value="14" onkeydown="if(event.key==='Enter') addAutoTask()">
-              <button class="btn btn-primary" onclick="addAutoTask()">添加</button>
-            </div>
-            <div class="list" id="autoTaskList"></div>
-          </div>
-
-          <div class="section">
-            <div class="section-header">
               <h3><span class="emoji">💬</span> 营销话术库</h3>
               <button class="btn btn-primary btn-sm" onclick="openPhraseModal('marketing')">＋ 加营销话术</button>
             </div>
@@ -417,10 +469,104 @@
 
           <div class="section">
             <div class="section-header">
+              <h3><span class="emoji">🔍</span> QA 话术分析器</h3>
+              <button class="btn btn-primary btn-sm" onclick="openQaAnalyzer()">打开分析器</button>
+            </div>
+            <p style="font-size:13px;color:var(--text-2);">粘贴聊天记录或上传截图，AI 自动分析客户意图并生成推荐话术，一键保存到 QA 话术库。</p>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
               <h3><span class="emoji">❓</span> QA 话术库</h3>
               <button class="btn btn-primary btn-sm" onclick="openPhraseModal('qa')">＋ 加 QA</button>
             </div>
             <div class="phrase-list" id="qaPhraseList"></div>
+          </div>
+        </div>
+
+        <!-- 看板 -->
+        <div class="panel" id="panel-dashboard">
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">👥</span> 客户状态看板</h3>
+              <button class="btn btn-primary btn-sm" onclick="openClientModal()">＋ 加客户</button>
+            </div>
+            <div class="client-filters" id="clientFilters"></div>
+            <div id="clientList"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">📈</span> 成交数据分析</h3>
+              <button class="btn btn-primary btn-sm" onclick="openTxModal()">＋ 加成交</button>
+            </div>
+            <div class="stat-grid" id="txStats"></div>
+            <div class="chart-box" id="txLineChartBox" style="display:none;">
+              <h4>月度成交金额趋势</h4>
+              <div id="txLineChart"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="chart-box" id="txPieChartBox" style="display:none;">
+                <h4>产品分布</h4>
+                <div id="txPieChart"></div>
+              </div>
+              <div class="chart-box" id="txBarChartBox" style="display:none;">
+                <h4>渠道贡献排行</h4>
+                <div id="txBarChart"></div>
+              </div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="tx-table" id="txTable"></table>
+            </div>
+            <div class="tx-card" id="txCardList"></div>
+          </div>
+        </div>
+
+        <!-- 设置 -->
+        <div class="panel" id="panel-settings">
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">🤖</span> KIMI API 配置</h3>
+            </div>
+            <p class="settings-desc">配置 KIMI（Moonshot AI）API Key 后，QA 话术分析器可直接在工作台内调用 AI 分析聊天记录。</p>
+            <div class="settings-row">
+              <div>
+                <div class="settings-label">API Key</div>
+                <div class="settings-desc">到 platform.moonshot.cn 获取</div>
+              </div>
+              <input type="password" class="settings-input" id="kimiKeyInput" placeholder="sk-..." onchange="saveKimiKey()">
+            </div>
+            <div id="kimiKeyStatus" style="margin-top:8px;font-size:13px;"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">☁️</span> 云端同步</h3>
+              <button class="btn btn-secondary btn-sm" onclick="openSyncModal()">同步设置</button>
+            </div>
+            <div id="syncStatusBar" style="font-size:13px;color:var(--text-2);"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">💾</span> 数据管理</h3>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">导出 JSON 备份</div><div class="settings-desc">下载全部数据为 JSON 文件</div></div>
+              <button class="btn btn-primary btn-sm" onclick="exportData()">导出</button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">导入恢复</div><div class="settings-desc">从 JSON 备份文件恢复数据</div></div>
+              <label class="btn btn-secondary btn-sm" style="cursor:pointer;">选择文件<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label">恢复示例数据</div><div class="settings-desc">重置为初始演示数据</div></div>
+              <button class="btn btn-secondary btn-sm" onclick="if(confirm('确定恢复示例数据？当前数据将被覆盖。')) loadDemoData()">恢复</button>
+            </div>
+            <div class="settings-row">
+              <div><div class="settings-label" style="color:var(--accent-red);">清空所有数据</div><div class="settings-desc">删除全部记录，不可撤销</div></div>
+              <button class="btn btn-danger btn-sm" onclick="showClearModal()">清空</button>
+            </div>
           </div>
         </div>
       </main>
@@ -437,6 +583,12 @@
       </button>
       <button class="bottom-tab" data-tab="work" onclick="switchTab('work')">
         <span class="emoji">💼</span> 工作
+      </button>
+      <button class="bottom-tab" data-tab="dashboard" onclick="switchTab('dashboard')">
+        <span class="emoji">📊</span> 看板
+      </button>
+      <button class="bottom-tab" data-tab="settings" onclick="switchTab('settings')">
+        <span class="emoji">⚙️</span> 设置
       </button>
     </div>
   </nav>
@@ -558,24 +710,6 @@
     </div>
   </div>
 
-  <!-- 工作流运行器弹窗 -->
-  <div class="modal-overlay" id="workflowRunnerModal">
-    <div class="modal" style="max-width:520px;">
-      <h4 id="workflowTitle">▶ 运行工作流</h4>
-      <p id="workflowDesc" style="font-size:13px;color:var(--text-2);margin-top:-8px;"></p>
-      <div id="workflowInputs" style="margin-bottom:12px;"></div>
-      <div id="workflowOutput" style="display:none;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:6px;">生成结果</div>
-        <textarea id="workflowOutputText" style="min-height:120px;background:var(--surface-2);" readonly></textarea>
-        <button class="btn btn-primary btn-sm" onclick="copyWorkflowOutput()" style="margin-top:6px;">📋 复制结果</button>
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" onclick="closeModal('workflowRunnerModal')">关闭</button>
-        <button class="btn btn-primary" onclick="runWorkflow()">运行</button>
-      </div>
-    </div>
-  </div>
-
   <!-- 清空确认 -->
   <div class="modal-overlay" id="clearModal">
     <div class="modal">
@@ -598,6 +732,90 @@
     </div>
   </div>
 
+  <!-- 客户弹窗 -->
+  <div class="modal-overlay" id="clientModal">
+    <div class="modal" style="max-width:480px;">
+      <h4 id="clientModalTitle">👥 添加客户</h4>
+      <input type="text" id="clientName" placeholder="客户姓名" style="width:100%;margin-bottom:8px;">
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <select id="clientStatus" style="flex:1;">
+          <option value="active">🟢 活跃</option>
+          <option value="watch">🟠 观望</option>
+          <option value="done">🔵 已成交</option>
+          <option value="sleep">⚫ 休眠</option>
+        </select>
+        <input type="text" id="clientChannel" placeholder="所属渠道" style="flex:1;">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input type="text" id="clientIfa" placeholder="所属IFA" style="flex:1;">
+        <input type="text" id="clientProducts" placeholder="持有产品" style="flex:1;">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input type="date" id="clientNextDate" style="flex:1;">
+        <input type="text" id="clientNextPlan" placeholder="下次跟进计划" style="flex:1;">
+      </div>
+      <input type="text" id="clientNote" placeholder="备注" style="width:100%;margin-bottom:14px;">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('clientModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveClient()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 成交弹窗 -->
+  <div class="modal-overlay" id="txModal">
+    <div class="modal" style="max-width:480px;">
+      <h4 id="txModalTitle">📈 添加成交</h4>
+      <input type="text" id="txClient" placeholder="客户姓名" style="width:100%;margin-bottom:8px;">
+      <input type="text" id="txProduct" placeholder="产品名称" style="width:100%;margin-bottom:8px;">
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input type="number" id="txAmount" placeholder="金额（元）" style="flex:1;">
+        <select id="txType" style="flex:1;">
+          <option value="申购">申购</option>
+          <option value="赎回">赎回</option>
+          <option value="追加">追加</option>
+        </select>
+      </div>
+      <input type="month" id="txMonth" style="width:100%;margin-bottom:8px;">
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input type="text" id="txIfa" placeholder="所属IFA" style="flex:1;">
+        <input type="text" id="txChannel" placeholder="所属渠道" style="flex:1;">
+      </div>
+      <input type="text" id="txNote" placeholder="备注" style="width:100%;margin-bottom:14px;">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('txModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveTx()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QA 分析器弹窗 -->
+  <div class="modal-overlay" id="qaAnalyzerModal" style="align-items:flex-start;">
+    <div class="modal" style="max-width:620px;">
+      <h4>🔍 QA 话术分析器</h4>
+      <p style="font-size:13px;color:var(--text-2);margin-bottom:10px;">粘贴聊天记录或上传截图，AI 自动分析客户意图并推荐话术</p>
+      <div class="qa-scene-select" id="qaSceneSelect">
+        <button class="qa-scene-btn active" data-scene="售前咨询" onclick="selectQaScene(this)">售前咨询</button>
+        <button class="qa-scene-btn" data-scene="售后跟进" onclick="selectQaScene(this)">售后跟进</button>
+        <button class="qa-scene-btn" data-scene="异议处理" onclick="selectQaScene(this)">异议处理</button>
+        <button class="qa-scene-btn" data-scene="促单转化" onclick="selectQaScene(this)">促单转化</button>
+      </div>
+      <textarea id="qaInputText" placeholder="在此粘贴客户聊天记录..." style="min-height:120px;"></textarea>
+      <div style="display:flex;gap:8px;margin:8px 0;align-items:center;flex-wrap:wrap;">
+        <div class="attach-pick" onclick="document.getElementById('qaImgFile').click()">🖼️ 上传聊天截图</div>
+        <span id="qaImgCount" style="font-size:12px;color:var(--text-2);"></span>
+        <input type="file" id="qaImgFile" accept="image/*" multiple style="display:none" onchange="handleQaImages(event)">
+        <div style="flex:1;"></div>
+        <button class="btn btn-primary" onclick="runQaAnalysis()" id="qaAnalyzeBtn">🔍 分析</button>
+      </div>
+      <div id="qaImgPreview" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;"></div>
+      <div id="qaResultArea"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeQaAnalyzer()">关闭</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
@@ -608,17 +826,18 @@
       lifeTodos: PREFIX + 'lifeTodos',
       expiring: PREFIX + 'expiring',
       workTodos: PREFIX + 'workTodos',
-      autoTasks: PREFIX + 'autoTasks',
       phrases: PREFIX + 'phrases',
       initialized: PREFIX + 'initialized',
       syncApiKey: PREFIX + 'sync_apikey',
       syncBinId: PREFIX + 'sync_binid',
       syncLastPush: PREFIX + 'sync_lastpush',
-      syncLastPull: PREFIX + 'sync_lastpull'
-    };
+      syncLastPull: PREFIX + 'sync_lastpull',
+      kimiApiKey: PREFIX + 'kimi_apikey',
+      clients: PREFIX + 'clients',
+      transactions: PREFIX + 'transactions'    };
     const COLORS = { green: '#7bae8e', purple: '#9b8bc9', orange: '#e0a458', blue: '#7c98c4' };
 
-    let data = { habits: [], shopping: [], lifeTodos: [], expiring: [], workTodos: [], autoTasks: [], phrases: [] };
+    let data = { habits: [], shopping: [], lifeTodos: [], expiring: [], workTodos: [], phrases: [], clients: [], transactions: [] };
     let phraseDraftAttach = [];
 
     function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
@@ -637,8 +856,9 @@
       data.lifeTodos = JSON.parse(localStorage.getItem(KEYS.lifeTodos) || '[]');
       data.expiring = JSON.parse(localStorage.getItem(KEYS.expiring) || '[]');
       data.workTodos = JSON.parse(localStorage.getItem(KEYS.workTodos) || '[]');
-      data.autoTasks = JSON.parse(localStorage.getItem(KEYS.autoTasks) || '[]');
       data.phrases = JSON.parse(localStorage.getItem(KEYS.phrases) || '[]');
+      data.clients = JSON.parse(localStorage.getItem(KEYS.clients) || '[]');
+      data.transactions = JSON.parse(localStorage.getItem(KEYS.transactions) || '[]');
       migrateData();
       if (!localStorage.getItem(KEYS.initialized)) { loadDemoData(); localStorage.setItem(KEYS.initialized, '1'); }
       renderAll();
@@ -647,13 +867,6 @@
     function migrateData() {
       // 工作待办补 tag
       data.workTodos.forEach(x => { if (x.tag === undefined) x.tag = ''; });
-      // 自动任务补工作流字段
-      data.autoTasks.forEach(x => {
-        if (x.description === undefined) x.description = x.note || '';
-        if (x.inputs === undefined) x.inputs = [];
-        if (x.template === undefined) x.template = '';
-        if (x.logs === undefined) x.logs = [];
-      });
       // 话术补 phraseType
       data.phrases.forEach(p => { if (p.phraseType === undefined) p.phraseType = 'marketing'; });
     }
@@ -664,8 +877,9 @@
       localStorage.setItem(KEYS.lifeTodos, JSON.stringify(data.lifeTodos));
       localStorage.setItem(KEYS.expiring, JSON.stringify(data.expiring));
       localStorage.setItem(KEYS.workTodos, JSON.stringify(data.workTodos));
-      localStorage.setItem(KEYS.autoTasks, JSON.stringify(data.autoTasks));
       localStorage.setItem(KEYS.phrases, JSON.stringify(data.phrases));
+      localStorage.setItem(KEYS.clients, JSON.stringify(data.clients));
+      localStorage.setItem(KEYS.transactions, JSON.stringify(data.transactions));
       renderAll();
       syncPushDebounced();
     }
@@ -698,15 +912,16 @@
         { id: genId(), title: '写本周工作周报', dueDate: t, priority: 'p1', done: false, createdAt: t, tag: 'juxiu' },
         { id: genId(), title: '整理项目文档', dueDate: addDays(t, 3), priority: 'p2', done: false, createdAt: t, tag: '' }
       ];
-      data.autoTasks = [
-        { id: genId(), title: '恒力石化积极信号监控', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 15:25', description: '交易日 15:25 检查恒力石化标的积极信号，记录异常与触发点。', inputs: [{ key: 'signal', label: '信号备注', type: 'text' }], template: '【恒力石化积极信号监控】\n日期：{{today}}\n信号备注：{{signal}}\n请根据以上信息生成监控摘要。', logs: [] },
-        { id: genId(), title: '美团每日自动领券', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 9:30', description: '工作日 9:30 打开美团领取当日优惠券，领完打卡即可。', inputs: [], template: '【美团领券打卡】\n日期：{{today}}\n已领取当日优惠券。', logs: [] },
-        { id: genId(), title: 'Regina 持仓每日收盘汇报', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 17:00', description: '收盘后整理 Regina 当日持仓概况并生成汇报。', inputs: [{ key: 'summary', label: '当日持仓概况', type: 'text' }], template: '【Regina 持仓每日收盘汇报】\n日期：{{today}}\n当日概况：\n{{summary}}\n请生成结构化汇报。', logs: [] },
-        { id: genId(), title: '天山铝业积极信号监控', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 15:15', description: '交易日 15:15 检查天山铝业标的积极信号。', inputs: [{ key: 'signal', label: '信号备注', type: 'text' }], template: '【天山铝业积极信号监控】\n日期：{{today}}\n信号备注：{{signal}}\n请生成监控摘要。', logs: [] },
-        { id: genId(), title: '达沃新闻发布 - 14点', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 14:00', description: '工作日 14:00 将达沃新闻内容发布到指定渠道。', inputs: [{ key: 'content', label: '新闻内容', type: 'text' }], template: '【达沃新闻发布】\n时间：{{today}}\n内容：\n{{content}}', logs: [] },
-        { id: genId(), title: '聚秀周报', intervalDays: 7, lastDone: addDays(t, -2), nextDate: addDays(t, 5), note: '每周二 16:00', description: '每周二根据本周数据/截图生成聚秀周报。', inputs: [{ key: 'data', label: '数据或截图说明', type: 'text' }, { key: 'screenshot', label: '数据截图', type: 'image' }], template: '【聚秀周报】\n周期：{{today}}\n数据说明：\n{{data}}\n\n请根据以上数据生成本周聚秀周报，突出关键指标、异常点与下周 Action。', logs: [] },
-        { id: genId(), title: '检查瑞幸 switchProduct 修复状态', intervalDays: 30, lastDone: addDays(t, -5), nextDate: addDays(t, 25), note: '每月 1 号', description: '每月 1 号检查瑞幸 switchProduct 修复状态并记录。', inputs: [{ key: 'status', label: '当前状态', type: 'text' }], template: '【瑞幸 switchProduct 修复状态检查】\n日期：{{today}}\n当前状态：\n{{status}}', logs: [] },
-        { id: genId(), title: '聚世碳科技月报', intervalDays: 30, lastDone: addDays(t, 1), nextDate: addDays(t, 29), note: '每月 5 号', description: '每月 5 号生成聚世碳科技月度报告。', inputs: [{ key: 'data', label: '月度数据', type: 'text' }], template: '【聚世碳科技月报】\n月份：{{today}}\n月度数据：\n{{data}}\n\n请生成月度报告。', logs: [] }
+      data.clients = [
+        { id: genId(), name: '王明', status: 'active', channel: '直销', ifa: 'Regina', products: '高毅晓峰2号', nextFollowDate: addDays(t, 2), nextFollowPlan: '沟通三季度业绩', note: '风险偏好中等' },
+        { id: genId(), name: '李芳', status: '观望', channel: '渠道A', ifa: '张经理', products: '', nextFollowDate: addDays(t, -1), nextFollowPlan: '发送产品资料', note: '对量化策略感兴趣' },
+        { id: genId(), name: '赵强', status: 'done', channel: '渠道B', ifa: 'Regina', products: '沪深300增强', nextFollowDate: addDays(t, 7), nextFollowPlan: '月度回顾', note: '已建仓' },
+        { id: genId(), name: '陈丽', status: 'sleep', channel: '直销', ifa: '李经理', products: '中性策略1号', nextFollowDate: '', nextFollowPlan: '', note: '3个月未联系' }
+      ];
+      data.transactions = [
+        { id: genId(), month: t.slice(0,7), client: '王明', product: '高毅晓峰2号', amount: 500000, type: '申购', ifa: 'Regina', channel: '直销', note: '' },
+        { id: genId(), month: addDays(t, -15).slice(0,7), client: '赵强', product: '沪深300增强', amount: 300000, type: '申购', ifa: 'Regina', channel: '渠道B', note: '' },
+        { id: genId(), month: addDays(t, -15).slice(0,7), client: '李芳', product: '中性策略1号', amount: 200000, type: '申购', ifa: '张经理', channel: '渠道A', note: '小仓位试水' }
       ];
       data.phrases = [
         { id: genId(), title: '请假模板', category: '工作沟通', phraseType: 'marketing', content: '领导好，因个人原因，我拟于 X 月 X 日请假一天，手头工作已安排妥当，望批准。', attachments: [] },
@@ -722,13 +937,13 @@
     }
 
     function totalCount() {
-      return data.habits.length + data.shopping.length + data.lifeTodos.length + data.expiring.length + data.workTodos.length + data.autoTasks.length + data.phrases.length;
+      return data.habits.length + data.shopping.length + data.lifeTodos.length + data.expiring.length + data.workTodos.length + data.phrases.length + data.clients.length + data.transactions.length;
     }
 
     function renderAll() {
       renderHome();
       renderLifeTodos(); renderHabits(); renderShopping(); renderExpiring();
-      renderWorkTodos(); renderAutoTasks(); renderMarketingPhrases(); renderQAPhrases();
+      renderWorkTodos(); renderMarketingPhrases(); renderQAPhrases(); renderClients(); renderTransactions();
       document.getElementById('dataCount').textContent = `已记录 ${totalCount()} 条`;
       if (totalCount() >= 30) document.getElementById('backupHint').innerHTML = `💾 数据已积累 <span class="backup-count">${totalCount()}</span> 条，建议导出备份。`;
       updateSyncStatusBar();
@@ -761,16 +976,6 @@
         g += `</div>`; groups.push(g);
       }
 
-      const autoItems = data.autoTasks.filter(x => diffDays(t, x.nextDate) <= 2);
-      if (autoItems.length) {
-        let g = `<div class="home-group"><div class="home-group-title">🔄 自动任务</div>`;
-        autoItems.forEach(x => {
-          const d = diffDays(t, x.nextDate);
-          g += `<div class="home-item ${d < 0 ? 'overdue' : ''}"><div style="flex:1;min-width:0;"><span class="item-title">${x.title}</span><span class="meta">${d < 0 ? '逾期 ' + Math.abs(d) + ' 天' : (d === 0 ? '今天该做' : d + ' 天后')}</span></div><button class="btn btn-primary btn-sm" onclick="openWorkflowRunner('${x.id}')">运行</button></div>`;
-        });
-        g += `</div>`; groups.push(g);
-      }
-
       const habitItems = data.habits.filter(h => { const r = h.records.find(x => x.date === t); return !r || !r.done; });
       if (habitItems.length) {
         let g = `<div class="home-group"><div class="home-group-title">✅ 习惯打卡</div>`;
@@ -786,6 +991,16 @@
         expiringItems.forEach(x => {
           const d = diffDays(t, x.expireDate);
           g += `<div class="home-item ${d < 0 ? 'expired' : ''}"><div style="flex:1;min-width:0;"><span class="item-title">${x.name}</span><span class="meta">${d < 0 ? '已过期 ' + Math.abs(d) + ' 天' : '剩 ' + d + ' 天'} · ${x.category}</span></div><button class="btn btn-sm btn-del" onclick="deleteExpiring('${x.id}')">已处理</button></div>`;
+        });
+        g += `</div>`; groups.push(g);
+      }
+
+      const clientFollowItems = data.clients.filter(x => x.nextFollowDate && diffDays(t, x.nextFollowDate) <= 2);
+      if (clientFollowItems.length) {
+        let g = `<div class="home-group"><div class="home-group-title">👥 客户跟进</div>`;
+        clientFollowItems.forEach(x => {
+          const d = diffDays(t, x.nextFollowDate);
+          g += `<div class="home-item ${d < 0 ? 'overdue' : ''}"><div style="flex:1;min-width:0;"><span class="item-title">${x.name}</span><span class="meta">${d < 0 ? '逾期 ' + Math.abs(d) + ' 天' : (d === 0 ? '今天' : d + ' 天后')} · ${x.nextFollowPlan || '跟进'}</span></div><button class="btn btn-primary btn-sm" onclick="switchTab('dashboard')">查看</button></div>`;
         });
         g += `</div>`; groups.push(g);
       }
@@ -1055,131 +1270,6 @@
     function doneWorkTodo(id) { const x = data.workTodos.find(t => t.id === id); if (x) { x.done = true; save(); } }
     function deleteWorkTodo(id) { data.workTodos = data.workTodos.filter(x => x.id !== id); save(); }
 
-    /* ---------- 自动任务（工作流） ---------- */
-    function renderAutoTasks() {
-      const list = document.getElementById('autoTaskList');
-      const sorted = [...data.autoTasks].sort((a, b) => new Date(a.nextDate) - new Date(b.nextDate));
-      if (!sorted.length) { list.innerHTML = '<div class="home-empty">暂无工作流 🔄</div>'; return; }
-      const t = todayStr();
-      list.innerHTML = sorted.map(x => {
-        const d = diffDays(t, x.nextDate);
-        let status = `${d} 天后`;
-        if (d < 0) status = `逾期 ${Math.abs(d)} 天`;
-        else if (d === 0) status = '今天';
-        const lastLog = (x.logs && x.logs.length) ? x.logs[x.logs.length - 1] : null;
-        const lastRunText = lastLog ? `上次：${lastLog.date}` : '尚未运行';
-        const inputCount = (x.inputs || []).length;
-        return `
-        <div class="workflow-card">
-          <div class="workflow-main">
-            <div class="workflow-title">${x.title}</div>
-            <div class="workflow-desc">${escapeHtml(x.description || '')}</div>
-            <div class="item-badges" style="margin-top:6px;">
-              <span class="badge">🔁 每 ${x.intervalDays} 天</span>
-              <span class="badge ${d <= 0 ? 'expire' : ''}">下次：${x.nextDate}（${status}）</span>
-              ${x.note ? `<span class="badge">${x.note}</span>` : ''}
-              <span class="badge work">${lastRunText}</span>
-            </div>
-          </div>
-          <div class="workflow-actions">
-            <button class="btn btn-primary btn-sm" onclick="openWorkflowRunner('${x.id}')">▶ 运行${inputCount ? ` (${inputCount})` : ''}</button>
-            <button class="btn btn-sm btn-del" onclick="deleteAutoTask('${x.id}')">删除</button>
-          </div>
-        </div>
-        ${renderWorkflowLogs(x)}`;
-      }).join('');
-    }
-    function renderWorkflowLogs(x) {
-      const logs = x.logs || [];
-      if (!logs.length) return '';
-      const recent = logs.slice(-3).reverse();
-      return `<div class="workflow-logs">
-        <div class="workflow-log-title">最近运行</div>
-        ${recent.map(l => `<div class="workflow-log-item" onclick="viewWorkflowLog('${x.id}', '${l.id}')">
-          <span>${l.date}</span><span class="workflow-log-preview">${escapeHtml(l.outputText.slice(0, 40))}${l.outputText.length > 40 ? '...' : ''}</span>
-        </div>`).join('')}
-      </div>`;
-    }
-    function addAutoTask() {
-      const title = document.getElementById('autoTitle').value.trim();
-      const days = parseInt(document.getElementById('autoDays').value);
-      if (!title || !days) { showToast('请填写完整'); return; }
-      data.autoTasks.push({ id: genId(), title, intervalDays: days, lastDone: todayStr(), nextDate: addDays(todayStr(), days), note: '', description: '', inputs: [], template: '', logs: [] });
-      document.getElementById('autoTitle').value = ''; document.getElementById('autoDays').value = '14'; save();
-    }
-    function doneAutoTask(id) {
-      const x = data.autoTasks.find(t => t.id === id);
-      if (x) { x.lastDone = todayStr(); x.nextDate = addDays(todayStr(), x.intervalDays); save(); showToast('✅ 已记录完成'); }
-    }
-    function deleteAutoTask(id) { data.autoTasks = data.autoTasks.filter(x => x.id !== id); save(); }
-
-    /* ---------- 工作流运行器 ---------- */
-    let runningWorkflowId = null;
-    let workflowDraftImages = [];
-    function openWorkflowRunner(id) {
-      const x = data.autoTasks.find(t => t.id === id); if (!x) return;
-      runningWorkflowId = id;
-      workflowDraftImages = [];
-      const inputs = x.inputs || [];
-      const box = document.getElementById('workflowInputs');
-      document.getElementById('workflowTitle').textContent = '▶ ' + x.title;
-      document.getElementById('workflowDesc').textContent = x.description || '';
-      document.getElementById('workflowOutput').style.display = 'none';
-      if (!inputs.length) {
-        box.innerHTML = '<p style="color:var(--text-2);font-size:13px;">该工作流无需输入，直接点击运行生成结果。</p>';
-      } else {
-        box.innerHTML = inputs.map((inp, idx) => {
-          if (inp.type === 'image') {
-            return `<div class="workflow-input-group"><label>${escapeHtml(inp.label)}</label><div class="workflow-image-preview" id="wfImgPreview${idx}"></div><div class="attach-pick" onclick="document.getElementById('wfFile${idx}').click()">🖼️ 上传图片</div><input type="file" id="wfFile${idx}" accept="image/*" style="display:none" onchange="handleWorkflowImage(event, ${idx})"></div>`;
-          }
-          return `<div class="workflow-input-group"><label>${escapeHtml(inp.label)}</label><textarea id="wfInp${idx}" data-key="${inp.key}" placeholder="请输入${escapeHtml(inp.label)}..."></textarea></div>`;
-        }).join('');
-      }
-      document.getElementById('workflowRunnerModal').classList.add('show');
-    }
-    function handleWorkflowImage(event, idx) {
-      const file = event.target.files[0]; if (!file) return;
-      compressImage(file, 1200, (dataUrl, name) => {
-        workflowDraftImages[idx] = { name, data: dataUrl };
-        document.getElementById('wfImgPreview' + idx).innerHTML = `<img src="${dataUrl}" alt="${escapeAttr(name)}" onclick="window.open('${dataUrl}')">`;
-      });
-    }
-    function runWorkflow() {
-      const x = data.autoTasks.find(t => t.id === runningWorkflowId); if (!x) return;
-      const inputs = x.inputs || [];
-      const textMap = { today: todayStr() };
-      inputs.forEach((inp, idx) => {
-        if (inp.type === 'text') textMap[inp.key] = document.getElementById('wfInp' + idx).value.trim();
-        else if (inp.type === 'image') textMap[inp.key] = workflowDraftImages[idx] ? `[图片：${workflowDraftImages[idx].name}]` : '[图片：未上传]';
-      });
-      let output = (x.template || '').replace(/\{\{([\w]+)\}\}/g, (m, key) => textMap[key] !== undefined ? textMap[key] : m);
-      if (!x.template) output = '【' + x.title + '】\n日期：' + todayStr() + '\n已运行';
-      const images = inputs.map((inp, idx) => inp.type === 'image' ? workflowDraftImages[idx] : null).filter(Boolean);
-      const log = { id: genId(), date: todayStr(), outputText: output, textInputs: textMap, images };
-      if (!x.logs) x.logs = [];
-      x.logs.push(log);
-      x.lastDone = todayStr();
-      x.nextDate = addDays(todayStr(), x.intervalDays);
-      document.getElementById('workflowOutputText').value = output;
-      document.getElementById('workflowOutput').style.display = 'block';
-      save();
-    }
-    function copyWorkflowOutput() {
-      const el = document.getElementById('workflowOutputText');
-      navigator.clipboard.writeText(el.value).then(() => showToast('📋 结果已复制')).catch(() => showToast('复制失败'));
-    }
-    function viewWorkflowLog(taskId, logId) {
-      const x = data.autoTasks.find(t => t.id === taskId); if (!x || !x.logs) return;
-      const l = x.logs.find(z => z.id === logId); if (!l) return;
-      runningWorkflowId = taskId;
-      document.getElementById('workflowTitle').textContent = '📄 ' + x.title + ' 历史记录';
-      document.getElementById('workflowDesc').textContent = l.date;
-      document.getElementById('workflowInputs').innerHTML = '<p style="color:var(--text-2);font-size:13px;">历史运行记录，可直接复制结果。</p>';
-      document.getElementById('workflowOutputText').value = l.outputText;
-      document.getElementById('workflowOutput').style.display = 'block';
-      document.getElementById('workflowRunnerModal').classList.add('show');
-    }
-
     /* ---------- 话术库：营销 + QA ---------- */
     function renderPhrases() {
       renderMarketingPhrases();
@@ -1279,6 +1369,540 @@
     }
     function deletePhrase(id) { data.phrases = data.phrases.filter(x => x.id !== id); save(); }
 
+    /* ---------- 客户状态看板 ---------- */
+    const STATUS_META = {
+      active: { label: '活跃', cls: 'status-active', emoji: '🟢' },
+      watch: { label: '观望', cls: 'status-watch', emoji: '🟠' },
+      done: { label: '已成交', cls: 'status-done', emoji: '🔵' },
+      sleep: { label: '休眠', cls: 'status-sleep', emoji: '⚫' }
+    };
+    let clientFilter = 'all';
+    let editingClientId = null;
+
+    function renderClientFilters() {
+      const counts = { all: data.clients.length };
+      Object.keys(STATUS_META).forEach(s => { counts[s] = data.clients.filter(c => c.status === s).length; });
+      const filters = [
+        { key: 'all', label: '全部' },
+        { key: 'active', label: '活跃' },
+        { key: 'watch', label: '观望' },
+        { key: 'done', label: '已成交' },
+        { key: 'sleep', label: '休眠' }
+      ];
+      document.getElementById('clientFilters').innerHTML = filters.map(f =>
+        `<button class="client-filter-btn ${clientFilter === f.key ? 'active' : ''}" onclick="setClientFilter('${f.key}')">${f.label} (${counts[f.key] || 0})</button>`
+      ).join('');
+    }
+
+    function setClientFilter(key) { clientFilter = key; renderClients(); }
+
+    function renderClients() {
+      renderClientFilters();
+      const list = document.getElementById('clientList');
+      let items = data.clients;
+      if (clientFilter !== 'all') items = items.filter(c => c.status === clientFilter);
+      // 排序：有跟进日期的按日期升序，无的放最后
+      items = [...items].sort((a, b) => {
+        if (a.nextFollowDate && b.nextFollowDate) return a.nextFollowDate.localeCompare(b.nextFollowDate);
+        if (a.nextFollowDate) return -1;
+        if (b.nextFollowDate) return 1;
+        return 0;
+      });
+      if (!items.length) { list.innerHTML = '<div class="home-empty">暂无客户记录 👥</div>'; return; }
+      const t = todayStr();
+      list.innerHTML = items.map(c => {
+        const meta = STATUS_META[c.status] || STATUS_META.active;
+        let followInfo = '';
+        if (c.nextFollowDate) {
+          const d = diffDays(t, c.nextFollowDate);
+          const overdue = d < 0;
+          followInfo = `<span class="meta ${overdue ? 'overdue-text' : ''}">${overdue ? '逾期 ' + Math.abs(d) + ' 天' : (d === 0 ? '今天' : d + ' 天后')}${c.nextFollowPlan ? ' · ' + escapeHtml(c.nextFollowPlan) : ''}</span>`;
+        } else if (c.status === 'sleep') {
+          followInfo = '<span class="meta">无跟进计划</span>';
+        }
+        return `
+        <div class="client-card">
+          <div style="flex:1;min-width:120px;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span class="client-name">${escapeHtml(c.name)}</span>
+              <span class="status-badge ${meta.cls}">${meta.emoji} ${meta.label}</span>
+            </div>
+            <div class="client-meta">
+              ${c.channel ? '<span>📍 ' + escapeHtml(c.channel) + '</span>' : ''}
+              ${c.ifa ? '<span>👤 ' + escapeHtml(c.ifa) + '</span>' : ''}
+              ${c.products ? '<span>📦 ' + escapeHtml(c.products) + '</span>' : ''}
+            </div>
+            ${followInfo}
+            ${c.note ? '<div class="meta" style="margin-top:2px;">📝 ' + escapeHtml(c.note) + '</div>' : ''}
+          </div>
+          <div class="client-actions">
+            <button class="btn btn-sm btn-secondary" onclick="editClient('${c.id}')">编辑</button>
+            <button class="btn btn-sm btn-del" onclick="deleteClient('${c.id}')">删除</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function openClientModal() {
+      editingClientId = null;
+      document.getElementById('clientModalTitle').textContent = '👥 添加客户';
+      ['clientName','clientChannel','clientIfa','clientProducts','clientNextPlan','clientNote'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('clientStatus').value = 'active';
+      document.getElementById('clientNextDate').value = '';
+      document.getElementById('clientModal').classList.add('show');
+      document.getElementById('clientName').focus();
+    }
+
+    function editClient(id) {
+      const c = data.clients.find(x => x.id === id); if (!c) return;
+      editingClientId = id;
+      document.getElementById('clientModalTitle').textContent = '✏️ 编辑客户';
+      document.getElementById('clientName').value = c.name || '';
+      document.getElementById('clientStatus').value = c.status || 'active';
+      document.getElementById('clientChannel').value = c.channel || '';
+      document.getElementById('clientIfa').value = c.ifa || '';
+      document.getElementById('clientProducts').value = c.products || '';
+      document.getElementById('clientNextDate').value = c.nextFollowDate || '';
+      document.getElementById('clientNextPlan').value = c.nextFollowPlan || '';
+      document.getElementById('clientNote').value = c.note || '';
+      document.getElementById('clientModal').classList.add('show');
+    }
+
+    function saveClient() {
+      const name = document.getElementById('clientName').value.trim();
+      if (!name) { showToast('请输入客户姓名'); return; }
+      const obj = {
+        name,
+        status: document.getElementById('clientStatus').value,
+        channel: document.getElementById('clientChannel').value.trim(),
+        ifa: document.getElementById('clientIfa').value.trim(),
+        products: document.getElementById('clientProducts').value.trim(),
+        nextFollowDate: document.getElementById('clientNextDate').value,
+        nextFollowPlan: document.getElementById('clientNextPlan').value.trim(),
+        note: document.getElementById('clientNote').value.trim()
+      };
+      if (editingClientId) {
+        const c = data.clients.find(x => x.id === editingClientId);
+        if (c) Object.assign(c, obj);
+        editingClientId = null;
+      } else {
+        obj.id = genId();
+        data.clients.push(obj);
+      }
+      closeModal('clientModal'); save();
+    }
+
+    function deleteClient(id) {
+      if (!confirm('删除这个客户记录？')) return;
+      data.clients = data.clients.filter(x => x.id !== id); save();
+    }
+
+    /* ---------- 成交数据分析 ---------- */
+    let editingTxId = null;
+
+    function renderTransactions() {
+      const stats = calcTxStats();
+      document.getElementById('txStats').innerHTML = `
+        <div class="stat-card"><div class="stat-val">${stats.totalAmountLabel}</div><div class="stat-label">总成交金额</div></div>
+        <div class="stat-card"><div class="stat-val">${stats.count}</div><div class="stat-label">成交笔数</div></div>
+        <div class="stat-card"><div class="stat-val">${stats.clientCount}</div><div class="stat-label">成交客户数</div></div>
+        <div class="stat-card"><div class="stat-val">${stats.avgLabel}</div><div class="stat-label">笔均金额</div></div>
+      `;
+      // 折线图
+      if (stats.monthly.length > 0) {
+        document.getElementById('txLineChartBox').style.display = 'block';
+        document.getElementById('txLineChart').innerHTML = drawLineChart(stats.monthly);
+      } else {
+        document.getElementById('txLineChartBox').style.display = 'none';
+      }
+      // 饼图
+      if (stats.products.length > 0) {
+        document.getElementById('txPieChartBox').style.display = 'block';
+        document.getElementById('txPieChart').innerHTML = drawPieChart(stats.products);
+      } else {
+        document.getElementById('txPieChartBox').style.display = 'none';
+      }
+      // 柱状图
+      if (stats.channels.length > 0) {
+        document.getElementById('txBarChartBox').style.display = 'block';
+        document.getElementById('txBarChart').innerHTML = drawBarChart(stats.channels);
+      } else {
+        document.getElementById('txBarChartBox').style.display = 'none';
+      }
+      // 表格
+      renderTxTable();
+    }
+
+    function calcTxStats() {
+      const txs = data.transactions;
+      const total = txs.reduce((s, t) => s + (t.amount || 0), 0);
+      const count = txs.length;
+      const clientSet = new Set(txs.map(t => t.client).filter(Boolean));
+      // 月度统计
+      const monthMap = {};
+      txs.forEach(t => {
+        const m = t.month || '';
+        if (!monthMap[m]) monthMap[m] = 0;
+        monthMap[m] += (t.amount || 0);
+      });
+      const monthly = Object.entries(monthMap).sort((a, b) => a[0].localeCompare(b[0])).map(([month, amount]) => ({ month, amount }));
+      // 产品分布
+      const prodMap = {};
+      txs.forEach(t => {
+        const p = t.product || '未知';
+        if (!prodMap[p]) prodMap[p] = 0;
+        prodMap[p] += (t.amount || 0);
+      });
+      const products = Object.entries(prodMap).map(([name, amount]) => ({ name, amount })).sort((a, b) => b.amount - a.amount);
+      // 渠道贡献
+      const chanMap = {};
+      txs.forEach(t => {
+        const c = t.channel || '未知';
+        if (!chanMap[c]) chanMap[c] = 0;
+        chanMap[c] += (t.amount || 0);
+      });
+      const channels = Object.entries(chanMap).map(([name, amount]) => ({ name, amount })).sort((a, b) => b.amount - a.amount);
+      return {
+        totalAmount: total, totalAmountLabel: total >= 10000 ? (total / 10000).toFixed(1) + '万' : total.toLocaleString(),
+        count, clientCount: clientSet.size,
+        avgLabel: count > 0 ? (total / count >= 10000 ? (total / count / 10000).toFixed(1) + '万' : Math.round(total / count).toLocaleString()) : '0',
+        monthly, products, channels
+      };
+    }
+
+    function fmtMoney(n) {
+      if (n >= 10000) return (n / 10000).toFixed(1) + '万';
+      return n.toLocaleString();
+    }
+
+    /* SVG 折线图 */
+    function drawLineChart(data) {
+      if (!data.length) return '';
+      const W = 520, H = 200, pad = { l: 50, r: 20, t: 20, b: 40 };
+      const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+      const maxVal = Math.max(...data.map(d => d.amount), 1);
+      const step = data.length > 1 ? cw / (data.length - 1) : 0;
+      const pts = data.map((d, i) => {
+        const x = pad.l + (data.length > 1 ? i * step : cw / 2);
+        const y = pad.t + ch - (d.amount / maxVal) * ch;
+        return { x, y, ...d };
+      });
+      const pathD = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p.x + ',' + p.y).join(' ');
+      const areaD = pathD + ` L${pts[pts.length-1].x},${pad.t + ch} L${pts[0].x},${pad.t + ch} Z`;
+      const labels = pts.map(p => `<text x="${p.x}" y="${H - pad.b + 18}" text-anchor="middle" font-size="11" fill="#8a8198">${p.month.slice(5)}</text>`).join('');
+      const values = pts.map(p => `<text x="${p.x}" y="${p.y - 8}" text-anchor="middle" font-size="11" fill="#7a68b0" font-weight="700">${fmtMoney(p.amount)}</text>`).join('');
+      const dots = pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#9b8bc9" stroke="#fff" stroke-width="2"/>`).join('');
+      const yLabels = [0, 0.25, 0.5, 0.75, 1].map(r => {
+        const v = maxVal * r; const y = pad.t + ch - r * ch;
+        return `<text x="${pad.l - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#8a8198">${fmtMoney(v)}</text><line x1="${pad.l}" y1="${y}" x2="${W - pad.r}" y2="${y}" stroke="#ece7f2" stroke-width="1" stroke-dasharray="3,3"/>`;
+      }).join('');
+      return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}"><path d="${areaD}" fill="rgba(155,139,201,0.08)"/><path d="${pathD}" fill="none" stroke="#9b8bc9" stroke-width="2.5" stroke-linejoin="round"/>${yLabels}${labels}${values}${dots}</svg>`;
+    }
+
+    /* SVG 饼图 */
+    function drawPieChart(data) {
+      if (!data.length) return '';
+      const total = data.reduce((s, d) => s + d.amount, 0) || 1;
+      const cx = 120, cy = 120, r = 90;
+      const colors = ['#9b8bc9','#7bae8e','#e0a458','#7c98c4','#d29bb8','#d9735f','#b3a4e0','#6ab0a8'];
+      let acc = 0; let slices = ''; let legends = '';
+      data.forEach((d, i) => {
+        const pct = d.amount / total;
+        const angle = pct * Math.PI * 2;
+        const a0 = acc - Math.PI / 2;
+        acc += angle;
+        const a1 = acc - Math.PI / 2;
+        const x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+        const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+        const large = angle > Math.PI ? 1 : 0;
+        const color = colors[i % colors.length];
+        if (pct > 0.001) {
+          slices += `<path d="M${cx},${cy} L${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${large} 1 ${x1.toFixed(1)},${y1.toFixed(1)} Z" fill="${color}" stroke="#fff" stroke-width="2"/>`;
+        }
+        legends += `<div style="display:flex;align-items:center;gap:6px;font-size:12px;margin:2px 0;"><span style="width:12px;height:12px;border-radius:3px;background:${color};display:inline-block;"></span>${escapeHtml(d.name)} ${fmtMoney(d.amount)} (${(pct * 100).toFixed(0)}%)</div>`;
+      });
+      return `<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;"><svg class="chart-svg" viewBox="0 0 240 240" style="width:180px;flex-shrink:0;">${slices}<text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="14" fill="#3a3540" font-weight="700">${fmtMoney(total)}</text></svg><div style="flex:1;min-width:120px;">${legends}</div></div>`;
+    }
+
+    /* SVG 柱状图 */
+    function drawBarChart(data) {
+      if (!data.length) return '';
+      const W = 280, H = 200, pad = { l: 20, r: 20, t: 20, b: 50 };
+      const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+      const maxVal = Math.max(...data.map(d => d.amount), 1);
+      const barW = Math.min(40, cw / data.length - 8);
+      const gap = (cw - barW * data.length) / Math.max(data.length - 1, 1);
+      const colors = ['#9b8bc9','#7bae8e','#e0a458','#7c98c4','#d29bb8','#d9735f'];
+      let bars = ''; let labels = ''; let values = '';
+      data.forEach((d, i) => {
+        const x = pad.l + i * (barW + gap);
+        const h = (d.amount / maxVal) * ch;
+        const y = pad.t + ch - h;
+        const color = colors[i % colors.length];
+        bars += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="4" fill="${color}"/>`;
+        labels += `<text x="${x + barW/2}" y="${H - pad.b + 16}" text-anchor="middle" font-size="10" fill="#8a8198">${escapeHtml(d.name).slice(0,6)}</text>`;
+        values += `<text x="${x + barW/2}" y="${y - 5}" text-anchor="middle" font-size="10" fill="#7a68b0" font-weight="700">${fmtMoney(d.amount)}</text>`;
+      });
+      const yLines = [0, 0.5, 1].map(r => {
+        const y = pad.t + ch - r * ch;
+        return `<line x1="${pad.l}" y1="${y}" x2="${W - pad.r}" y2="${y}" stroke="#ece7f2" stroke-width="1" stroke-dasharray="3,3"/><text x="${pad.l}" y="${y - 3}" font-size="9" fill="#aaa">${fmtMoney(maxVal * r)}</text>`;
+      }).join('');
+      return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}">${yLines}${bars}${labels}${values}</svg>`;
+    }
+
+    function renderTxTable() {
+      const txs = [...data.transactions].sort((a, b) => (b.month || '').localeCompare(a.month || ''));
+      // 表格（PC）
+      const table = document.getElementById('txTable');
+      if (!txs.length) { table.innerHTML = '<div class="home-empty">暂无成交记录 📈</div>'; document.getElementById('txCardList').innerHTML = ''; return; }
+      table.innerHTML = `
+        <thead><tr><th>月份</th><th>客户</th><th>产品</th><th>金额</th><th>类型</th><th>IFA</th><th>渠道</th><th></th></tr></thead>
+        <tbody>${txs.map(t => `<tr>
+          <td>${t.month || '-'}</td>
+          <td>${escapeHtml(t.client || '')}</td>
+          <td>${escapeHtml(t.product || '')}</td>
+          <td class="tx-amount">¥${(t.amount || 0).toLocaleString()}</td>
+          <td>${escapeHtml(t.type || '')}</td>
+          <td>${escapeHtml(t.ifa || '')}</td>
+          <td>${escapeHtml(t.channel || '')}</td>
+          <td><button class="btn btn-sm btn-del" onclick="deleteTx('${t.id}')">删除</button></td>
+        </tr>`).join('')}</tbody>`;
+      // 卡片（移动端）
+      document.getElementById('txCardList').innerHTML = txs.map(t => `
+        <div class="tx-card-item">
+          <div class="tx-row"><span class="tx-label">月份</span><span class="tx-val">${t.month || '-'}</span></div>
+          <div class="tx-row"><span class="tx-label">客户</span><span class="tx-val">${escapeHtml(t.client || '')}</span></div>
+          <div class="tx-row"><span class="tx-label">产品</span><span class="tx-val">${escapeHtml(t.product || '')}</span></div>
+          <div class="tx-row"><span class="tx-label">金额</span><span class="tx-val tx-amount">¥${(t.amount || 0).toLocaleString()}</span></div>
+          <div class="tx-row"><span class="tx-label">类型</span><span class="tx-val">${escapeHtml(t.type || '')}</span></div>
+          <div class="tx-row"><span class="tx-label">IFA</span><span class="tx-val">${escapeHtml(t.ifa || '')}</span></div>
+          <div class="tx-row"><span class="tx-label">渠道</span><span class="tx-val">${escapeHtml(t.channel || '')}</span></div>
+          ${t.note ? '<div class="tx-row"><span class="tx-label">备注</span><span class="tx-val">' + escapeHtml(t.note) + '</span></div>' : ''}
+          <div class="tx-actions"><button class="btn btn-sm btn-del" onclick="deleteTx('${t.id}')">删除</button></div>
+        </div>
+      `).join('');
+    }
+
+    function openTxModal() {
+      editingTxId = null;
+      document.getElementById('txModalTitle').textContent = '📈 添加成交';
+      ['txClient','txProduct','txAmount','txIfa','txChannel','txNote'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('txType').value = '申购';
+      document.getElementById('txMonth').value = todayStr().slice(0, 7);
+      document.getElementById('txModal').classList.add('show');
+      document.getElementById('txClient').focus();
+    }
+
+    function saveTx() {
+      const client = document.getElementById('txClient').value.trim();
+      const product = document.getElementById('txProduct').value.trim();
+      const amount = parseFloat(document.getElementById('txAmount').value) || 0;
+      if (!client || !product || !amount) { showToast('请填写客户、产品和金额'); return; }
+      const obj = {
+        client, product, amount,
+        type: document.getElementById('txType').value,
+        month: document.getElementById('txMonth').value || todayStr().slice(0, 7),
+        ifa: document.getElementById('txIfa').value.trim(),
+        channel: document.getElementById('txChannel').value.trim(),
+        note: document.getElementById('txNote').value.trim()
+      };
+      if (editingTxId) {
+        const t = data.transactions.find(x => x.id === editingTxId);
+        if (t) Object.assign(t, obj);
+        editingTxId = null;
+      } else {
+        obj.id = genId();
+        data.transactions.push(obj);
+      }
+      closeModal('txModal'); save();
+    }
+
+    function deleteTx(id) {
+      if (!confirm('删除这条成交记录？')) return;
+      data.transactions = data.transactions.filter(x => x.id !== id); save();
+    }
+
+    /* ---------- QA 话术分析器 ---------- */
+    let qaScene = '售前咨询';
+    let qaImages = [];
+
+    function openQaAnalyzer() {
+      qaImages = [];
+      qaScene = '售前咨询';
+      document.getElementById('qaInputText').value = '';
+      document.getElementById('qaResultArea').innerHTML = '';
+      document.getElementById('qaImgPreview').innerHTML = '';
+      document.getElementById('qaImgCount').textContent = '';
+      document.querySelectorAll('.qa-scene-btn').forEach(b => b.classList.toggle('active', b.dataset.scene === qaScene));
+      document.getElementById('qaAnalyzerModal').classList.add('show');
+    }
+
+    function closeQaAnalyzer() { closeModal('qaAnalyzerModal'); }
+
+    function selectQaScene(btn) {
+      qaScene = btn.dataset.scene;
+      document.querySelectorAll('.qa-scene-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function handleQaImages(event) {
+      const files = Array.from(event.target.files);
+      files.forEach(file => {
+        if (qaImages.length >= 4) { showToast('最多 4 张截图'); return; }
+        compressImage(file, 800, (dataUrl) => {
+          qaImages.push(dataUrl);
+          renderQaImgPreview();
+        });
+      });
+      event.target.value = '';
+    }
+
+    function renderQaImgPreview() {
+      document.getElementById('qaImgCount').textContent = qaImages.length ? qaImages.length + ' 张已选' : '';
+      document.getElementById('qaImgPreview').innerHTML = qaImages.map((src, i) =>
+        `<img src="${src}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;cursor:pointer;" onclick="qaImages.splice(${i},1);renderQaImgPreview()">`
+      ).join('');
+    }
+
+    async function runQaAnalysis() {
+      const text = document.getElementById('qaInputText').value.trim();
+      if (!text && !qaImages.length) { showToast('请输入聊天记录或上传截图'); return; }
+      const apiKey = localStorage.getItem(KEYS.kimiApiKey);
+      if (!apiKey) { showToast('请先在设置中配置 KIMI API Key'); switchTab('settings'); return; }
+
+      const btn = document.getElementById('qaAnalyzeBtn');
+      btn.disabled = true; btn.textContent = '⏳ 分析中...';
+      document.getElementById('qaResultArea').innerHTML = '<div class="qa-loading"><div class="spinner"></div>AI 正在分析聊天记录...</div>';
+
+      const prompt = buildQaPrompt(qaScene, text);
+      const messages = [{ role: 'user', content: [] }];
+
+      // 图片以 base64 url 形式发给视觉模型
+      if (qaImages.length) {
+        qaImages.forEach(img => {
+          messages[0].content.push({ type: 'image_url', image_url: { url: img } });
+        });
+      }
+      // 文字
+      if (text) {
+        messages[0].content.push({ type: 'text', text: prompt + '\n\n聊天记录：\n' + text });
+      } else {
+        messages[0].content.push({ type: 'text', text: prompt });
+      }
+
+      // 如果没有图片，简化为纯文字消息
+      if (!qaImages.length) {
+        messages[0].content = prompt + '\n\n聊天记录：\n' + text;
+      }
+
+      try {
+        const res = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + apiKey
+          },
+          body: JSON.stringify({
+            model: qaImages.length ? 'moonshot-v1-8k-vision-preview' : 'moonshot-v1-8k',
+            messages: messages,
+            temperature: 0.3,
+            max_tokens: 2000
+          })
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error('HTTP ' + res.status + ': ' + errText.substring(0, 200));
+        }
+
+        const json = await res.json();
+        const result = json.choices && json.choices[0] && json.choices[0].message && json.choices[0].message.content;
+        if (!result) throw new Error('返回内容为空');
+
+        displayQaResult(result, qaScene);
+      } catch (e) {
+        document.getElementById('qaResultArea').innerHTML = `<div style="color:var(--accent-red);font-size:13px;">⚠️ 分析失败: ${escapeHtml(e.message)}<br><br>请检查 API Key 是否正确，或稍后重试。</div>`;
+      } finally {
+        btn.disabled = false; btn.textContent = '🔍 分析';
+      }
+    }
+
+    function buildQaPrompt(scene, text) {
+      return `你是一位专业的金融产品客服话术顾问。请根据以下聊天记录，在「${scene}」场景下进行分析，输出以下内容：
+
+1. **客户意图分析**：客户的核心诉求、顾虑或情绪状态
+2. **关键信息提取**：提到的产品、金额、时间等关键信息
+3. **推荐话术**：针对此场景，给出 2-3 条专业回复话术（可直接使用）
+4. **注意事项**：跟进时需要注意的要点
+
+请用中文回复，格式清晰。`;
+    }
+
+    let lastQaResult = '';
+
+    function mdToHtml(md) {
+      return escapeHtml(md)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/^(\d+)\.\s/gm, '<br>$1. ')
+        .replace(/^[-•]\s/gm, '<br>• ')
+        .replace(/\n/g, '<br>');
+    }
+
+    function displayQaResult(result, scene) {
+      lastQaResult = result;
+      document.getElementById('qaResultArea').innerHTML = `
+        <div class="qa-result">
+          <div class="qa-result-title">🔍 分析结果 · ${escapeHtml(scene)}</div>
+          <div class="qa-result-body">${mdToHtml(result)}</div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="saveQaResultToPhrase()">💾 保存到 QA 话术库</button>
+            <button class="btn btn-secondary btn-sm" onclick="copyQaResult()">📋 复制</button>
+          </div>
+        </div>`;
+    }
+
+    function saveQaResultToPhrase() {
+      if (!lastQaResult) return;
+      data.phrases.push({
+        id: genId(),
+        title: 'QA分析_' + qaScene + '_' + todayStr().slice(5),
+        category: qaScene,
+        phraseType: 'qa',
+        content: lastQaResult,
+        attachments: []
+      });
+      save();
+      showToast('✅ 已保存到 QA 话术库');
+      closeQaAnalyzer();
+    }
+
+    function copyQaResult() {
+      navigator.clipboard.writeText(lastQaResult).then(() => showToast('已复制'));
+    }
+
+    /* ---------- KIMI API Key ---------- */
+    function saveKimiKey() {
+      const key = document.getElementById('kimiKeyInput').value.trim();
+      if (key) {
+        localStorage.setItem(KEYS.kimiApiKey, key);
+        document.getElementById('kimiKeyStatus').innerHTML = '<span style="color:var(--accent-green);">✅ API Key 已保存</span>';
+        showToast('API Key 已保存');
+      } else {
+        localStorage.removeItem(KEYS.kimiApiKey);
+        document.getElementById('kimiKeyStatus').innerHTML = '<span style="color:var(--text-2);">未配置</span>';
+      }
+    }
+
+    function loadKimiKeyStatus() {
+      const key = localStorage.getItem(KEYS.kimiApiKey);
+      if (key) {
+        document.getElementById('kimiKeyInput').value = key;
+        document.getElementById('kimiKeyStatus').innerHTML = '<span style="color:var(--accent-green);">✅ API Key 已配置（' + key.slice(0, 6) + '...' + key.slice(-4) + '）</span>';
+      } else {
+        document.getElementById('kimiKeyStatus').innerHTML = '<span style="color:var(--text-2);">未配置，QA 分析器将无法使用</span>';
+      }
+    }
+
     /* ---------- 工具 ---------- */
     function escapeHtml(str) { return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
     function escapeAttr(str) { return String(str).replace(/"/g, '&quot;'); }
@@ -1292,11 +1916,11 @@
     function showClearModal() { document.getElementById('clearModal').classList.add('show'); }
     function clearAllData() {
       Object.values(KEYS).forEach(k => {
-        if (k !== KEYS.syncApiKey && k !== KEYS.syncBinId && k !== KEYS.syncLastPush && k !== KEYS.syncLastPull) {
+        if (!k.startsWith('wb_life_v2_sync') && k !== KEYS.kimiApiKey) {
           localStorage.removeItem(k);
         }
       });
-      data = { habits: [], shopping: [], lifeTodos: [], expiring: [], workTodos: [], autoTasks: [], phrases: [] };
+      data = { habits: [], shopping: [], lifeTodos: [], expiring: [], workTodos: [], phrases: [], clients: [], transactions: [] };
       localLastModified = Date.now();
       closeModal('clearModal'); renderAll(); syncPushDebounced();
       showToast('🗑️ 已清空全部数据');
@@ -1316,7 +1940,7 @@
         try {
           const payload = JSON.parse(e.target.result);
           const imp = payload.data || payload;
-          ['habits', 'shopping', 'lifeTodos', 'expiring', 'workTodos', 'autoTasks', 'phrases'].forEach(k => { if (imp[k]) data[k] = imp[k]; });
+          ['habits', 'shopping', 'lifeTodos', 'expiring', 'workTodos', 'phrases', 'clients', 'transactions'].forEach(k => { if (imp[k]) data[k] = imp[k]; });
           migrateData();
           localLastModified = Date.now();
           save(); showToast('⬆️ 数据已恢复');
@@ -1499,7 +2123,7 @@
       if (!cloud || !cloud.data) return false;
       const cloudTime = cloud.lastModified || 0;
       if (force || cloudTime > localLastModified) {
-        ['habits', 'shopping', 'lifeTodos', 'expiring', 'workTodos', 'autoTasks', 'phrases'].forEach(k => {
+        ['habits', 'shopping', 'lifeTodos', 'expiring', 'workTodos', 'phrases', 'clients', 'transactions'].forEach(k => {
           if (cloud.data[k]) data[k] = cloud.data[k];
         });
         localLastModified = cloudTime > localLastModified ? cloudTime : localLastModified;
@@ -1508,9 +2132,9 @@
         localStorage.setItem(KEYS.lifeTodos, JSON.stringify(data.lifeTodos));
         localStorage.setItem(KEYS.expiring, JSON.stringify(data.expiring));
         localStorage.setItem(KEYS.workTodos, JSON.stringify(data.workTodos));
-        localStorage.setItem(KEYS.autoTasks, JSON.stringify(data.autoTasks));
-        localStorage.setItem(KEYS.phrases, JSON.stringify(data.phrases));
-        renderAll();
+          localStorage.setItem(KEYS.phrases, JSON.stringify(data.phrases));
+      localStorage.setItem(KEYS.clients, JSON.stringify(data.clients));
+      localStorage.setItem(KEYS.transactions, JSON.stringify(data.transactions));        renderAll();
         return true;
       }
       return false;
@@ -1633,6 +2257,7 @@
     document.getElementById('workTodoDate').value = todayStr();
     document.getElementById('expDate').value = todayStr();
     loadData();
+    loadKimiKeyStatus();
   </script>
 </body>
 </html>
