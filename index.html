@@ -137,6 +137,24 @@
     .badge.soon { background: #fdf4e9; color: var(--accent-orange); }
     .item-actions { display: flex; gap: 6px; flex-shrink: 0; }
     .btn-del { background: #fdf0ed; color: var(--accent-red); border: 1px solid #f6d8d1; }
+    .work-subsection { margin-bottom: 14px; }
+    .work-subsection:last-child { margin-bottom: 0; }
+    .work-subtitle { font-size: 13px; font-weight: 800; color: var(--text-2); margin-bottom: 8px; padding-left: 2px; }
+    .workflow-card { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; margin-bottom: 8px; }
+    .workflow-main { flex: 1; min-width: 0; }
+    .workflow-title { font-weight: 700; font-size: 14px; }
+    .workflow-desc { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+    .workflow-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+    .workflow-logs { margin: 0 0 14px 4px; }
+    .workflow-log-title { font-size: 11px; color: var(--text-2); font-weight: 700; margin-bottom: 5px; }
+    .workflow-log-item { display: flex; gap: 10px; font-size: 12px; color: var(--text-2); cursor: pointer; padding: 4px 0; }
+    .workflow-log-item:hover { color: var(--primary-deep); }
+    .workflow-log-preview { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .workflow-input-group { margin-bottom: 12px; }
+    .workflow-input-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+    .workflow-image-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 7px; margin-bottom: 6px; }
+    .workflow-image-preview img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); }
+    #workflowOutputText { font-family: inherit; font-size: 13px; }
 
     .habit-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; }
     .habit-info { flex: 1; min-width: 0; }
@@ -366,6 +384,11 @@
                 <option value="p1" selected>重要</option>
                 <option value="p2">普通</option>
               </select>
+              <select id="workTodoTag">
+                <option value="" selected>无标签</option>
+                <option value="gdw">GDW</option>
+                <option value="juxiu">聚秀</option>
+              </select>
               <button class="btn btn-primary" onclick="addWorkTodo()">添加</button>
             </div>
             <div class="list" id="workTodoList"></div>
@@ -386,10 +409,18 @@
 
           <div class="section">
             <div class="section-header">
-              <h3><span class="emoji">💬</span> 工作话术库</h3>
-              <button class="btn btn-primary btn-sm" onclick="openPhraseModal()">＋ 加话术</button>
+              <h3><span class="emoji">💬</span> 营销话术库</h3>
+              <button class="btn btn-primary btn-sm" onclick="openPhraseModal('marketing')">＋ 加营销话术</button>
             </div>
-            <div class="phrase-list" id="phraseList"></div>
+            <div class="phrase-list" id="marketingPhraseList"></div>
+          </div>
+
+          <div class="section">
+            <div class="section-header">
+              <h3><span class="emoji">❓</span> QA 话术库</h3>
+              <button class="btn btn-primary btn-sm" onclick="openPhraseModal('qa')">＋ 加 QA</button>
+            </div>
+            <div class="phrase-list" id="qaPhraseList"></div>
           </div>
         </div>
       </main>
@@ -428,6 +459,24 @@
     </div>
   </div>
 
+  <!-- 编辑习惯弹窗 -->
+  <div class="modal-overlay" id="editHabitModal">
+    <div class="modal">
+      <h4>✏️ 编辑习惯</h4>
+      <input type="text" id="editHabitName" placeholder="习惯名称" style="width:100%;margin-bottom:10px;">
+      <select id="editHabitColor" style="width:100%;margin-bottom:14px;">
+        <option value="green">💚 绿色</option>
+        <option value="purple">💜 紫色</option>
+        <option value="blue">💙 蓝色</option>
+        <option value="orange">🧡 橙色</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('editHabitModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveEditHabit()">保存</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 生活待办弹窗 -->
   <div class="modal-overlay" id="lifeTodoModal">
     <div class="modal">
@@ -452,10 +501,15 @@
       <h4>💼 加工作待办</h4>
       <input type="text" id="mWorkTitle" placeholder="如：提交季度报告" style="width:100%;margin-bottom:10px;">
       <input type="date" id="mWorkDate" style="width:100%;margin-bottom:10px;">
-      <select id="mWorkPrio" style="width:100%;margin-bottom:14px;">
+      <select id="mWorkPrio" style="width:100%;margin-bottom:10px;">
         <option value="p0">🔴 紧急</option>
         <option value="p1" selected>🟠 重要</option>
         <option value="p2">🟢 普通</option>
+      </select>
+      <select id="mWorkTag" style="width:100%;margin-bottom:14px;">
+        <option value="" selected>📎 无标签</option>
+        <option value="gdw">🏢 GDW</option>
+        <option value="juxiu">🌟 聚秀</option>
       </select>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal('workTodoModal')">取消</button>
@@ -486,7 +540,11 @@
   <!-- 话术弹窗 -->
   <div class="modal-overlay" id="phraseModal">
     <div class="modal">
-      <h4>💬 加话术</h4>
+      <h4 id="phraseModalTitle">💬 加话术</h4>
+      <select id="phraseType" style="width:100%;margin-bottom:10px;" onchange="onPhraseTypeChange()">
+        <option value="marketing">💬 营销话术</option>
+        <option value="qa">❓ QA 话术</option>
+      </select>
       <input type="text" id="phraseTitle" placeholder="标题，如：请假模板" style="width:100%;margin-bottom:10px;">
       <input type="text" id="phraseCategory" placeholder="分类，如：工作沟通" style="width:100%;margin-bottom:10px;">
       <textarea id="phraseContent" placeholder="在此输入话术内容..."></textarea>
@@ -496,6 +554,24 @@
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal('phraseModal')">取消</button>
         <button class="btn btn-primary" onclick="addPhrase()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 工作流运行器弹窗 -->
+  <div class="modal-overlay" id="workflowRunnerModal">
+    <div class="modal" style="max-width:520px;">
+      <h4 id="workflowTitle">▶ 运行工作流</h4>
+      <p id="workflowDesc" style="font-size:13px;color:var(--text-2);margin-top:-8px;"></p>
+      <div id="workflowInputs" style="margin-bottom:12px;"></div>
+      <div id="workflowOutput" style="display:none;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;">生成结果</div>
+        <textarea id="workflowOutputText" style="min-height:120px;background:var(--surface-2);" readonly></textarea>
+        <button class="btn btn-primary btn-sm" onclick="copyWorkflowOutput()" style="margin-top:6px;">📋 复制结果</button>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('workflowRunnerModal')">关闭</button>
+        <button class="btn btn-primary" onclick="runWorkflow()">运行</button>
       </div>
     </div>
   </div>
@@ -563,9 +639,23 @@
       data.workTodos = JSON.parse(localStorage.getItem(KEYS.workTodos) || '[]');
       data.autoTasks = JSON.parse(localStorage.getItem(KEYS.autoTasks) || '[]');
       data.phrases = JSON.parse(localStorage.getItem(KEYS.phrases) || '[]');
+      migrateData();
       if (!localStorage.getItem(KEYS.initialized)) { loadDemoData(); localStorage.setItem(KEYS.initialized, '1'); }
       renderAll();
       syncInit();
+    }
+    function migrateData() {
+      // 工作待办补 tag
+      data.workTodos.forEach(x => { if (x.tag === undefined) x.tag = ''; });
+      // 自动任务补工作流字段
+      data.autoTasks.forEach(x => {
+        if (x.description === undefined) x.description = x.note || '';
+        if (x.inputs === undefined) x.inputs = [];
+        if (x.template === undefined) x.template = '';
+        if (x.logs === undefined) x.logs = [];
+      });
+      // 话术补 phraseType
+      data.phrases.forEach(p => { if (p.phraseType === undefined) p.phraseType = 'marketing'; });
     }
 
     function save() {
@@ -604,25 +694,28 @@
         { id: genId(), name: '薯片', category: '零食', expireDate: addDays(t, 20), note: '', createdAt: t }
       ];
       data.workTodos = [
-        { id: genId(), title: '交本月水电费报销', dueDate: y, priority: 'p0', done: false, createdAt: y },
-        { id: genId(), title: '写本周工作周报', dueDate: t, priority: 'p1', done: false, createdAt: t },
-        { id: genId(), title: '整理项目文档', dueDate: addDays(t, 3), priority: 'p2', done: false, createdAt: t }
+        { id: genId(), title: '交本月水电费报销', dueDate: y, priority: 'p0', done: false, createdAt: y, tag: 'gdw' },
+        { id: genId(), title: '写本周工作周报', dueDate: t, priority: 'p1', done: false, createdAt: t, tag: 'juxiu' },
+        { id: genId(), title: '整理项目文档', dueDate: addDays(t, 3), priority: 'p2', done: false, createdAt: t, tag: '' }
       ];
       data.autoTasks = [
-        { id: genId(), title: '恒力石化积极信号监控', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 15:25' },
-        { id: genId(), title: '美团每日自动领券', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 9:30' },
-        { id: genId(), title: 'Regina 持仓每日收盘汇报', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 17:00' },
-        { id: genId(), title: '天山铝业积极信号监控', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 15:15' },
-        { id: genId(), title: '达沃新闻发布 - 14点', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 14:00' },
-        { id: genId(), title: '聚秀周报每周二提醒', intervalDays: 7, lastDone: addDays(t, -2), nextDate: addDays(t, 5), note: '每周二 16:00' },
-        { id: genId(), title: '检查瑞幸 switchProduct 修复状态', intervalDays: 30, lastDone: addDays(t, -5), nextDate: addDays(t, 25), note: '每月 1 号' },
-        { id: genId(), title: '聚世碳科技月报月度生成', intervalDays: 30, lastDone: addDays(t, 1), nextDate: addDays(t, 29), note: '每月 5 号（已暂停）' }
+        { id: genId(), title: '恒力石化积极信号监控', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 15:25', description: '交易日 15:25 检查恒力石化标的积极信号，记录异常与触发点。', inputs: [{ key: 'signal', label: '信号备注', type: 'text' }], template: '【恒力石化积极信号监控】\n日期：{{today}}\n信号备注：{{signal}}\n请根据以上信息生成监控摘要。', logs: [] },
+        { id: genId(), title: '美团每日自动领券', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 9:30', description: '工作日 9:30 打开美团领取当日优惠券，领完打卡即可。', inputs: [], template: '【美团领券打卡】\n日期：{{today}}\n已领取当日优惠券。', logs: [] },
+        { id: genId(), title: 'Regina 持仓每日收盘汇报', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 17:00', description: '收盘后整理 Regina 当日持仓概况并生成汇报。', inputs: [{ key: 'summary', label: '当日持仓概况', type: 'text' }], template: '【Regina 持仓每日收盘汇报】\n日期：{{today}}\n当日概况：\n{{summary}}\n请生成结构化汇报。', logs: [] },
+        { id: genId(), title: '天山铝业积极信号监控', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 15:15', description: '交易日 15:15 检查天山铝业标的积极信号。', inputs: [{ key: 'signal', label: '信号备注', type: 'text' }], template: '【天山铝业积极信号监控】\n日期：{{today}}\n信号备注：{{signal}}\n请生成监控摘要。', logs: [] },
+        { id: genId(), title: '达沃新闻发布 - 14点', intervalDays: 1, lastDone: y, nextDate: t, note: '工作日 14:00', description: '工作日 14:00 将达沃新闻内容发布到指定渠道。', inputs: [{ key: 'content', label: '新闻内容', type: 'text' }], template: '【达沃新闻发布】\n时间：{{today}}\n内容：\n{{content}}', logs: [] },
+        { id: genId(), title: '聚秀周报', intervalDays: 7, lastDone: addDays(t, -2), nextDate: addDays(t, 5), note: '每周二 16:00', description: '每周二根据本周数据/截图生成聚秀周报。', inputs: [{ key: 'data', label: '数据或截图说明', type: 'text' }, { key: 'screenshot', label: '数据截图', type: 'image' }], template: '【聚秀周报】\n周期：{{today}}\n数据说明：\n{{data}}\n\n请根据以上数据生成本周聚秀周报，突出关键指标、异常点与下周 Action。', logs: [] },
+        { id: genId(), title: '检查瑞幸 switchProduct 修复状态', intervalDays: 30, lastDone: addDays(t, -5), nextDate: addDays(t, 25), note: '每月 1 号', description: '每月 1 号检查瑞幸 switchProduct 修复状态并记录。', inputs: [{ key: 'status', label: '当前状态', type: 'text' }], template: '【瑞幸 switchProduct 修复状态检查】\n日期：{{today}}\n当前状态：\n{{status}}', logs: [] },
+        { id: genId(), title: '聚世碳科技月报', intervalDays: 30, lastDone: addDays(t, 1), nextDate: addDays(t, 29), note: '每月 5 号', description: '每月 5 号生成聚世碳科技月度报告。', inputs: [{ key: 'data', label: '月度数据', type: 'text' }], template: '【聚世碳科技月报】\n月份：{{today}}\n月度数据：\n{{data}}\n\n请生成月度报告。', logs: [] }
       ];
       data.phrases = [
-        { id: genId(), title: '请假模板', category: '工作沟通', content: '领导好，因个人原因，我拟于 X 月 X 日请假一天，手头工作已安排妥当，望批准。', attachments: [] },
-        { id: genId(), title: '委婉拒绝', category: '沟通技巧', content: '谢谢你的邀请/好意，但我近期时间安排比较紧，这次恐怕无法参加，下次有机会再一起。', attachments: [] },
-        { id: genId(), title: '催进度', category: '工作沟通', content: '你好，想跟进一下 XXX 的进度，预计什么时候可以给我反馈？若有困难随时沟通。', attachments: [] }
+        { id: genId(), title: '请假模板', category: '工作沟通', phraseType: 'marketing', content: '领导好，因个人原因，我拟于 X 月 X 日请假一天，手头工作已安排妥当，望批准。', attachments: [] },
+        { id: genId(), title: '委婉拒绝', category: '沟通技巧', phraseType: 'marketing', content: '谢谢你的邀请/好意，但我近期时间安排比较紧，这次恐怕无法参加，下次有机会再一起。', attachments: [] },
+        { id: genId(), title: '催进度', category: '工作沟通', phraseType: 'marketing', content: '你好，想跟进一下 XXX 的进度，预计什么时候可以给我反馈？若有困难随时沟通。', attachments: [] },
+        { id: genId(), title: '你们提供试用吗？', category: '售前', phraseType: 'qa', content: '我们支持 7 天免费试用，期间可体验核心功能。试用期结束后您可以选择适合的订阅方案。', attachments: [] },
+        { id: genId(), title: '价格是多少？', category: '售前', phraseType: 'qa', content: '我们提供多档套餐，具体报价会根据使用人数和功能模块有所不同。我可以安排顾问为您定制一份报价单。', attachments: [] }
       ];
+      migrateData();
       save();
       showToast('✨ 已恢复示例数据');
       localLastModified = Date.now();
@@ -635,7 +728,7 @@
     function renderAll() {
       renderHome();
       renderLifeTodos(); renderHabits(); renderShopping(); renderExpiring();
-      renderWorkTodos(); renderAutoTasks(); renderPhrases();
+      renderWorkTodos(); renderAutoTasks(); renderMarketingPhrases(); renderQAPhrases();
       document.getElementById('dataCount').textContent = `已记录 ${totalCount()} 条`;
       if (totalCount() >= 30) document.getElementById('backupHint').innerHTML = `💾 数据已积累 <span class="backup-count">${totalCount()}</span> 条，建议导出备份。`;
       updateSyncStatusBar();
@@ -673,7 +766,7 @@
         let g = `<div class="home-group"><div class="home-group-title">🔄 自动任务</div>`;
         autoItems.forEach(x => {
           const d = diffDays(t, x.nextDate);
-          g += `<div class="home-item ${d < 0 ? 'overdue' : ''}"><div style="flex:1;min-width:0;"><span class="item-title">${x.title}</span><span class="meta">${d < 0 ? '逾期 ' + Math.abs(d) + ' 天' : (d === 0 ? '今天该做' : d + ' 天后')}</span></div><button class="btn btn-primary btn-sm" onclick="doneAutoTask('${x.id}')">完成</button></div>`;
+          g += `<div class="home-item ${d < 0 ? 'overdue' : ''}"><div style="flex:1;min-width:0;"><span class="item-title">${x.title}</span><span class="meta">${d < 0 ? '逾期 ' + Math.abs(d) + ' 天' : (d === 0 ? '今天该做' : d + ' 天后')}</span></div><button class="btn btn-primary btn-sm" onclick="openWorkflowRunner('${x.id}')">运行</button></div>`;
         });
         g += `</div>`; groups.push(g);
       }
@@ -718,7 +811,10 @@
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
             <button class="btn ${done ? 'btn-secondary' : 'btn-primary'}" onclick="toggleHabitDate('${h.id}', '${t}')">${done ? '已打卡' : '打卡'}</button>
-            <button class="btn btn-sm btn-del" onclick="deleteHabit('${h.id}')">删除</button>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-sm btn-secondary" onclick="openEditHabitModal('${h.id}')">编辑</button>
+              <button class="btn btn-sm btn-del" onclick="deleteHabit('${h.id}')">删除</button>
+            </div>
           </div>
         </div>`;
       }).join('');
@@ -765,6 +861,24 @@
     function deleteHabit(id) {
       if (!confirm('删除这个习惯？历史打卡记录也会一并移除。')) return;
       data.habits = data.habits.filter(x => x.id !== id); save();
+    }
+    let editingHabitId = null;
+    function openEditHabitModal(id) {
+      const h = data.habits.find(x => x.id === id); if (!h) return;
+      editingHabitId = id;
+      document.getElementById('editHabitName').value = h.name;
+      document.getElementById('editHabitColor').value = h.color || 'purple';
+      document.getElementById('editHabitModal').classList.add('show');
+      document.getElementById('editHabitName').focus();
+    }
+    function saveEditHabit() {
+      const h = data.habits.find(x => x.id === editingHabitId); if (!h) return;
+      const name = document.getElementById('editHabitName').value.trim();
+      const color = document.getElementById('editHabitColor').value;
+      if (!name) { showToast('请输入习惯名称'); return; }
+      h.name = name; h.color = color;
+      editingHabitId = null;
+      closeModal('editHabitModal'); save();
     }
 
     /* ---------- 购物 ---------- */
@@ -886,22 +1000,31 @@
     /* ---------- 工作待办 ---------- */
     function renderWorkTodos() {
       const list = document.getElementById('workTodoList');
-      const sorted = [...data.workTodos].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-      if (!sorted.length) { list.innerHTML = '<div class="home-empty">暂无工作待办 💼</div>'; return; }
       const t = todayStr();
-      list.innerHTML = sorted.map(x => {
-        const overdue = !x.done && x.dueDate < t;
-        const map = { p0: '🔴 紧急', p1: '🟠 重要', p2: '🟢 普通' };
-        return `
-        <div class="list-item ${x.done ? 'done' : ''}">
-          <div class="list-item-left">
-            <div class="checkbox ${x.done ? 'checked' : ''}" onclick="toggleWorkTodo('${x.id}')">${x.done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}</div>
-            <div><div class="item-title ${x.done ? 'strike' : ''}">${x.title}</div>
-            <div class="item-badges"><span class="badge ${x.priority}">${map[x.priority]}</span><span class="badge work" style="${overdue ? 'background:#fdf0ed;color:#d9735f;' : ''}">${overdue ? '逾期' : x.dueDate}</span></div></div>
-          </div>
-          <div class="item-actions"><button class="btn btn-sm btn-del" onclick="deleteWorkTodo('${x.id}')">删除</button></div>
-        </div>`;
-      }).join('');
+      const tagOrder = ['gdw', 'juxiu', ''];
+      const tagNames = { gdw: '🏢 GDW', juxiu: '🌟 聚秀', '': '📎 其他' };
+      if (!data.workTodos.length) { list.innerHTML = '<div class="home-empty">暂无工作待办 💼</div>'; return; }
+      let html = '';
+      tagOrder.forEach(tag => {
+        const items = data.workTodos.filter(x => (x.tag || '') === tag).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+        if (!items.length) return;
+        html += `<div class="work-subsection"><div class="work-subtitle">${tagNames[tag]}</div>`;
+        html += items.map(x => {
+          const overdue = !x.done && x.dueDate < t;
+          const map = { p0: '🔴 紧急', p1: '🟠 重要', p2: '🟢 普通' };
+          return `
+          <div class="list-item ${x.done ? 'done' : ''}">
+            <div class="list-item-left">
+              <div class="checkbox ${x.done ? 'checked' : ''}" onclick="toggleWorkTodo('${x.id}')">${x.done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}</div>
+              <div><div class="item-title ${x.done ? 'strike' : ''}">${x.title}</div>
+              <div class="item-badges"><span class="badge ${x.priority}">${map[x.priority]}</span><span class="badge work" style="${overdue ? 'background:#fdf0ed;color:#d9735f;' : ''}">${overdue ? '逾期' : x.dueDate}</span></div></div>
+            </div>
+            <div class="item-actions"><button class="btn btn-sm btn-del" onclick="deleteWorkTodo('${x.id}')">删除</button></div>
+          </div>`;
+        }).join('');
+        html += '</div>';
+      });
+      list.innerHTML = html;
     }
     function openWorkTodoModal() {
       document.getElementById('mWorkDate').value = todayStr();
@@ -912,8 +1035,9 @@
       const title = document.getElementById('workTodoTitle').value.trim();
       const date = document.getElementById('workTodoDate').value || todayStr();
       const priority = document.getElementById('workTodoPriority').value;
+      const tag = document.getElementById('workTodoTag').value;
       if (!title) { showToast('请输入内容'); return; }
-      data.workTodos.push({ id: genId(), title, dueDate: date, priority, done: false, createdAt: todayStr() });
+      data.workTodos.push({ id: genId(), title, dueDate: date, priority, done: false, createdAt: todayStr(), tag });
       document.getElementById('workTodoTitle').value = '';
       toggleForm('workTodoForm', false); save();
     }
@@ -921,8 +1045,9 @@
       const title = document.getElementById('mWorkTitle').value.trim();
       const date = document.getElementById('mWorkDate').value || todayStr();
       const priority = document.getElementById('mWorkPrio').value;
+      const tag = document.getElementById('mWorkTag').value;
       if (!title) { showToast('请输入内容'); return; }
-      data.workTodos.push({ id: genId(), title, dueDate: date, priority, done: false, createdAt: todayStr() });
+      data.workTodos.push({ id: genId(), title, dueDate: date, priority, done: false, createdAt: todayStr(), tag });
       document.getElementById('mWorkTitle').value = '';
       closeModal('workTodoModal'); save();
     }
@@ -930,35 +1055,56 @@
     function doneWorkTodo(id) { const x = data.workTodos.find(t => t.id === id); if (x) { x.done = true; save(); } }
     function deleteWorkTodo(id) { data.workTodos = data.workTodos.filter(x => x.id !== id); save(); }
 
-    /* ---------- 自动任务 ---------- */
+    /* ---------- 自动任务（工作流） ---------- */
     function renderAutoTasks() {
       const list = document.getElementById('autoTaskList');
       const sorted = [...data.autoTasks].sort((a, b) => new Date(a.nextDate) - new Date(b.nextDate));
-      if (!sorted.length) { list.innerHTML = '<div class="home-empty">暂无自动任务 🔄</div>'; return; }
+      if (!sorted.length) { list.innerHTML = '<div class="home-empty">暂无工作流 🔄</div>'; return; }
       const t = todayStr();
       list.innerHTML = sorted.map(x => {
         const d = diffDays(t, x.nextDate);
         let status = `${d} 天后`;
         if (d < 0) status = `逾期 ${Math.abs(d)} 天`;
         else if (d === 0) status = '今天';
+        const lastLog = (x.logs && x.logs.length) ? x.logs[x.logs.length - 1] : null;
+        const lastRunText = lastLog ? `上次：${lastLog.date}` : '尚未运行';
+        const inputCount = (x.inputs || []).length;
         return `
-        <div class="list-item">
-          <div class="list-item-left">
-            <div><div class="item-title">${x.title}</div>
-            <div class="item-badges"><span class="badge">🔁 每 ${x.intervalDays} 天</span><span class="badge ${d <= 0 ? 'expire' : ''}">下次：${x.nextDate}（${status}）</span>${x.note ? `<span class="badge">${x.note}</span>` : ''}</div></div>
+        <div class="workflow-card">
+          <div class="workflow-main">
+            <div class="workflow-title">${x.title}</div>
+            <div class="workflow-desc">${escapeHtml(x.description || '')}</div>
+            <div class="item-badges" style="margin-top:6px;">
+              <span class="badge">🔁 每 ${x.intervalDays} 天</span>
+              <span class="badge ${d <= 0 ? 'expire' : ''}">下次：${x.nextDate}（${status}）</span>
+              ${x.note ? `<span class="badge">${x.note}</span>` : ''}
+              <span class="badge work">${lastRunText}</span>
+            </div>
           </div>
-          <div class="item-actions">
-            <button class="btn btn-primary btn-sm" onclick="doneAutoTask('${x.id}')">完成</button>
+          <div class="workflow-actions">
+            <button class="btn btn-primary btn-sm" onclick="openWorkflowRunner('${x.id}')">▶ 运行${inputCount ? ` (${inputCount})` : ''}</button>
             <button class="btn btn-sm btn-del" onclick="deleteAutoTask('${x.id}')">删除</button>
           </div>
-        </div>`;
+        </div>
+        ${renderWorkflowLogs(x)}`;
       }).join('');
+    }
+    function renderWorkflowLogs(x) {
+      const logs = x.logs || [];
+      if (!logs.length) return '';
+      const recent = logs.slice(-3).reverse();
+      return `<div class="workflow-logs">
+        <div class="workflow-log-title">最近运行</div>
+        ${recent.map(l => `<div class="workflow-log-item" onclick="viewWorkflowLog('${x.id}', '${l.id}')">
+          <span>${l.date}</span><span class="workflow-log-preview">${escapeHtml(l.outputText.slice(0, 40))}${l.outputText.length > 40 ? '...' : ''}</span>
+        </div>`).join('')}
+      </div>`;
     }
     function addAutoTask() {
       const title = document.getElementById('autoTitle').value.trim();
       const days = parseInt(document.getElementById('autoDays').value);
       if (!title || !days) { showToast('请填写完整'); return; }
-      data.autoTasks.push({ id: genId(), title, intervalDays: days, lastDone: todayStr(), nextDate: addDays(todayStr(), days), note: '' });
+      data.autoTasks.push({ id: genId(), title, intervalDays: days, lastDone: todayStr(), nextDate: addDays(todayStr(), days), note: '', description: '', inputs: [], template: '', logs: [] });
       document.getElementById('autoTitle').value = ''; document.getElementById('autoDays').value = '14'; save();
     }
     function doneAutoTask(id) {
@@ -967,33 +1113,123 @@
     }
     function deleteAutoTask(id) { data.autoTasks = data.autoTasks.filter(x => x.id !== id); save(); }
 
-    /* ---------- 话术库（含附件） ---------- */
-    function renderPhrases() {
-      const list = document.getElementById('phraseList');
-      if (!data.phrases.length) { list.innerHTML = '<div class="home-empty">暂无话术 💬</div>'; return; }
-      list.innerHTML = data.phrases.map(p => {
-        const att = p.attachments || [];
-        const attHtml = att.length ? `<div class="phrase-attach">${att.map(a => `<img src="${a.data}" alt="${escapeAttr(a.name)}" onclick="window.open('${a.data}')">`).join('')}</div>` : '';
-        return `
-        <div class="phrase-card">
-          <div class="phrase-top"><div class="phrase-title">💬 ${p.title}</div><span class="badge work">${p.category || '未分类'}</span></div>
-          <div class="phrase-content">${escapeHtml(p.content)}</div>
-          ${attHtml}
-          <div class="phrase-actions">
-            <button class="btn btn-primary btn-sm" onclick="copyPhrase('${p.id}')">📋 复制${att.length ? ` (+${att.length}附件)` : ''}</button>
-            <button class="btn btn-sm btn-del" onclick="deletePhrase('${p.id}')">删除</button>
-          </div>
-        </div>`;
-      }).join('');
+    /* ---------- 工作流运行器 ---------- */
+    let runningWorkflowId = null;
+    let workflowDraftImages = [];
+    function openWorkflowRunner(id) {
+      const x = data.autoTasks.find(t => t.id === id); if (!x) return;
+      runningWorkflowId = id;
+      workflowDraftImages = [];
+      const inputs = x.inputs || [];
+      const box = document.getElementById('workflowInputs');
+      document.getElementById('workflowTitle').textContent = '▶ ' + x.title;
+      document.getElementById('workflowDesc').textContent = x.description || '';
+      document.getElementById('workflowOutput').style.display = 'none';
+      if (!inputs.length) {
+        box.innerHTML = '<p style="color:var(--text-2);font-size:13px;">该工作流无需输入，直接点击运行生成结果。</p>';
+      } else {
+        box.innerHTML = inputs.map((inp, idx) => {
+          if (inp.type === 'image') {
+            return `<div class="workflow-input-group"><label>${escapeHtml(inp.label)}</label><div class="workflow-image-preview" id="wfImgPreview${idx}"></div><div class="attach-pick" onclick="document.getElementById('wfFile${idx}').click()">🖼️ 上传图片</div><input type="file" id="wfFile${idx}" accept="image/*" style="display:none" onchange="handleWorkflowImage(event, ${idx})"></div>`;
+          }
+          return `<div class="workflow-input-group"><label>${escapeHtml(inp.label)}</label><textarea id="wfInp${idx}" data-key="${inp.key}" placeholder="请输入${escapeHtml(inp.label)}..."></textarea></div>`;
+        }).join('');
+      }
+      document.getElementById('workflowRunnerModal').classList.add('show');
     }
-    function openPhraseModal() {
+    function handleWorkflowImage(event, idx) {
+      const file = event.target.files[0]; if (!file) return;
+      compressImage(file, 1200, (dataUrl, name) => {
+        workflowDraftImages[idx] = { name, data: dataUrl };
+        document.getElementById('wfImgPreview' + idx).innerHTML = `<img src="${dataUrl}" alt="${escapeAttr(name)}" onclick="window.open('${dataUrl}')">`;
+      });
+    }
+    function runWorkflow() {
+      const x = data.autoTasks.find(t => t.id === runningWorkflowId); if (!x) return;
+      const inputs = x.inputs || [];
+      const textMap = { today: todayStr() };
+      inputs.forEach((inp, idx) => {
+        if (inp.type === 'text') textMap[inp.key] = document.getElementById('wfInp' + idx).value.trim();
+        else if (inp.type === 'image') textMap[inp.key] = workflowDraftImages[idx] ? `[图片：${workflowDraftImages[idx].name}]` : '[图片：未上传]';
+      });
+      let output = (x.template || '').replace(/\{\{([\w]+)\}\}/g, (m, key) => textMap[key] !== undefined ? textMap[key] : m);
+      if (!x.template) output = '【' + x.title + '】\n日期：' + todayStr() + '\n已运行';
+      const images = inputs.map((inp, idx) => inp.type === 'image' ? workflowDraftImages[idx] : null).filter(Boolean);
+      const log = { id: genId(), date: todayStr(), outputText: output, textInputs: textMap, images };
+      if (!x.logs) x.logs = [];
+      x.logs.push(log);
+      x.lastDone = todayStr();
+      x.nextDate = addDays(todayStr(), x.intervalDays);
+      document.getElementById('workflowOutputText').value = output;
+      document.getElementById('workflowOutput').style.display = 'block';
+      save();
+    }
+    function copyWorkflowOutput() {
+      const el = document.getElementById('workflowOutputText');
+      navigator.clipboard.writeText(el.value).then(() => showToast('📋 结果已复制')).catch(() => showToast('复制失败'));
+    }
+    function viewWorkflowLog(taskId, logId) {
+      const x = data.autoTasks.find(t => t.id === taskId); if (!x || !x.logs) return;
+      const l = x.logs.find(z => z.id === logId); if (!l) return;
+      runningWorkflowId = taskId;
+      document.getElementById('workflowTitle').textContent = '📄 ' + x.title + ' 历史记录';
+      document.getElementById('workflowDesc').textContent = l.date;
+      document.getElementById('workflowInputs').innerHTML = '<p style="color:var(--text-2);font-size:13px;">历史运行记录，可直接复制结果。</p>';
+      document.getElementById('workflowOutputText').value = l.outputText;
+      document.getElementById('workflowOutput').style.display = 'block';
+      document.getElementById('workflowRunnerModal').classList.add('show');
+    }
+
+    /* ---------- 话术库：营销 + QA ---------- */
+    function renderPhrases() {
+      renderMarketingPhrases();
+      renderQAPhrases();
+    }
+    function renderMarketingPhrases() {
+      const list = document.getElementById('marketingPhraseList');
+      const items = data.phrases.filter(p => (p.phraseType || 'marketing') === 'marketing');
+      if (!items.length) { list.innerHTML = '<div class="home-empty">暂无营销话术 💬</div>'; return; }
+      list.innerHTML = items.map(p => phraseCardHtml(p, 'marketing')).join('');
+    }
+    function renderQAPhrases() {
+      const list = document.getElementById('qaPhraseList');
+      const items = data.phrases.filter(p => p.phraseType === 'qa');
+      if (!items.length) { list.innerHTML = '<div class="home-empty">暂无 QA 话术 ❓</div>'; return; }
+      list.innerHTML = items.map(p => phraseCardHtml(p, 'qa')).join('');
+    }
+    function phraseCardHtml(p, type) {
+      const att = p.attachments || [];
+      const attHtml = att.length ? `<div class="phrase-attach">${att.map(a => `<img src="${a.data}" alt="${escapeAttr(a.name)}" onclick="window.open('${a.data}')">`).join('')}</div>` : '';
+      const icon = type === 'qa' ? '❓' : '💬';
+      return `
+      <div class="phrase-card">
+        <div class="phrase-top"><div class="phrase-title">${icon} ${p.title}</div><span class="badge work">${p.category || '未分类'}</span></div>
+        <div class="phrase-content">${escapeHtml(p.content)}</div>
+        ${attHtml}
+        <div class="phrase-actions">
+          <button class="btn btn-primary btn-sm" onclick="copyPhrase('${p.id}')">📋 复制${att.length ? ` (+${att.length}附件)` : ''}</button>
+          <button class="btn btn-sm btn-del" onclick="deletePhrase('${p.id}')">删除</button>
+        </div>
+      </div>`;
+    }
+    let phraseDraftType = 'marketing';
+    function openPhraseModal(type) {
+      phraseDraftType = type || 'marketing';
       phraseDraftAttach = [];
       renderPhraseAttachPreview();
+      document.getElementById('phraseType').value = phraseDraftType;
+      onPhraseTypeChange();
       document.getElementById('phraseTitle').value = '';
       document.getElementById('phraseCategory').value = '';
       document.getElementById('phraseContent').value = '';
       document.getElementById('phraseModal').classList.add('show');
       document.getElementById('phraseTitle').focus();
+    }
+    function onPhraseTypeChange() {
+      phraseDraftType = document.getElementById('phraseType').value;
+      document.getElementById('phraseModalTitle').textContent = phraseDraftType === 'qa' ? '❓ 加 QA 话术' : '💬 加营销话术';
+      document.getElementById('phraseTitle').placeholder = phraseDraftType === 'qa' ? '问题，如：你们提供试用吗？' : '标题，如：请假模板';
+      document.getElementById('phraseContent').placeholder = phraseDraftType === 'qa' ? '在此输入标准答案...' : '在此输入话术内容...';
     }
     function handlePhraseFiles(event) {
       const files = Array.from(event.target.files);
@@ -1030,8 +1266,9 @@
       const title = document.getElementById('phraseTitle').value.trim();
       const category = document.getElementById('phraseCategory').value.trim();
       const content = document.getElementById('phraseContent').value;
+      const phraseType = document.getElementById('phraseType').value;
       if (!title || !content) { showToast('请填写标题和内容'); return; }
-      data.phrases.push({ id: genId(), title, category, content, attachments: phraseDraftAttach.slice() });
+      data.phrases.push({ id: genId(), title, category, phraseType, content, attachments: phraseDraftAttach.slice() });
       closeModal('phraseModal'); save();
     }
     function copyPhrase(id) {
@@ -1080,6 +1317,7 @@
           const payload = JSON.parse(e.target.result);
           const imp = payload.data || payload;
           ['habits', 'shopping', 'lifeTodos', 'expiring', 'workTodos', 'autoTasks', 'phrases'].forEach(k => { if (imp[k]) data[k] = imp[k]; });
+          migrateData();
           localLastModified = Date.now();
           save(); showToast('⬆️ 数据已恢复');
         } catch (err) { showToast('文件解析失败'); }
