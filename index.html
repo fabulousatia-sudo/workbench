@@ -188,6 +188,10 @@
     .modal { background: var(--surface); border-radius: var(--radius); padding: 20px; width: 100%; max-width: 440px; box-shadow: 0 12px 44px rgba(0,0,0,.18); max-height: 88vh; overflow-y: auto; }
     .modal h4 { margin: 0 0 14px; font-size: 17px; }
     .modal p { margin: 0 0 16px; color: var(--text-2); font-size: 14px; }
+    .seg-control { display:flex; border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-bottom:10px; }
+    .seg-btn { flex:1; padding:8px 10px; border:none; background:transparent; font-size:13px; color:var(--text-2); cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .seg-btn.active { background:var(--primary); color:#fff; }
+    .calc-hint { margin-top:6px; font-size:12px; color:var(--primary); font-weight:500; }
     .modal .form-row { margin-bottom: 10px; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
     .attach-pick { font-size: 13px; color: var(--primary-deep); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; margin-top: 4px; }
@@ -734,7 +738,31 @@
     <div class="modal">
       <h4>⏰ 加临期记录</h4>
       <input type="text" id="mExpName" placeholder="如：鲜牛奶 / 感冒药" style="width:100%;margin-bottom:10px;">
-      <input type="date" id="mExpDate" style="width:100%;margin-bottom:10px;">
+
+      <div class="seg-control">
+        <button class="seg-btn active" id="segExpire" onclick="switchExpireMode('expire')">到期日期</button>
+        <button class="seg-btn" id="segProduce" onclick="switchExpireMode('produce')">生产日期 + 保质期</button>
+      </div>
+
+      <!-- 模式1：直接到期日 -->
+      <div id="expireModeBox" style="margin-bottom:10px;">
+        <input type="date" id="mExpDate" style="width:100%;">
+      </div>
+
+      <!-- 模式2：生产日期 + 保质期 -->
+      <div id="produceModeBox" style="display:none;margin-bottom:10px;">
+        <input type="date" id="mProdDate" style="width:100%;margin-bottom:8px;" oninput="updateCalcHint()">
+        <div style="display:flex;gap:6px;">
+          <input type="number" id="mShelfLife" placeholder="数值" min="1" style="flex:1;min-width:0;" oninput="updateCalcHint()">
+          <select id="mShelfUnit" style="flex:0 0 72px;" onchange="updateCalcHint()">
+            <option value="day">天</option>
+            <option value="month" selected>月</option>
+            <option value="year">年</option>
+          </select>
+        </div>
+        <div class="calc-hint" id="calcHint"></div>
+      </div>
+
       <select id="mExpCat" style="width:100%;margin-bottom:14px;">
         <option value="食品">🍱 食品</option>
         <option value="药品">💊 药品</option>
@@ -1227,6 +1255,40 @@
     function deleteLifeTodo(id) { data.lifeTodos = data.lifeTodos.filter(x => x.id !== id); save(); }
 
     /* ---------- 临期提醒 ---------- */
+    let expireMode = 'expire';
+
+    function switchExpireMode(mode) {
+      expireMode = mode;
+      document.getElementById('segExpire').classList.toggle('active', mode === 'expire');
+      document.getElementById('segProduce').classList.toggle('active', mode === 'produce');
+      document.getElementById('expireModeBox').style.display = mode === 'expire' ? '' : 'none';
+      document.getElementById('produceModeBox').style.display = mode === 'produce' ? '' : 'none';
+      updateCalcHint();
+    }
+
+    function calcExpireDate(prodDate, shelfLife, unit) {
+      const d = new Date(prodDate);
+      const n = parseInt(shelfLife);
+      if (!n || isNaN(n)) return null;
+      if (unit === 'day') d.setDate(d.getDate() + n);
+      else if (unit === 'month') d.setMonth(d.getMonth() + n);
+      else if (unit === 'year') d.setFullYear(d.getFullYear() + n);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function updateCalcHint() {
+      const hint = document.getElementById('calcHint');
+      if (!hint || expireMode !== 'produce') return;
+      const pd = document.getElementById('mProdDate').value;
+      const sl = document.getElementById('mShelfLife').value;
+      const u = document.getElementById('mShelfUnit').value;
+      if (pd && sl) {
+        const exp = calcExpireDate(pd, sl, u);
+        if (exp) { hint.textContent = '到期日期：' + exp; return; }
+      }
+      hint.textContent = '';
+    }
+
     function renderExpiring() {
       const list = document.getElementById('expiringList');
       const sorted = [...data.expiring].sort((a, b) => new Date(a.expireDate) - new Date(b.expireDate));
@@ -1249,6 +1311,10 @@
     function catEmoji(c) { return { '食品': '🍱', '药品': '💊', '零食': '🍪', '其他': '📦' }[c] || '📦'; }
     function openExpiringModal() {
       document.getElementById('mExpDate').value = todayStr();
+      document.getElementById('mProdDate').value = todayStr();
+      document.getElementById('mShelfLife').value = '';
+      document.getElementById('calcHint').textContent = '';
+      switchExpireMode('expire');
       document.getElementById('expiringModal').classList.add('show');
       document.getElementById('mExpName').focus();
     }
@@ -1263,10 +1329,22 @@
     }
     function addExpiringFromModal() {
       const name = document.getElementById('mExpName').value.trim();
-      const date = document.getElementById('mExpDate').value;
       const cat = document.getElementById('mExpCat').value;
-      if (!name || !date) { showToast('请填写名称和日期'); return; }
-      data.expiring.push({ id: genId(), name, category: cat, expireDate: date, note: '', createdAt: todayStr() });
+      if (!name) { showToast('请填写名称'); return; }
+      let date, note = '';
+      if (expireMode === 'produce') {
+        const pd = document.getElementById('mProdDate').value;
+        const sl = document.getElementById('mShelfLife').value;
+        const u = document.getElementById('mShelfUnit').value;
+        if (!pd || !sl) { showToast('请填写生产日期和保质期'); return; }
+        date = calcExpireDate(pd, sl, u);
+        const uLabel = u === 'day' ? '天' : u === 'month' ? '个月' : '年';
+        note = '生产' + pd + '·保质期' + sl + uLabel;
+      } else {
+        date = document.getElementById('mExpDate').value;
+        if (!date) { showToast('请选择到期日期'); return; }
+      }
+      data.expiring.push({ id: genId(), name, category: cat, expireDate: date, note, createdAt: todayStr() });
       document.getElementById('mExpName').value = '';
       closeModal('expiringModal'); save();
     }
