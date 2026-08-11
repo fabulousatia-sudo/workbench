@@ -179,6 +179,10 @@
     .phrase-attach { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 7px; margin-top: 9px; }
     .phrase-attach img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); }
     .attach-mini { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-2); }
+    .img-preview-modal { background: rgba(0,0,0,.78); }
+    .img-preview-box { position: relative; max-width: 92vw; max-height: 88vh; display: flex; align-items: center; justify-content: center; }
+    .img-preview-box img { max-width: 100%; max-height: 82vh; object-fit: contain; border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,.35); }
+    .img-preview-close { position: absolute; top: -40px; right: 0; color: #fff; font-size: 28px; line-height: 1; cursor: pointer; background: transparent; border: none; padding: 4px; }
 
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(58, 53, 64, .42); display: none;
@@ -794,6 +798,14 @@
         <button class="btn btn-secondary" onclick="closeModal('phraseModal')">取消</button>
         <button class="btn btn-primary" onclick="addPhrase()">保存</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 图片预览弹窗 -->
+  <div class="modal-overlay img-preview-modal" id="imagePreviewModal" onclick="closeModal('imagePreviewModal')">
+    <div class="modal img-preview-box" onclick="event.stopPropagation()">
+      <button class="img-preview-close" onclick="closeModal('imagePreviewModal')">&times;</button>
+      <img id="imagePreviewImg" src="" alt="预览">
     </div>
   </div>
 
@@ -1427,7 +1439,7 @@
     }
     function phraseCardHtml(p, type) {
       const att = p.attachments || [];
-      const attHtml = att.length ? `<div class="phrase-attach">${att.map(a => `<img src="${a.data}" alt="${escapeAttr(a.name)}" onclick="window.open('${a.data}')">`).join('')}</div>` : '';
+      const attHtml = att.length ? `<div class="phrase-attach">${att.map(a => `<img src="${a.data}" alt="${escapeAttr(a.name)}" onclick="openImagePreview(this.src)">`).join('')}</div>` : '';
       const icon = type === 'qa' ? '❓' : '💬';
       return `
       <div class="phrase-card">
@@ -1499,6 +1511,12 @@
       data.phrases.push({ id: genId(), title, category, phraseType, content, attachments: phraseDraftAttach.slice() });
       closeModal('phraseModal'); save();
     }
+    function openImagePreview(src) {
+      if (!src) return;
+      document.getElementById('imagePreviewImg').src = src;
+      document.getElementById('imagePreviewModal').classList.add('show');
+    }
+
     function copyPhrase(id) {
       const p = data.phrases.find(x => x.id === id); if (!p) return;
       const att = p.attachments || [];
