@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>陈瑜卿学习乐园</title>
+<meta name="theme-color" content="#FF7FA9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="学习乐园">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="unicorn-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="unicorn-192.png">
 <style>
 :root{
   --pink:#FF7FA9; --pink-l:#FFE0EC;
@@ -185,6 +192,7 @@ body{
 @media(max-width:768px){
   #sidebar{display:none;}
   #content{padding:14px 14px 96px;}
+  .topbar{margin-top:48px;}
   #bottomtab{
     display:flex;position:fixed;bottom:0;left:0;right:0;z-index:45;
     background:#fff;box-shadow:0 -4px 16px rgba(180,140,200,.18);
@@ -246,9 +254,30 @@ body{
 @keyframes pop{0%{transform:translateX(-50%) scale(0) rotate(-18deg);opacity:0}30%{transform:translateX(-50%) scale(1.35) rotate(8deg);opacity:1}100%{transform:translateX(-50%) scale(1) rotate(0);opacity:0}}
 /* 按钮 hover 微光（桌面） */
 @media(hover:hover){.btn:hover{filter:brightness(1.05);transform:translateY(-2px);}}
+/* ---------- 启动屏 ---------- */
+#splash{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,#FFF6FB 0%,#F1F7FF 50%,#F6F0FF 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;transition:opacity .6s,visibility .6s;}
+#splash.hide{opacity:0;visibility:hidden;pointer-events:none;}
+#splash .splash-mascot{width:130px;height:130px;border-radius:28px;background:#fff;box-shadow:0 12px 30px rgba(180,140,200,.25);object-fit:contain;padding:8px;}
+#splash h1{margin:0;font-size:28px;color:#7A4E86;font-weight:900;}
+#splash p{margin:0;font-size:15px;color:#9a7a90;font-weight:700;}
+#splash .dots{display:flex;gap:8px;margin-top:6px;}
+#splash .dots i{width:10px;height:10px;border-radius:50%;background:#FF7FA9;animation:bounce 1s infinite both;}
+#splash .dots i:nth-child(2){background:#4FB8FF;animation-delay:.15s;}
+#splash .dots i:nth-child(3){background:#FFC83C;animation-delay:.3s;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@media(max-width:768px){
+  #splash .splash-mascot{width:110px;height:110px;}
+  #splash h1{font-size:24px;}
+}
 </style>
 </head>
 <body>
+<div id="splash">
+  <img class="splash-mascot" src="unicorn-192.png" alt="独角兽">
+  <h1>陈瑜卿学习乐园</h1>
+  <p>正在打开快乐学习世界…</p>
+  <div class="dots"><i></i><i></i><i></i></div>
+</div>
 <div id="app">
   <aside id="sidebar">
     <div class="brand">
@@ -269,6 +298,7 @@ body{
 
 <script>
 "use strict";
+window.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{const s=document.getElementById('splash');if(s)s.classList.add('hide');},1200);});
 /* ============== 数据持久化 ============== */
 const PREFIX="wb_chenyuqing_";
 function load(k,def){try{const v=localStorage.getItem(PREFIX+k);return v?JSON.parse(v):def;}catch(e){return def;}}
