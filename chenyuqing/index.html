@@ -269,6 +269,8 @@ body{
   #splash .splash-mascot{width:110px;height:110px;}
   #splash h1{font-size:24px;}
 }
+.stroke-diagram-wrap{text-align:center;margin:8px 0 12px;}
+.stroke-diagram{width:100%;max-width:320px;height:auto;background:#fff;border-radius:16px;box-shadow:var(--shadow);}
 </style>
 </head>
 <body>
@@ -313,7 +315,7 @@ const DEFAULT_SHOP=[
 const SHOP_ICON_KEYS=["gift","tv","cookie","tablet","park","toy","game","star2","book"];
 let state={
   stars:load("stars",0),
-  counts:load("counts",{pinyin:0,letters:0,poems:0,numbers:0,logic:0,adventure:0}),
+  counts:load("counts",{pinyin:0,letters:0,poems:0,numbers:0,adventure:0}),
   badges:load("badges",[]),
   sound:load("sound",true),
   today:load("today",{date:"",n:0}),
@@ -403,28 +405,12 @@ function speak(text,lang){
 let toastTimer;
 function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),1600);}
 
-/* ============== 形状 SVG (逻辑题) ============== */
-function starP(c){return `<path d="M20 3l4.5 9.5 10.5 1.3-7.8 7.3 2 10.4L20 36.5 11.3 41.5l2-10.4L5.5 23.8 16 22.5z" fill="${c}"/>`;}
-function heartP(c){return `<path d="M20 35C8 26 5 16 11 11c4-3 8-1 9 3 1-4 5-6 9-3 6 5 3 15-9 24z" fill="${c}"/>`;}
-function shape(t,c){
-  const col=c||"#FF7FA9";
-  switch(t){
-    case "circle":return `<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="15" fill="${col}"/></svg>`;
-    case "square":return `<svg viewBox="0 0 40 40"><rect x="6" y="6" width="28" height="28" rx="6" fill="${col}"/></svg>`;
-    case "triangle":return `<svg viewBox="0 0 40 40"><polygon points="20,5 35,35 5,35" fill="${col}"/></svg>`;
-    case "star":return `<svg viewBox="0 0 40 40">${starP(col)}</svg>`;
-    case "heart":return `<svg viewBox="0 0 40 40">${heartP(col)}</svg>`;
-  }
-  return "";
-}
-const COL={pink:"#FF7FA9",blue:"#4FB8FF",yellow:"#FFC83C",green:"#4FD38A",purple:"#A98BF5"};
-
 /* ============== 拼音数据 ============== */
 const PINYIN={"单韵母":[{"p":"a","w":"啊","c":"ā","tip":"发 a 时，嘴巴张大，舌头放平，声音响亮。","tones":"ā á ǎ à","words":[{"w":"阿姨","p":"ā yí","e":"👩"},{"w":"鸭子","p":"yā zi","e":"🦆"},{"w":"西瓜","p":"xī guā","e":"🍉"},{"w":"妈妈","p":"mā ma","e":"👩‍👧"}],"rhyme":{"t":"小鸭子","lines":["小鸭子，嘎嘎叫，","摇摇摆摆水里跳。","张开嘴巴 a a a，","游来游去真热闹。"]},"scene":{"s":"一群小鸭子在池塘里嬉戏玩耍。","p":"yì qún xiǎo yā zi zài chí táng lǐ xī xì wán shuǎ"}},{"p":"o","w":"喔","c":"ō","tip":"发 o 时，嘴唇收圆，舌头后缩，像吹口哨。","tones":"ō ó ǒ ò","words":[{"w":"白鹅","p":"bái é","e":"🦢"},{"w":"婆婆","p":"pó po","e":"👵"},{"w":"菠萝","p":"bō luó","e":"🍍"},{"w":"伯伯","p":"bó bo","e":"👴"}],"rhyme":{"t":"大白鹅","lines":["大白鹅，昂起头，","红色脚掌水里游。","看见小鱼 o o o，","拍拍翅膀追过去。"]},"scene":{"s":"一只大白鹅在清澈的湖水中游来游去。","p":"yì zhī dà bái é zài qīng chè de hú shuǐ zhōng yóu lái yóu qù"}},{"p":"e","w":"鹅","c":"é","tip":"发 e 时，嘴巴半开，嘴角向两边展，像微笑。","tones":"ē é ě è","words":[{"w":"天鹅","p":"tiān é","e":"🦢"},{"w":"白鸽","p":"bái gē","e":"🕊️"},{"w":"唱歌","p":"chàng gē","e":"🎤"},{"w":"小河","p":"xiǎo hé","e":"🏞️"}],"rhyme":{"t":"小天鹅","lines":["小天鹅，水中游，","弯弯脖子像小舟。","看见朋友 e e e，","一起跳舞乐悠悠。"]},"scene":{"s":"一只小天鹅对着湖面梳理洁白的羽毛。","p":"yì zhī xiǎo tiān é duì zhe hú miàn shū lǐ jié bái de yǔ máo"}},{"p":"i","w":"衣服","c":"yī","tip":"发 i 时，嘴巴微张，嘴角向两边展，舌尖抵下齿。","tones":"ī í ǐ ì","words":[{"w":"衣服","p":"yī fu","e":"👕"},{"w":"蚂蚁","p":"mǎ yǐ","e":"🐜"},{"w":"梨子","p":"lí zi","e":"🍐"},{"w":"自行车","p":"zì xíng chē","e":"🚲"}],"rhyme":{"t":"小蚂蚁","lines":["小蚂蚁，排队走，","扛着米粒不回头。","一二一 i i i，","齐心协力运粮球。"]},"scene":{"s":"一群小蚂蚁排着队搬运一粒大米。","p":"yì qún xiǎo mǎ yǐ pái zhe duì bān yùn yì lì dà mǐ"}},{"p":"u","w":"乌鸦","c":"wū","tip":"发 u 时，嘴唇收圆并向前突出，舌头后缩。","tones":"ū ú ǔ ù","words":[{"w":"乌鸦","p":"wū yā","e":"🐦‍⬛"},{"w":"兔子","p":"tù zi","e":"🐰"},{"w":"大树","p":"dà shù","e":"🌳"},{"w":"读书","p":"dú shū","e":"📖"}],"rhyme":{"t":"小乌鸦","lines":["小乌鸦，穿黑衣，","站在树上哇哇啼。","找到虫子 u u u，","叼回窝里喂宝宝。"]},"scene":{"s":"一只乌鸦叼着虫子飞回树上的鸟巢。","p":"yì zhī wū yā diāo zhe chóng zi fēi huí shù shàng de niǎo cháo"}},{"p":"ü","w":"小鱼","c":"yú","tip":"发 ü 时，嘴唇收圆像 u，舌头位置像 i。","tones":"ǖ ǘ ǚ ǜ","words":[{"w":"小鱼","p":"xiǎo yú","e":"🐟"},{"w":"下雨","p":"xià yǔ","e":"🌧️"},{"w":"女孩","p":"nǚ hái","e":"👧"},{"w":"绿色","p":"lǜ sè","e":"🍃"}],"rhyme":{"t":"小鱼游","lines":["小鱼儿，水里游，","摇摇尾巴点点头。","吐个泡泡 ü ü ü，","快乐自由真无忧。"]},"scene":{"s":"几条彩色的小鱼在荷叶下游来游去。","p":"jǐ tiáo cǎi sè de xiǎo yú zài hé yè xià yóu lái yóu qù"}}],"声母":[{"p":"b","w":"爸爸","c":"bà ba","tip":"发 b 时，双唇紧闭，突然放开，气流轻轻冲出。","tones":"bā bá bǎ bà","words":[{"w":"爸爸","p":"bà ba","e":"👨"},{"w":"书包","p":"shū bāo","e":"🎒"},{"w":"白兔","p":"bái tù","e":"🐇"},{"w":"铅笔","p":"qiān bǐ","e":"✏️"}],"rhyme":{"t":"拔萝卜","lines":["拔萝卜，拔萝卜，","嘿哟嘿哟拔萝卜。","大萝卜，甜又香，","b b b，拔出来。"]},"scene":{"s":"小兔子用力拔着一个大萝卜。","p":"xiǎo tù zi yòng lì bá zhe yí gè dà luó bo"}},{"p":"p","w":"山坡","c":"shān pō","tip":"发 p 时，双唇紧闭突然放开，气流较强，像泼水。","tones":"pā pá pǎ pà","words":[{"w":"苹果","p":"píng guǒ","e":"🍎"},{"w":"爬山","p":"pá shān","e":"⛰️"},{"w":"皮球","p":"pí qiú","e":"⚽"},{"w":"跑步","p":"pǎo bù","e":"🏃"}],"rhyme":{"t":"拍皮球","lines":["小皮球，圆溜溜，","拍一拍，跳高高。","p p p，拍皮球，","左拍拍，右拍拍。"]},"scene":{"s":"小朋友在草地上拍着一个彩色皮球。","p":"xiǎo péng you zài cǎo dì shàng pāi zhe yí gè cǎi sè pí qiú"}},{"p":"m","w":"妈妈","c":"mā ma","tip":"发 m 时，双唇紧闭，气流从鼻腔出来，像闭着嘴哼歌。","tones":"mā má mǎ mà","words":[{"w":"妈妈","p":"mā ma","e":"👩"},{"w":"猫咪","p":"māo mī","e":"🐱"},{"w":"门","p":"mén","e":"🚪"},{"w":"米饭","p":"mǐ fàn","e":"🍚"}],"rhyme":{"t":"小猫咪","lines":["小猫咪，喵喵叫，","看见老鼠马上跑。","m m m，摸一摸，","软软尾巴摇一摇。"]},"scene":{"s":"一只小猫咪趴在门口晒太阳。","p":"yì zhī xiǎo māo mī pā zài mén kǒu shài tài yáng"}},{"p":"f","w":"佛","c":"fó","tip":"发 f 时，上齿轻咬下唇，气流从中间轻轻摩擦出来。","tones":"fā fá fǎ fà","words":[{"w":"飞机","p":"fēi jī","e":"✈️"},{"w":"风车","p":"fēng chē","e":"🎡"},{"w":"花朵","p":"huā duǒ","e":"🌸"},{"w":"风扇","p":"fēng shàn","e":"🌀"}],"rhyme":{"t":"小风车","lines":["小风车，转呀转，","风吹过来转得欢。","f f f，飞上天，","带着梦想转圈圈。"]},"scene":{"s":"山坡上的小风车被风吹得呼呼转。","p":"shān pō shàng de xiǎo fēng chē bèi fēng chuī de hū hū zhuàn"}},{"p":"d","w":"弟弟","c":"dì di","tip":"发 d 时，舌尖抵住上齿龈，突然放开，气流冲出。","tones":"dā dá dǎ dà","words":[{"w":"弟弟","p":"dì di","e":"👦"},{"w":"大树","p":"dà shù","e":"🌳"},{"w":"读书","p":"dú shū","e":"📚"},{"w":"蛋糕","p":"dàn gāo","e":"🎂"}],"rhyme":{"t":"大西瓜","lines":["大西瓜，圆又大，","弟弟抱着笑哈哈。","d d d，顶呱呱，","甜甜西瓜分大家。"]},"scene":{"s":"小弟弟坐在大树下吃西瓜。","p":"xiǎo dì di zuò zài dà shù xià chī xī guā"}},{"p":"t","w":"兔子","c":"tù zi","tip":"发 t 时，舌尖抵住上齿龈，突然放开，气流较强。","tones":"tā tá tǎ tà","words":[{"w":"兔子","p":"tù zi","e":"🐰"},{"w":"太阳","p":"tài yáng","e":"☀️"},{"w":"桃子","p":"táo zi","e":"🍑"},{"w":"听","p":"tīng","e":"👂"}],"rhyme":{"t":"小白兔","lines":["小白兔，白又白，","两只耳朵竖起来。","t t t，蹦蹦跳，","爱吃萝卜和青菜。"]},"scene":{"s":"一只小白兔在田地里蹦蹦跳跳。","p":"yì zhī xiǎo bái tù zài tián dì lǐ bèng bèng tiào tiào"}},{"p":"n","w":"牛奶","c":"niú nǎi","tip":"发 n 时，舌尖抵住上齿龈，气流从鼻腔出来。","tones":"nā ná nǎ nà","words":[{"w":"牛奶","p":"niú nǎi","e":"🥛"},{"w":"鸟儿","p":"niǎo er","e":"🐦"},{"w":"女孩","p":"nǚ hái","e":"👧"},{"w":"南瓜","p":"nán guā","e":"🎃"}],"rhyme":{"t":"小鸟儿","lines":["小鸟儿，枝头叫，","唱起歌来 n n n。","拍拍翅膀飞上天，","白云朵朵对它笑。"]},"scene":{"s":"一只小鸟站在树枝上唱歌。","p":"yì zhī xiǎo niǎo zhàn zài shù zhī shàng chàng gē"}},{"p":"l","w":"老虎","c":"lǎo hǔ","tip":"发 l 时，舌尖抵住上齿龈，气流从舌头两边出来。","tones":"lā lá lǎ là","words":[{"w":"老虎","p":"lǎo hǔ","e":"🐯"},{"w":"蓝天","p":"lán tiān","e":"🌤️"},{"w":"梨","p":"lí","e":"🍐"},{"w":"路","p":"lù","e":"🛤️"}],"rhyme":{"t":"两只老虎","lines":["两只老虎，两只老虎，","跑得快，跑得快。","l l l，真厉害，","森林之王人人爱。"]},"scene":{"s":"一只小老虎在森林里慢慢散步。","p":"yì zhī xiǎo lǎo hǔ zài sēn lín lǐ màn man sàn bù"}},{"p":"g","w":"鸽子","c":"gē zi","tip":"发 g 时，舌根抵住软腭，突然放开，气流冲出。","tones":"gā gá gǎ gà","words":[{"w":"鸽子","p":"gē zi","e":"🕊️"},{"w":"哥哥","p":"gē ge","e":"👦"},{"w":"西瓜","p":"xī guā","e":"🍉"},{"w":"小狗","p":"xiǎo gǒu","e":"🐶"}],"rhyme":{"t":"小鸽子","lines":["小鸽子，咕咕叫，","飞到窗前把信捎。","g g g，乖宝宝，","和平使者人人瞧。"]},"scene":{"s":"一只白鸽衔着橄榄枝飞过蓝天。","p":"yì zhī bái gē xián zhe gǎn lǎn zhī fēi guò lán tiān"}},{"p":"k","w":"蝌蚪","c":"kē dǒu","tip":"发 k 时，舌根抵住软腭，突然放开，气流较强。","tones":"kā ká kǎ kà","words":[{"w":"蝌蚪","p":"kē dǒu","e":"🐸"},{"w":"开心","p":"kāi xīn","e":"😊"},{"w":"看书","p":"kàn shū","e":"📖"},{"w":"卡车","p":"kǎ chē","e":"🚚"}],"rhyme":{"t":"小蝌蚪","lines":["小蝌蚪，黑黝黝，","摇摇尾巴水里游。","k k k，找妈妈，","长大变成小青蛙。"]},"scene":{"s":"池塘里一群黑黑的小蝌蚪在游动。","p":"chí táng lǐ yì qún hēi hēi de xiǎo kē dǒu zài yóu dòng"}},{"p":"h","w":"小河","c":"xiǎo hé","tip":"发 h 时，舌根靠近软腭，气流摩擦出来，像哈气。","tones":"hā há hǎ hà","words":[{"w":"小河","p":"xiǎo hé","e":"🏞️"},{"w":"荷花","p":"hé huā","e":"🪷"},{"w":"蝴蝶","p":"hú dié","e":"🦋"},{"w":"火车","p":"huǒ chē","e":"🚂"}],"rhyme":{"t":"小河流","lines":["小河流，哗啦啦，","唱着歌儿跑向家。","h h h，水花飞，","鱼儿虾儿笑哈哈。"]},"scene":{"s":"一条小河弯弯曲曲流向远方。","p":"yì tiáo xiǎo hé wān wān qū qū liú xiàng yuǎn fāng"}},{"p":"j","w":"小鸡","c":"xiǎo jī","tip":"发 j 时，舌面抬起抵住硬腭，气流冲破阻碍。","tones":"jī jí jǐ jì","words":[{"w":"小鸡","p":"xiǎo jī","e":"🐤"},{"w":"积木","p":"jī mù","e":"🧱"},{"w":"橘子","p":"jú zi","e":"🍊"},{"w":"姐姐","p":"jiě jie","e":"👧"}],"rhyme":{"t":"小鸡吃米","lines":["小鸡小鸡叽叽叽，","跟着妈妈啄米粒。","j j j，挤一挤，","毛茸茸的真欢喜。"]},"scene":{"s":"一群小鸡围着鸡妈妈啄米吃。","p":"yì qún xiǎo jī wéi zhe jī mā ma zhuó mǐ chī"}},{"p":"q","w":"气球","c":"qì qiú","tip":"发 q 时，舌面抬起抵住硬腭，气流较强，像吹气。","tones":"qī qí qǐ qì","words":[{"w":"气球","p":"qì qiú","e":"🎈"},{"w":"青蛙","p":"qīng wā","e":"🐸"},{"w":"七","p":"qī","e":"7️⃣"},{"w":"秋千","p":"qiū qiān","e":"🎠"}],"rhyme":{"t":"彩色气球","lines":["彩色气球天上飘，","红的黄的真热闹。","q q q，轻轻飞，","带着愿望飞高高。"]},"scene":{"s":"小朋友手里拿着一串彩色气球。","p":"xiǎo péng you shǒu lǐ ná zhe yí chuàn cǎi sè qì qiú"}},{"p":"x","w":"西瓜","c":"xī guā","tip":"发 x 时，舌面靠近硬腭，气流从缝隙中摩擦出来。","tones":"xī xí xǐ xì","words":[{"w":"西瓜","p":"xī guā","e":"🍉"},{"w":"星星","p":"xīng xing","e":"⭐"},{"w":"熊猫","p":"xióng māo","e":"🐼"},{"w":"鞋子","p":"xié zi","e":"👟"}],"rhyme":{"t":"小星星","lines":["小星星，亮晶晶，","挂在天上眨眼睛。","x x x，笑嘻嘻，","夜晚陪我入梦境。"]},"scene":{"s":"夜空中许多小星星在眨眼睛。","p":"yè kōng zhōng xǔ duō xiǎo xīng xing zài zhǎ yǎn jing"}},{"p":"zh","w":"小猪","c":"xiǎo zhū","tip":"发 zh 时，舌尖翘起抵住硬腭前部，气流冲出。","tones":"zhī zhí zhǐ zhì","words":[{"w":"小猪","p":"xiǎo zhū","e":"🐷"},{"w":"蜘蛛","p":"zhī zhū","e":"🕷️"},{"w":"竹林","p":"zhú lín","e":"🎋"},{"w":"桌子","p":"zhuō zi","e":"🪑"}],"rhyme":{"t":"小蜘蛛","lines":["小蜘蛛，会织网，","织张大网捉虫忙。","zh zh zh，真能干，","网上露珠亮闪闪。"]},"scene":{"s":"一只小蜘蛛在树枝间织网。","p":"yì zhī xiǎo zhī zhū zài shù zhī jiān zhī wǎng"}},{"p":"ch","w":"吃饭","c":"chī fàn","tip":"发 ch 时，舌尖翘起抵住硬腭前部，气流较强。","tones":"chī chí chǐ chì","words":[{"w":"吃饭","p":"chī fàn","e":"🍽️"},{"w":"汽车","p":"qì chē","e":"🚗"},{"w":"小船","p":"xiǎo chuán","e":"🚢"},{"w":"窗户","p":"chuāng hu","e":"🪟"}],"rhyme":{"t":"吃饭歌","lines":["小饭碗，手中拿，","一口一口吃掉它。","ch ch ch，吃得香，","不挑食来身体棒。"]},"scene":{"s":"小朋友坐在桌前开心地吃饭。","p":"xiǎo péng you zuò zài zhuō qián kāi xīn de chī fàn"}},{"p":"sh","w":"狮子","c":"shī zi","tip":"发 sh 时，舌尖翘起靠近硬腭前部，气流摩擦出来。","tones":"shī shí shǐ shì","words":[{"w":"狮子","p":"shī zi","e":"🦁"},{"w":"书本","p":"shū běn","e":"📖"},{"w":"高山","p":"gāo shān","e":"⛰️"},{"w":"大树","p":"dà shù","e":"🌳"}],"rhyme":{"t":"小狮子","lines":["小狮子，毛发长，","站在山头大声唱。","sh sh sh，真威风，","森林之王力量强。"]},"scene":{"s":"一头小狮子站在岩石上仰天长啸。","p":"yì tóu xiǎo shī zi zhàn zài yán shí shàng yǎng tiān cháng xiào"}},{"p":"r","w":"日出","c":"rì chū","tip":"发 r 时，舌尖翘起靠近硬腭前部，声带振动。","tones":"rī rí rǐ rì","words":[{"w":"日出","p":"rì chū","e":"🌅"},{"w":"人们","p":"rén men","e":"👥"},{"w":"热闹","p":"rè nao","e":"🎉"},{"w":"柔软","p":"róu ruǎn","e":"🧸"}],"rhyme":{"t":"看日出","lines":["太阳公公起床早，","露出笑脸咪咪笑。","r r r，日出啦，","新的一天来到了。"]},"scene":{"s":"太阳从东方慢慢升起，染红了天空。","p":"tài yáng cóng dōng fāng màn man shēng qǐ rǎn hóng le tiān kōng"}},{"p":"z","w":"写字","c":"xiě zì","tip":"发 z 时，舌尖抵住上齿背，气流冲破阻碍。","tones":"zī zí zǐ zì","words":[{"w":"写字","p":"xiě zì","e":"✍️"},{"w":"足球","p":"zú qiú","e":"⚽"},{"w":"走路","p":"zǒu lù","e":"🚶"},{"w":"彩虹","p":"cǎi hóng","e":"🌈"}],"rhyme":{"t":"学写字","lines":["小铅笔，手中拿，","一笔一画学写字。","z z z，认真写，","写好汉字笑哈哈。"]},"scene":{"s":"小朋友拿着铅笔在纸上认真写字。","p":"xiǎo péng you ná zhe qiān bǐ zài zhǐ shàng rèn zhēn xiě zì"}},{"p":"c","w":"小草","c":"xiǎo cǎo","tip":"发 c 时，舌尖抵住上齿背，气流较强。","tones":"cī cí cǐ cì","words":[{"w":"小草","p":"xiǎo cǎo","e":"🌱"},{"w":"彩虹","p":"cǎi hóng","e":"🌈"},{"w":"吃饭","p":"chī fàn","e":"🍚"},{"w":"刺猬","p":"cì wei","e":"🦔"}],"rhyme":{"t":"小草芽","lines":["小草芽，土里钻，","迎着太阳笑开颜。","c c c，蹭蹭长，","绿色衣裳披满山。"]},"scene":{"s":"春雨过后，小草从土里探出头来。","p":"chūn yǔ guò hòu xiǎo cǎo cóng tǔ lǐ tàn chū tóu lái"}},{"p":"s","w":"丝绸","c":"sī chóu","tip":"发 s 时，舌尖靠近上齿背，气流摩擦出来。","tones":"sī sí sǐ sì","words":[{"w":"丝绸","p":"sī chóu","e":"🧣"},{"w":"松树","p":"sōng shù","e":"🌲"},{"w":"雨伞","p":"yǔ sǎn","e":"☂️"},{"w":"三思","p":"sān sī","e":"🤔"}],"rhyme":{"t":"小松鼠","lines":["小松鼠，尾巴大，","抱着松果树上爬。","s s s，嗖嗖跑，","冬天粮食藏好啦。"]},"scene":{"s":"一只小松鼠抱着松果爬上松树。","p":"yì zhī xiǎo sōng shǔ bào zhe sōng guǒ pá shàng sōng shù"}},{"p":"y","w":"衣服","c":"yī fu","tip":"发 y 时，舌面靠近硬腭，气流轻微摩擦，像 i 开头。","tones":"yī yí yǐ yì","words":[{"w":"衣服","p":"yī fu","e":"👕"},{"w":"鸭子","p":"yā zi","e":"🦆"},{"w":"月亮","p":"yuè liàng","e":"🌙"},{"w":"游泳","p":"yóu yǒng","e":"🏊"}],"rhyme":{"t":"小鸭游","lines":["小鸭小鸭 y y y，","摇摇摆摆水里去。","捉到小鱼嘎嘎叫，","快快乐乐回家去。"]},"scene":{"s":"小鸭子跟着鸭妈妈在水里游。","p":"xiǎo yā zi gēn zhe yā mā ma zài shuǐ lǐ yóu"}},{"p":"w","w":"娃娃","c":"wá wa","tip":"发 w 时，嘴唇收圆并向前突出，像 u 开头。","tones":"wū wú wǔ wù","words":[{"w":"娃娃","p":"wá wa","e":"🪆"},{"w":"乌鸦","p":"wū yā","e":"🐦‍⬛"},{"w":"握手","p":"wò shǒu","e":"🤝"},{"w":"跳舞","p":"tiào wǔ","e":"💃"}],"rhyme":{"t":"小娃娃","lines":["小娃娃，笑哈哈，","w w w，弯弯嘴。","抱着娃娃睡觉觉，","梦里见到花蝴蝶。"]},"scene":{"s":"小娃娃抱着布娃娃甜甜地笑着。","p":"xiǎo wá wa bào zhe bù wá wa tián tián de xiào zhe"}}],"复韵母":[{"p":"ai","w":"热爱","c":"rè ài","tip":"先发 a，然后快速滑向 i，嘴巴由大变小。","tones":"āi ái ǎi ài","words":[{"w":"爱","p":"ài","e":"❤️"},{"w":"白菜","p":"bái cài","e":"🥬"},{"w":"拍手","p":"pāi shǒu","e":"👏"},{"w":"开门","p":"kāi mén","e":"🔓"}],"rhyme":{"t":"小白兔爱白菜","lines":["小白兔，爱白菜，","拔起白菜抱满怀。","ai ai ai，真可爱，","蹦蹦跳跳回家来。"]},"scene":{"s":"小白兔拔了一颗大白菜抱在怀里。","p":"xiǎo bái tù bá le yì kē dà bái cài bào zài huái lǐ"}},{"p":"ei","w":"杯子","c":"bēi zi","tip":"先发 e，然后快速滑向 i，嘴角向两边展开。","tones":"ēi éi ěi èi","words":[{"w":"杯子","p":"bēi zi","e":"🥤"},{"w":"飞机","p":"fēi jī","e":"✈️"},{"w":"被子","p":"bèi zi","e":"🛏️"},{"w":"北方","p":"běi fāng","e":"🧭"}],"rhyme":{"t":"小飞机","lines":["小飞机，飞得高，","飞过云山和小桥。","ei ei ei，真轻巧，","载着梦想天上飘。"]},"scene":{"s":"一架小飞机在蓝天上飞过小桥。","p":"yí jià xiǎo fēi jī zài lán tiān shàng fēi guò xiǎo qiáo"}},{"p":"ui","w":"水杯","c":"shuǐ bēi","tip":"先发 u，再滑向 ei，注意 i 读得轻短。","tones":"uī uí uǐ uì","words":[{"w":"喝水","p":"hē shuǐ","e":"💧"},{"w":"开会","p":"kāi huì","e":"✅"},{"w":"吹风","p":"chuī fēng","e":"🌬️"},{"w":"回家","p":"huí jiā","e":"🏠"}],"rhyme":{"t":"小水杯","lines":["小水杯，手中拿，","咕噜咕噜喝水啦。","ui ui ui，甜甜水，","喝完精神顶呱呱。"]},"scene":{"s":"小朋友端着水杯咕噜咕噜喝水。","p":"xiǎo péng you duān zhe shuǐ bēi gū lū gū lū hē shuǐ"}},{"p":"ao","w":"棉袄","c":"mián ǎo","tip":"先发 a，嘴巴张大，然后滑向 o，嘴唇收圆。","tones":"āo áo ǎo ào","words":[{"w":"小猫","p":"xiǎo māo","e":"🐱"},{"w":"跑步","p":"pǎo bù","e":"🏃"},{"w":"帽子","p":"mào zi","e":"🧢"},{"w":"桃子","p":"táo zi","e":"🍑"}],"rhyme":{"t":"小花猫","lines":["小花猫，喵喵喵，","追着小球到处跑。","ao ao ao，跳一跳，","抓住老鼠乐陶陶。"]},"scene":{"s":"小花猫追着毛线球在房间里跑。","p":"xiǎo huā māo zhuī zhe máo xiàn qiú zài fáng jiān lǐ pǎo"}},{"p":"ou","w":"莲藕","c":"lián ǒu","tip":"先发 o，嘴唇收圆，然后滑向 u。","tones":"ōu óu ǒu òu","words":[{"w":"小狗","p":"xiǎo gǒu","e":"🐶"},{"w":"头发","p":"tóu fa","e":"🤕"},{"w":"走路","p":"zǒu lù","e":"🚶"},{"w":"小手","p":"xiǎo shǒu","e":"✋"}],"rhyme":{"t":"小狗跑","lines":["小花狗，汪汪汪，","摇着尾巴到处逛。","ou ou ou，跑得快，","看见主人扑过来。"]},"scene":{"s":"小狗摇着尾巴向主人跑去。","p":"xiǎo gǒu yáo zhe wěi ba xiàng zhǔ rén pǎo qù"}},{"p":"iu","w":"皮球","c":"pí qiú","tip":"先发 i，再滑向 ou，注意 u 读得响亮。","tones":"iū iú iǔ iù","words":[{"w":"水牛","p":"shuǐ niú","e":"🐮"},{"w":"九","p":"jiǔ","e":"9️⃣"},{"w":"柳树","p":"liǔ shù","e":"🌿"},{"w":"游泳","p":"yóu yǒng","e":"🏊"}],"rhyme":{"t":"小水牛","lines":["小水牛，河边走，","低下头来喝口水。","iu iu iu，慢慢游，","田里劳动真辛苦。"]},"scene":{"s":"小水牛在河边低头喝水。","p":"xiǎo shuǐ niú zài hé biān dī tóu hē shuǐ"}},{"p":"ie","w":"树叶","c":"shù yè","tip":"先发 i，再滑向 ê，嘴角向两边展开。","tones":"iē ié iě iè","words":[{"w":"叶子","p":"yè zi","e":"🍃"},{"w":"爷爷","p":"yé ye","e":"👴"},{"w":"姐姐","p":"jiě jie","e":"👧"},{"w":"借书","p":"jiè shū","e":"🤲"}],"rhyme":{"t":"小树叶","lines":["小树叶，飘呀飘，","秋风一吹离开了。","ie ie ie，轻轻落，","铺成地毯真美好。"]},"scene":{"s":"金黄的树叶从树上飘落到地面。","p":"jīn huáng de shù yè cóng shù shàng piāo luò dào dì miàn"}},{"p":"üe","w":"月亮","c":"yuè liàng","tip":"先发 ü，嘴唇收圆，再滑向 ê。","tones":"üē üé üě üè","words":[{"w":"月亮","p":"yuè liàng","e":"🌙"},{"w":"雪人","p":"xuě rén","e":"☃️"},{"w":"学习","p":"xué xí","e":"📖"},{"w":"吃药","p":"chī yào","e":"💊"}],"rhyme":{"t":"看月亮","lines":["小月亮，挂天上，","圆圆脸蛋放光芒。","üe üe üe，亮堂堂，","陪我进入梦乡。"]},"scene":{"s":"圆圆的月亮挂在深蓝色的夜空。","p":"yuán yuán de yuè liàng guà zài shēn lán sè de yè kōng"}},{"p":"er","w":"耳朵","c":"ěr duo","tip":"发 er 时，舌头卷起，声音从舌头两边出来。","tones":"ēr ér ěr èr","words":[{"w":"耳朵","p":"ěr duo","e":"👂"},{"w":"儿子","p":"ér zi","e":"👦"},{"w":"二","p":"èr","e":"2️⃣"},{"w":"儿童","p":"ér tóng","e":"👶"}],"rhyme":{"t":"小耳朵","lines":["小耳朵，真灵便，","左听听，右听听。","er er er，听得清，","妈妈话儿记心中。"]},"scene":{"s":"小朋友竖起小耳朵认真听故事。","p":"xiǎo péng you shù qǐ xiǎo ěr duo rèn zhēn tīng gù shi"}}],"前鼻韵母":[{"p":"an","w":"安全","c":"ān quán","tip":"先发 a，然后舌尖抵住上齿龈，气流从鼻腔出来。","tones":"ān án ǎn àn","words":[{"w":"大山","p":"dà shān","e":"⛰️"},{"w":"蓝天","p":"lán tiān","e":"🌤️"},{"w":"三","p":"sān","e":"3️⃣"},{"w":"温暖","p":"wēn nuǎn","e":"🌞"}],"rhyme":{"t":"大山高","lines":["大山高，高又高，","白云飘在山半腰。","an an an，真壮观，","鸟儿飞过喳喳叫。"]},"scene":{"s":"远处的大山高耸入云，白云缭绕。","p":"yuǎn chù de dà shān gāo sǒng rù yún bái yún liáo rào"}},{"p":"en","w":"恩情","c":"ēn qíng","tip":"先发 e，然后舌尖抵住上齿龈，气流从鼻腔出来。","tones":"ēn én ěn èn","words":[{"w":"大门","p":"dà mén","e":"🚪"},{"w":"人们","p":"rén men","e":"👥"},{"w":"森林","p":"sēn lín","e":"🌲"},{"w":"认真","p":"rèn zhēn","e":"📝"}],"rhyme":{"t":"小木门","lines":["小木门，吱呀响，","推开看见好风光。","en en en，进出门，","礼仪问候不能忘。"]},"scene":{"s":"小朋友推开小木门走进花园。","p":"xiǎo péng you tuī kāi xiǎo mù mén zǒu jìn huā yuán"}},{"p":"in","w":"音乐","c":"yīn yuè","tip":"先发 i，然后舌尖抵住上齿龈，气流从鼻腔出来。","tones":"īn ín ǐn ìn","words":[{"w":"音乐","p":"yīn yuè","e":"🎵"},{"w":"森林","p":"sēn lín","e":"🌲"},{"w":"金鱼","p":"jīn yú","e":"🐠"},{"w":"小心","p":"xiǎo xīn","e":"❤️"}],"rhyme":{"t":"小金鱼","lines":["小金鱼，水中游，","摇摇尾巴点点头。","in in in，金闪闪，","水里世界真好看。"]},"scene":{"s":"几条小金鱼在鱼缸里游来游去。","p":"jǐ tiáo xiǎo jīn yú zài yú gāng lǐ yóu lái yóu qù"}},{"p":"un","w":"温水","c":"wēn shuǐ","tip":"先发 u，然后舌尖抵住上齿龈，气流从鼻腔出来。","tones":"ūn ún ǔn ùn","words":[{"w":"白云","p":"bái yún","e":"☁️"},{"w":"温暖","p":"wēn nuǎn","e":"🌡️"},{"w":"山村","p":"shān cūn","e":"🏘️"},{"w":"春笋","p":"chūn sǔn","e":"🎋"}],"rhyme":{"t":"白云飘","lines":["白云飘，天上跑，","变成小羊又变小。","un un un，轻轻飘，","蓝天画布真美妙。"]},"scene":{"s":"天上的白云像棉花糖一样飘动。","p":"tiān shàng de bái yún xiàng mián huā táng yí yàng piāo dòng"}},{"p":"ün","w":"白云","c":"bái yún","tip":"先发 ü，嘴唇收圆，然后舌尖抵住上齿龈。","tones":"ǖn ǘn ǚn ǜn","words":[{"w":"白云","p":"bái yún","e":"☁️"},{"w":"军人","p":"jūn rén","e":"🎖️"},{"w":"裙子","p":"qún zi","e":"👗"},{"w":"群众","p":"qún zhòng","e":"👥"}],"rhyme":{"t":"小白云","lines":["小白云，天上飞，","风儿吹来轻轻追。","ün ün ün，团团围，","蓝天上面捉迷藏。"]},"scene":{"s":"几朵白云在蓝天上飘来飘去。","p":"jǐ duǒ bái yún zài lán tiān shàng piāo lái piāo qù"}}],"后鼻韵母":[{"p":"ang","w":"昂首","c":"áng shǒu","tip":"先发 a，然后舌根抬起抵住软腭，气流从鼻腔出来。","tones":"āng áng ǎng àng","words":[{"w":"绵羊","p":"mián yáng","e":"🐑"},{"w":"房子","p":"fáng zi","e":"🏠"},{"w":"唱歌","p":"chàng gē","e":"🎤"},{"w":"长大","p":"zhǎng dà","e":"🌱"}],"rhyme":{"t":"小绵羊","lines":["小绵羊，毛茸茸，","弯弯角儿像月亮。","ang ang ang，山上放，","白云下面吃草忙。"]},"scene":{"s":"一群小绵羊在山坡上吃草。","p":"yì qún xiǎo mián yáng zài shān pō shàng chī cǎo"}},{"p":"eng","w":"灯笼","c":"dēng long","tip":"先发 e，然后舌根抬起抵住软腭，气流从鼻腔出来。","tones":"ēng éng ěng èng","words":[{"w":"台灯","p":"tái dēng","e":"💡"},{"w":"大风","p":"dà fēng","e":"🌬️"},{"w":"朋友","p":"péng you","e":"🤝"},{"w":"成功","p":"chéng gōng","e":"🏆"}],"rhyme":{"t":"小灯笼","lines":["小灯笼，红彤彤，","挂在门前喜盈盈。","eng eng eng，亮晶晶，","照亮夜晚满天星。"]},"scene":{"s":"红红的灯笼挂在门前迎风摇摆。","p":"hóng hóng de dēng long guà zài mén qián yíng fēng yáo bǎi"}},{"p":"ing","w":"老鹰","c":"lǎo yīng","tip":"先发 i，然后舌根抬起抵住软腭，气流从鼻腔出来。","tones":"īng íng ǐng ìng","words":[{"w":"老鹰","p":"lǎo yīng","e":"🦅"},{"w":"星星","p":"xīng xing","e":"⭐"},{"w":"听见","p":"tīng jiàn","e":"👂"},{"w":"冰雪","p":"bīng xuě","e":"🧊"}],"rhyme":{"t":"小老鹰","lines":["小老鹰，飞得高，","展开翅膀天上飘。","ing ing ing，真英豪，","锐利眼睛看得遥。"]},"scene":{"s":"一只老鹰在高山之上展翅飞翔。","p":"yì zhī lǎo yīng zài gāo shān zhī shàng zhǎn chì fēi xiáng"}},{"p":"ong","w":"时钟","c":"shí zhōng","tip":"先发 o，然后舌根抬起抵住软腭，气流从鼻腔出来。","tones":"ōng óng ǒng òng","words":[{"w":"龙舟","p":"lóng zhōu","e":"🐉"},{"w":"时钟","p":"shí zhōng","e":"🕰️"},{"w":"红色","p":"hóng sè","e":"🔴"},{"w":"东方","p":"dōng fāng","e":"➡️"}],"rhyme":{"t":"小青龙","lines":["小青龙，云中藏，","呼风唤雨本领强。","ong ong ong，腾空上，","守护人间保安康。"]},"scene":{"s":"一条小青龙在云雾中穿梭。","p":"yì tiáo xiǎo qīng lóng zài yún wù zhōng chuān suō"}}],"整体认读":[{"p":"zhi","w":"蜘蛛","c":"zhī zhū","tip":"zhi 是一个整体，直接读，不要拼读。","tones":"zhī zhí zhǐ zhì","words":[{"w":"蜘蛛","p":"zhī zhū","e":"🕷️"},{"w":"知道","p":"zhī dào","e":"💡"},{"w":"直尺","p":"zhí chǐ","e":"📏"},{"w":"白纸","p":"bái zhǐ","e":"📄"}],"rhyme":{"t":"小蜘蛛","lines":["小蜘蛛，会织网，","织张大网捉虫忙。","zhi zhi zhi，真能干，","网上露珠亮闪闪。"]},"scene":{"s":"一只小蜘蛛正在织一张大网。","p":"yì zhī xiǎo zhī zhū zhèng zài zhī yì zhāng dà wǎng"}},{"p":"chi","w":"吃饭","c":"chī fàn","tip":"chi 是一个整体，直接读，不要拼读。","tones":"chī chí chǐ chì","words":[{"w":"吃饭","p":"chī fàn","e":"🍽️"},{"w":"尺子","p":"chǐ zi","e":"📏"},{"w":"翅膀","p":"chì bǎng","e":"🦋"},{"w":"迟到","p":"chí dào","e":"🕰️"}],"rhyme":{"t":"吃饭歌","lines":["小饭碗，手中拿，","一口一口吃掉它。","chi chi chi，吃得香，","不挑食来身体棒。"]},"scene":{"s":"小朋友坐在桌前大口吃饭。","p":"xiǎo péng you zuò zài zhuō qián dà kǒu chī fàn"}},{"p":"shi","w":"狮子","c":"shī zi","tip":"shi 是一个整体，直接读，不要拼读。","tones":"shī shí shǐ shì","words":[{"w":"狮子","p":"shī zi","e":"🦁"},{"w":"老师","p":"lǎo shī","e":"👩‍🏫"},{"w":"石头","p":"shí tou","e":"🪨"},{"w":"柿子","p":"shì zi","e":"🍅"}],"rhyme":{"t":"小狮子","lines":["小狮子，毛发长，","站在山头大声唱。","shi shi shi，真威风，","森林之王力量强。"]},"scene":{"s":"一头小狮子站在石头上眺望远方。","p":"yì tóu xiǎo shī zi zhàn zài shí tou shàng tiào wàng yuǎn fāng"}},{"p":"ri","w":"日出","c":"rì chū","tip":"ri 是一个整体，直接读，不要拼读。","tones":"rī rí rǐ rì","words":[{"w":"日出","p":"rì chū","e":"🌅"},{"w":"日子","p":"rì zi","e":"📅"},{"w":"太阳","p":"tài yáng","e":"☀️"},{"w":"红日","p":"hóng rì","e":"🌞"}],"rhyme":{"t":"看日出","lines":["太阳公公起床早，","露出笑脸咪咪笑。","ri ri ri，日出啦，","新的一天来到了。"]},"scene":{"s":"红红的太阳从东方升起。","p":"hóng hóng de tài yáng cóng dōng fāng shēng qǐ"}},{"p":"zi","w":"写字","c":"xiě zì","tip":"zi 是一个整体，直接读，不要拼读。","tones":"zī zí zǐ zì","words":[{"w":"写字","p":"xiě zì","e":"✍️"},{"w":"孩子","p":"hái zi","e":"👶"},{"w":"紫色","p":"zǐ sè","e":"🟣"},{"w":"仔细","p":"zǐ xì","e":"🔍"}],"rhyme":{"t":"学写字","lines":["小铅笔，手中拿，","一笔一画学写字。","zi zi zi，认真写，","写好汉字笑哈哈。"]},"scene":{"s":"小朋友一笔一画地学写汉字。","p":"xiǎo péng you yì bǐ yì huà de xué xiě hàn zì"}},{"p":"ci","w":"刺猬","c":"cì wei","tip":"ci 是一个整体，直接读，不要拼读。","tones":"cī cí cǐ cì","words":[{"w":"刺猬","p":"cì wei","e":"🦔"},{"w":"词语","p":"cí yǔ","e":"📝"},{"w":"瓷器","p":"cí qì","e":"🏺"},{"w":"次数","p":"cì shù","e":"🔢"}],"rhyme":{"t":"小刺猬","lines":["小刺猬，身上刺，","团成一团像球球。","ci ci ci，别碰它，","保护自己本领牛。"]},"scene":{"s":"一只小刺猬团成一团躲在草丛里。","p":"yì zhī xiǎo cì wei tuán chéng yì tuán duǒ zài cǎo cóng lǐ"}},{"p":"si","w":"丝绸","c":"sī chóu","tip":"si 是一个整体，直接读，不要拼读。","tones":"sī sí sǐ sì","words":[{"w":"丝绸","p":"sī chóu","e":"🧣"},{"w":"思念","p":"sī niàn","e":"💭"},{"w":"四季","p":"sì jì","e":"🗓️"},{"w":"思想","p":"sī xiǎng","e":"💡"}],"rhyme":{"t":"小丝巾","lines":["小丝巾，轻又柔，","飘在空中像云朵。","si si si，随风走，","美丽舞姿人人夸。"]},"scene":{"s":"一条彩色丝巾在风中飘扬。","p":"yì tiáo cǎi sè sī jīn zài fēng zhōng piāo yáng"}},{"p":"yi","w":"衣服","c":"yī fu","tip":"yi 是一个整体，直接读一读，不要拼读。","tones":"yī yí yǐ yì","words":[{"w":"衣服","p":"yī fu","e":"👕"},{"w":"医生","p":"yī shēng","e":"👨‍⚕️"},{"w":"蚂蚁","p":"mǎ yǐ","e":"🐜"},{"w":"已经","p":"yǐ jīng","e":"✅"}],"rhyme":{"t":"小蚂蚁","lines":["小蚂蚁，排队走，","扛着米粒不回头。","yi yi yi，一二一，","齐心协力运粮球。"]},"scene":{"s":"小蚂蚁们排着队搬运粮食。","p":"xiǎo mǎ yǐ men pái zhe duì bān yùn liáng shi"}},{"p":"wu","w":"乌鸦","c":"wū yā","tip":"wu 是一个整体，直接读，不要拼读。","tones":"wū wú wǔ wù","words":[{"w":"乌鸦","p":"wū yā","e":"🐦‍⬛"},{"w":"乌龟","p":"wū guī","e":"🐢"},{"w":"屋子","p":"wū zi","e":"🏠"},{"w":"跳舞","p":"tiào wǔ","e":"💃"}],"rhyme":{"t":"小乌鸦","lines":["小乌鸦，穿黑衣，","站在树上哇哇啼。","wu wu wu，找到虫，","叼回窝里喂宝宝。"]},"scene":{"s":"乌鸦妈妈叼着虫子回窝喂宝宝。","p":"wū yā mā ma diāo zhe chóng zi huí wō wèi bǎo bao"}},{"p":"yu","w":"小鱼","c":"xiǎo yú","tip":"yu 是一个整体，直接读，不要拼读。","tones":"yū yú yǔ yù","words":[{"w":"小鱼","p":"xiǎo yú","e":"🐟"},{"w":"下雨","p":"xià yǔ","e":"🌧️"},{"w":"羽毛","p":"yǔ máo","e":"🪶"},{"w":"玉石","p":"yù shí","e":"💎"}],"rhyme":{"t":"小鱼游","lines":["小鱼儿，水里游，","摇摇尾巴点点头。","yu yu yu，吐泡泡，","快乐自由真无忧。"]},"scene":{"s":"小鱼儿在荷叶下面游来游去。","p":"xiǎo yú er zài hé yè xià miàn yóu lái yóu qù"}},{"p":"ye","w":"叶子","c":"yè zi","tip":"ye 是一个整体，直接读，不要拼读。","tones":"yē yé yě yè","words":[{"w":"叶子","p":"yè zi","e":"🍃"},{"w":"爷爷","p":"yé ye","e":"👴"},{"w":"野花","p":"yě huā","e":"🌼"},{"w":"夜晚","p":"yè wǎn","e":"🌙"}],"rhyme":{"t":"小树叶","lines":["小树叶，飘呀飘，","秋风一吹离开了。","ye ye ye，轻轻落，","铺成地毯真美好。"]},"scene":{"s":"金黄的叶子从树上飘下来。","p":"jīn huáng de yè zi cóng shù shàng piāo xià lái"}},{"p":"yue","w":"月亮","c":"yuè liàng","tip":"yue 是一个整体，直接读，不要拼读。","tones":"yuē yué yuě yuè","words":[{"w":"月亮","p":"yuè liàng","e":"🌙"},{"w":"音乐","p":"yīn yuè","e":"🎵"},{"w":"乐器","p":"yuè qì","e":"🎸"},{"w":"大约","p":"dà yuē","e":"📏"}],"rhyme":{"t":"看月亮","lines":["小月亮，挂天上，","圆圆脸蛋放光芒。","yue yue yue，亮堂堂，","陪我进入梦乡。"]},"scene":{"s":"弯弯的月亮像小船挂在天上。","p":"wān wān de yuè liàng xiàng xiǎo chuán guà zài tiān shàng"}},{"p":"yuan","w":"圆圈","c":"yuán quān","tip":"yuan 是一个整体，直接读，不要拼读。","tones":"yuān yuán yuǎn yuàn","words":[{"w":"圆圈","p":"yuán quān","e":"⭕"},{"w":"公园","p":"gōng yuán","e":"🏞️"},{"w":"远方","p":"yuǎn fāng","e":"🛤️"},{"w":"愿意","p":"yuàn yì","e":"😊"}],"rhyme":{"t":"画圆圈","lines":["小铅笔，画圆圈，","圆圆圈圈真好看。","yuan yuan yuan，圈呀圈，","画出太阳和笑脸。"]},"scene":{"s":"小朋友用彩笔画了许多圆圈。","p":"xiǎo péng you yòng cǎi bǐ huà le xǔ duō yuán quān"}},{"p":"yin","w":"音乐","c":"yīn yuè","tip":"yin 是一个整体，直接读，不要拼读。","tones":"yīn yín yǐn yìn","words":[{"w":"音乐","p":"yīn yuè","e":"🎵"},{"w":"阴天","p":"yīn tiān","e":"☁️"},{"w":"脚印","p":"jiǎo yìn","e":"👣"},{"w":"饮料","p":"yǐn liào","e":"🧃"}],"rhyme":{"t":"小音符","lines":["小音符，蹦蹦跳，","组成歌曲真美妙。","yin yin yin，轻轻唱，","快乐旋律心头绕。"]},"scene":{"s":"五线谱上的小音符在跳舞。","p":"wǔ xiàn pǔ shàng de xiǎo yīn fú zài tiào wǔ"}},{"p":"yun","w":"白云","c":"bái yún","tip":"yun 是一个整体，直接读，不要拼读。","tones":"yūn yún yǔn yùn","words":[{"w":"白云","p":"bái yún","e":"☁️"},{"w":"运动","p":"yùn dòng","e":"🏃"},{"w":"允许","p":"yǔn xǔ","e":"✅"},{"w":"头晕","p":"tóu yūn","e":"😵"}],"rhyme":{"t":"小白云","lines":["小白云，天上飞，","风儿吹来轻轻追。","yun yun yun，团团围，","蓝天上面捉迷藏。"]},"scene":{"s":"几朵白云在蓝天上变来变去。","p":"jǐ duǒ bái yún zài lán tiān shàng biàn lái biàn qù"}},{"p":"ying","w":"老鹰","c":"lǎo yīng","tip":"ying 是一个整体，直接读，不要拼读。","tones":"yīng yíng yǐng yìng","words":[{"w":"老鹰","p":"lǎo yīng","e":"🦅"},{"w":"英雄","p":"yīng xióng","e":"🦸"},{"w":"电影","p":"diàn yǐng","e":"🎬"},{"w":"答应","p":"dā ying","e":"🙋"}],"rhyme":{"t":"小老鹰","lines":["小老鹰，飞得高，","展开翅膀天上飘。","ying ying ying，真英豪，","锐利眼睛看得遥。"]},"scene":{"s":"一只小老鹰展翅飞向远方。","p":"yì zhī xiǎo lǎo yīng zhǎn chì fēi xiàng yuǎn fāng"}}]};
 const PIN_CLASS=["pink","blue","yellow","green","purple"];
 
-/* ============== 拼音书写笔顺数据 ============== */
-const STROKE_DATA={"a": {"guide": "第一笔左半圆，第二笔竖右弯。", "strokes": [{"path": "M 100 75 C 52 75 52 160 100 160", "num": [100, 65]}, {"path": "M 100 160 C 100 160 100 208 152 208", "num": [108, 150]}]}, "o": {"guide": "一笔圆写成，上下紧挨二三线。", "strokes": [{"path": "M 100 75 C 52 75 52 160 100 160 C 148 160 148 75 100 75", "num": [100, 65]}]}, "e": {"guide": "中格正中起横笔，从左至右再左半圆，一笔写成。", "strokes": [{"path": "M 60 120 L 120 120 C 138 120 138 160 100 160 C 68 160 68 135 68 125", "num": [68, 105]}]}, "i": {"guide": "第一笔竖写中间，第二笔点出二线。", "strokes": [{"path": "M 100 55 L 100 160", "num": [85, 110]}, {"path": "M 100 35 L 100 48", "num": [100, 42]}]}, "u": {"guide": "第一笔中格竖右弯，第二笔竖。", "strokes": [{"path": "M 70 55 C 70 55 70 160 100 160", "num": [62, 110]}, {"path": "M 130 55 L 130 160", "num": [142, 110]}]}, "ü": {"guide": "先将u字写在中间，从左至右写上面两点出二线。", "strokes": [{"path": "M 70 55 C 70 55 70 160 100 160", "num": [62, 110]}, {"path": "M 130 55 L 130 160", "num": [142, 110]}, {"path": "M 85 38 L 85 50", "num": [85, 44]}, {"path": "M 115 38 L 115 50", "num": [115, 44]}]}, "b": {"guide": "第一笔竖，第二笔右半圆。", "strokes": [{"path": "M 85 55 L 85 160", "num": [70, 110]}, {"path": "M 85 100 C 85 100 140 100 140 130 C 140 160 85 160", "num": [125, 105]}]}, "p": {"guide": "第一笔竖，第二笔右半圆。", "strokes": [{"path": "M 85 55 L 85 195", "num": [70, 125]}, {"path": "M 85 120 C 85 120 140 120 140 155 C 140 190 85 190", "num": [125, 130]}]}, "m": {"guide": "第一笔竖，第二、三笔竖弯竖。", "strokes": [{"path": "M 62 55 L 62 160", "num": [50, 110]}, {"path": "M 62 100 C 62 100 95 90 95 160", "num": [88, 105]}, {"path": "M 95 100 C 95 100 128 90 128 160", "num": [122, 105]}]}, "f": {"guide": "第一笔右弯竖，第二笔横。", "strokes": [{"path": "M 118 35 C 118 35 118 58 95 58 L 95 160", "num": [110, 45]}, {"path": "M 65 90 L 130 90", "num": [100, 82]}]}, "d": {"guide": "第一笔左半圆，第二笔竖。", "strokes": [{"path": "M 100 75 C 52 75 52 160 100 160", "num": [55, 120]}, {"path": "M 118 55 L 118 160", "num": [132, 110]}]}, "t": {"guide": "第一笔竖右弯，第二笔横。", "strokes": [{"path": "M 100 55 C 100 55 100 160 118 160", "num": [92, 110]}, {"path": "M 65 90 L 135 90", "num": [100, 82]}]}, "n": {"guide": "第一笔竖，第二笔竖弯竖。", "strokes": [{"path": "M 80 55 L 80 160", "num": [66, 110]}, {"path": "M 80 100 C 80 100 122 90 122 160", "num": [116, 105]}]}, "l": {"guide": "一笔竖。", "strokes": [{"path": "M 100 55 L 100 160", "num": [85, 110]}]}, "g": {"guide": "第一笔左半圆，第二笔竖左弯。", "strokes": [{"path": "M 100 75 C 52 75 52 160 100 160", "num": [55, 120]}, {"path": "M 100 160 C 100 160 100 205 62 205", "num": [88, 188]}]}, "k": {"guide": "第一笔竖，第二笔斜折。", "strokes": [{"path": "M 85 55 L 85 160", "num": [70, 110]}, {"path": "M 85 110 L 128 88 L 128 160", "num": [110, 92]}]}, "h": {"guide": "第一笔竖，第二笔竖弯竖。", "strokes": [{"path": "M 80 55 L 80 160", "num": [66, 110]}, {"path": "M 80 100 C 80 100 122 90 122 160", "num": [116, 105]}]}, "j": {"guide": "第一笔竖左弯，第二笔点。", "strokes": [{"path": "M 100 55 C 100 55 100 198 68 198", "num": [88, 178]}, {"path": "M 100 38 L 100 50", "num": [100, 44]}]}, "q": {"guide": "第一笔左半圆，第二笔竖。", "strokes": [{"path": "M 100 75 C 52 75 52 160 100 160", "num": [55, 120]}, {"path": "M 118 55 L 118 195", "num": [132, 130]}]}, "x": {"guide": "第一笔右斜，第二笔左斜。", "strokes": [{"path": "M 75 90 L 125 155", "num": [88, 105]}, {"path": "M 125 90 L 75 155", "num": [112, 105]}]}, "r": {"guide": "第一笔竖，第二笔右上弯。", "strokes": [{"path": "M 85 55 L 85 160", "num": [72, 110]}, {"path": "M 85 110 C 85 110 130 98 130 122", "num": [122, 102]}]}, "z": {"guide": "一笔横折横。", "strokes": [{"path": "M 70 90 L 130 90 L 70 160 L 130 160", "num": [100, 80]}]}, "c": {"guide": "一笔左半圆。", "strokes": [{"path": "M 100 75 C 52 75 52 160 100 160", "num": [55, 120]}]}, "s": {"guide": "一笔 S 形。", "strokes": [{"path": "M 128 90 C 78 90 78 125 100 125 C 122 125 122 160 72 160", "num": [115, 80]}]}, "y": {"guide": "第一笔右斜，第二笔左斜向下。", "strokes": [{"path": "M 88 55 L 112 110", "num": [88, 72]}, {"path": "M 112 110 L 88 195", "num": [90, 158]}]}, "w": {"guide": "一笔斜竖折斜竖。", "strokes": [{"path": "M 68 55 L 90 160 L 110 88 L 132 160", "num": [100, 75]}]}};
+/* ============== 拼音书写笔顺提示 ============== */
+const STROKE_TIPS={"a": {"guide": "a：第一笔左半圆，第二笔竖右弯。", "nums": [[42, 42], [72, 42]]}, "o": {"guide": "o：左上起笔，一笔圆写成。", "nums": [[42, 40]]}, "e": {"guide": "e：中格正中起横笔，从左至右再左半圆，一笔写成。", "nums": [[40, 50]]}, "i": {"guide": "i：第一笔竖写中间，第二笔点出二线。", "nums": [[54, 42], [54, 22]]}, "u": {"guide": "u：第一笔中格竖右弯，第二笔竖。", "nums": [[40, 42], [72, 42]]}, "ü": {"guide": "ü：先将u写在中间，再写上面两点出二线。", "nums": [[40, 42], [72, 42], [44, 22], [62, 22]]}, "b": {"guide": "b：长竖出二线，右下写半圆。", "nums": [[40, 38], [72, 48]]}, "p": {"guide": "p：长竖下三线，中格写上右半圆。", "nums": [[40, 38], [72, 58]]}, "m": {"guide": "m：短竖写中间，弯竖弯竖写右边。", "nums": [[36, 42], [52, 42], [68, 42]]}, "f": {"guide": "f：右弯竖出二线，短横写在二线边。", "nums": [[74, 28], [48, 48]]}, "d": {"guide": "d：中格先写左半圆，右边长竖出二线。", "nums": [[42, 42], [78, 38]]}, "t": {"guide": "t：竖右弯出二线，短横写在二线边。", "nums": [[52, 42], [48, 28]]}, "n": {"guide": "n：短竖写中间，弯竖写右边。", "nums": [[40, 42], [64, 42]]}, "l": {"guide": "l：长竖出二线，写直才好看。", "nums": [[52, 38]]}, "g": {"guide": "g：先写左半圆，弯竖下三线。", "nums": [[42, 42], [66, 42]]}, "k": {"guide": "k：长竖出二线，斜左斜右写中间。", "nums": [[40, 38], [64, 48]]}, "h": {"guide": "h：长竖出二线，弯竖写右边。", "nums": [[40, 38], [68, 42]]}, "j": {"guide": "j：左竖弯下三线，上格正中写圆点。", "nums": [[54, 62], [54, 22]]}, "q": {"guide": "q：中格先写左半圆，右边长竖下三线。", "nums": [[42, 42], [74, 58]]}, "x": {"guide": "x：左斜右斜叉中间，上下紧挨二三线。", "nums": [[40, 42], [70, 42]]}, "r": {"guide": "r：短竖写中间，右上一小弯。", "nums": [[40, 42], [64, 48]]}, "z": {"guide": "z：横折横一笔写成，中间要充满。", "nums": [[40, 42]]}, "c": {"guide": "c：一笔写成多半圆，上下紧挨二三线。", "nums": [[42, 42]]}, "s": {"guide": "s：8字写一半，上下挨着线。", "nums": [[42, 42]]}, "y": {"guide": "y：右斜中格慢，左斜下三线。", "nums": [[58, 42], [46, 58]]}, "w": {"guide": "w：斜下斜上写两遍，山下紧挨二三线。", "nums": [[38, 42], [54, 42], [70, 42]]}, "zh": {"guide": "zh：z 一笔，h 两笔，共三笔。", "nums": [[38, 42], [58, 42], [82, 38]]}, "ch": {"guide": "ch：c 一笔，h 两笔，共三笔。", "nums": [[38, 42], [58, 42], [82, 38]]}, "sh": {"guide": "sh：s 一笔，h 两笔，共三笔。", "nums": [[38, 42], [58, 42], [82, 38]]}, "zhi": {"guide": "zhi：整体认读音节，直接读出来。", "nums": [[38, 42]]}, "chi": {"guide": "chi：整体认读音节，直接读出来。", "nums": [[38, 42]]}, "shi": {"guide": "shi：整体认读音节，直接读出来。", "nums": [[38, 42]]}, "ri": {"guide": "ri：整体认读音节，直接读出来。", "nums": [[40, 42]]}, "zi": {"guide": "zi：整体认读音节，直接读出来。", "nums": [[40, 42]]}, "ci": {"guide": "ci：整体认读音节，直接读出来。", "nums": [[42, 42]]}, "si": {"guide": "si：整体认读音节，直接读出来。", "nums": [[42, 42]]}, "yi": {"guide": "yi：整体认读音节，直接读出来。", "nums": [[58, 42]]}, "wu": {"guide": "wu：整体认读音节，直接读出来。", "nums": [[38, 42]]}, "yu": {"guide": "yu：整体认读音节，直接读出来。", "nums": [[58, 42]]}, "ye": {"guide": "ye：整体认读音节，直接读出来。", "nums": [[58, 42]]}, "yue": {"guide": "yue：整体认读音节，直接读出来。", "nums": [[58, 42]]}, "yuan": {"guide": "yuan：整体认读音节，直接读出来。", "nums": [[58, 42]]}, "yin": {"guide": "yin：整体认读音节，直接读出来。", "nums": [[58, 42]]}, "yun": {"guide": "yun：整体认读音节，直接读出来。", "nums": [[58, 42]]}, "ying": {"guide": "ying：整体认读音节，直接读出来。", "nums": [[58, 42]]}};
 
 /* ============== 古诗数据（统编教材对齐，33首；一年级必背置顶，标注年级） ============== */
 const POEMS=[
@@ -463,27 +449,12 @@ const POEMS=[
  {t:"春夜喜雨（节选）",a:"杜甫",g:"拓展",l:[["好雨知时节，","hǎo yǔ zhī shí jié"],["当春乃发生。","dāng chūn nǎi fā shēng"],["随风潜入夜，","suí fēng qián rù yè"],["润物细无声。","rùn wù xì wú shēng"]]}
 ];
 
-/* ============== 逻辑题 ============== */
-const LOGIC=[
- {type:"pattern",prompt:"猜猜下一个是什么？",seq:[{t:"circle",c:COL.pink},{t:"square",c:COL.blue},{t:"circle",c:COL.pink},{t:"square",c:COL.blue}],options:[{t:"circle",c:COL.pink},{t:"square",c:COL.blue},{t:"triangle",c:COL.green},{t:"star",c:COL.yellow}],answer:0},
- {type:"pattern",prompt:"图形颜色有规律，下一个是？",seq:[{t:"star",c:COL.yellow},{t:"star",c:COL.pink},{t:"star",c:COL.yellow},{t:"star",c:COL.pink}],options:[{t:"star",c:COL.yellow},{t:"star",c:COL.pink},{t:"star",c:COL.blue},{t:"star",c:COL.green}],answer:0},
- {type:"pattern",prompt:"大小有规律，下一个是？",seq:[{t:"circle",c:COL.green},{t:"circle",c:COL.green},{t:"circle",c:COL.green},{t:"circle",c:COL.green}],options:[{t:"circle",c:COL.green},{t:"square",c:COL.green},{t:"triangle",c:COL.green},{t:"heart",c:COL.green}],answer:0,meta:"size"},
- {type:"match",prompt:"找出和例子一样的图形",target:{t:"star",c:COL.yellow},options:[{t:"circle",c:COL.pink},{t:"star",c:COL.yellow},{t:"square",c:COL.blue},{t:"heart",c:COL.purple}],answer:1},
- {type:"match",prompt:"哪个图形和例子一样？",target:{t:"triangle",c:COL.blue},options:[{t:"triangle",c:COL.blue},{t:"circle",c:COL.blue},{t:"square",c:COL.blue},{t:"star",c:COL.blue}],answer:0},
- {type:"match",prompt:"找出一样的爱心",target:{t:"heart",c:COL.pink},options:[{t:"heart",c:COL.purple},{t:"heart",c:COL.blue},{t:"heart",c:COL.pink},{t:"heart",c:COL.green}],answer:2},
- {type:"compare",prompt:"哪个数字最大？",options:["3","8","5","2"],answer:1},
- {type:"compare",prompt:"哪个数字最小？",options:["6","9","1","4"],answer:2},
- {type:"compare",prompt:"哪个数字最大？",options:["12","7","15","10"],answer:2},
- {type:"order",prompt:"把下面的数从小到大排，第一个是？",options:["2","9","5","7"],answer:0,meta:"min"}
-];
-
 /* ============== 勋章 ============== */
 const BADGES=[
  {id:"pinyin",nm:"拼音小能手",need:"玩拼音游戏 5 次",ic:"M12 2l3 6 6 .8-4.5 4.3 1 6.1L12 21l-5.5 3.2 1-6.1L3 8.8 9 8z"},
  {id:"letters",nm:"字母小天才",need:"玩字母游戏 5 次",ic:"M4 6h16v3H4zM4 11h10v3H4zM4 16h16v3H4z"},
  {id:"poems",nm:"古诗小状元",need:"朗读古诗 8 首",ic:"M6 4h9l3 3v13H6zM9 9h6M9 12h6M9 15h4"},
  {id:"numbers",nm:"数学小神童",need:"做数学题 10 道",ic:"M5 19l7-14 7 14M8 14h8"},
- {id:"logic",nm:"逻辑小达人",need:"做逻辑题 8 道",ic:"M12 3a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4zM12 11v10"},
  {id:"adventure",nm:"闯关小英雄",need:"通关第 1 关",ic:"M3 12l4 4 6-9 4 6 4-5"},
  {id:"collector",nm:"星星收藏家",need:"集满 50 颗星",ic:"M12 2l3 6 6 .8-4.5 4.3 1 6.1L12 21l-5.5 3.2 1-6.1L3 8.8 9 8z"},
  {id:"scholar",nm:"全能小学者",need:"集齐全部勋章",ic:"M3 8l9-4 9 4-9 4zM6 11v5c0 1 3 3 6 3s6-2 6-3v-5"}
@@ -495,7 +466,6 @@ function checkBadges(){
   if(c.letters>=5)give("letters");
   if(c.poems>=8)give("poems");
   if(c.numbers>=10)give("numbers");
-  if(c.logic>=8)give("logic");
   if(state.adv.done.includes(1))give("adventure");
   if(state.stars>=50)give("collector");
   if(BADGES.every(b=>earned.includes(b.id)))give("scholar");
@@ -509,7 +479,6 @@ const ICONS={
   letters:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18L12 5l8 13"/><path d="M8 13h8"/></svg>',
   poems:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>',
   numbers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5a2 2 0 114 0c0 2-4 1.5-4 3.5a2 2 0 004 0"/></svg>',
-  logic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="7" r="2.5"/><circle cx="12" cy="17" r="2.5"/><path d="M8.5 8.8L11 15M15.5 8.8L13 15"/></svg>',
   adventure:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l5 5 5-9 4 6 4-5"/></svg>',
   star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 6.9L12 17.8 5.8 21l1.4-6.9L2 9.3l7-.8z"/></svg>',
   sound:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 010 6"/></svg>',
@@ -533,7 +502,6 @@ const MODULES=[
  {id:"letters",name:"字母乐园",icon:"letters"},
  {id:"poems",name:"古诗花园",icon:"poems"},
  {id:"numbers",name:"数字王国",icon:"numbers"},
- {id:"logic",name:"逻辑挑战",icon:"logic"},
  {id:"adventure",name:"闯关冒险",icon:"adventure"},
  {id:"shop",name:"奖励商店",icon:"gift"}
 ];
@@ -566,7 +534,6 @@ function render(){
   if(current==="letters")return renderLetters();
   if(current==="poems")return renderPoems();
   if(current==="numbers")return renderNumbers();
-  if(current==="logic")return renderLogic();
   if(current==="adventure")return renderAdventure();
   if(current==="shop")return renderShop();
 }
@@ -612,7 +579,7 @@ function renderHome(){
 }
 const MOD_DESC={
   pinyin:"读一读·写一写·玩一玩",letters:"26个字母·大小写配对",poems:"30首古诗·点读朗读",
-  numbers:"数数·加减法·游戏",logic:"找规律·配对·排序",adventure:"综合闯关·赢星星",shop:"用积分换礼物"
+  numbers:"10以内·20以内加减法",adventure:"综合闯关·赢星星",shop:"用积分换礼物"
 };
 
 /* ============== 拼音迷宫 ============== */
@@ -803,9 +770,9 @@ function openPoem(i){
 }
 
 /* ============== 数字王国 ============== */
-let numMode="认知";
+let numMode="10以内加减法";
 function renderNumbers(){
-  const modes=["认知","加减法","数一数"];
+  const modes=["10以内加减法","20以内加减法"];
   C.innerHTML=`
   <div class="topbar"><h1>🔢 数字王国</h1></div>
   <div class="tabs">${modes.map(m=>`<button class="tab${m===numMode?" active":""}" onclick="setNum('${m}')">${m}</button>`).join("")}</div>
@@ -814,34 +781,32 @@ function renderNumbers(){
 }
 function setNum(m){numMode=m;document.querySelectorAll(".tabs .tab").forEach(t=>t.classList.toggle("active",t.textContent===m));document.getElementById("numbody").innerHTML=numBody(m);bindNum(m);}
 function numBody(m){
-  if(m==="认知"){
-    let h=`<div class="grid c6">`;
-    for(let i=0;i<=20;i++){
-      h+=`<div class="lc ${PIN_CLASS[i%5]}" data-n="${i}" style="min-height:96px">
-        <div class="big">${i}</div>
-        <div class="dots" style="max-width:120px;margin:6px auto 0">${dots(i)}</div>
-      </div>`;
-    }
-    return h+`</div>`;
-  }
-  if(m==="加减法"){return `<div class="game" id="calgame"></div>`;}
-  if(m==="数一数"){return `<div class="game" id="countgame"></div>`;}
+  if(m==="10以内加减法"||m==="20以内加减法"){return `<div class="game" id="calgame"></div><div style="text-align:center;color:#9a8aa0;font-size:13px;margin-top:8px">${m==="10以内加减法"?"得数不超过 10":"得数不超过 20"}</div>`;}
 }
 function dots(n){let s="";for(let i=0;i<Math.min(n,20);i++)s+=`<span class="dot"></span>`;return s;}
 function bindNum(m){
-  if(m==="认知"){document.querySelectorAll('[data-n]').forEach(el=>el.onclick=()=>speak(CN[+el.dataset.n],"zh-CN"));return;}
-  if(m==="加减法")return calRound();
-  if(m==="数一数")return countRound();
+  if(m==="10以内加减法")return calRound(10);
+  if(m==="20以内加减法")return calRound(20);
 }
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-function calRound(){
+function calRound(max){
   startQ();
   const add=Math.random()<0.5;
   let a,b,ans,sign;
-  if(add){a=rnd(1,9);b=rnd(1,10-a);ans=a+b;sign="+";}
-  else{a=rnd(2,10);b=rnd(1,a);ans=a-b;sign="-";}
+  if(max===10){
+    if(add){a=rnd(1,9);b=rnd(1,10-a);ans=a+b;sign="+";}
+    else{a=rnd(2,10);b=rnd(1,a);ans=a-b;sign="-";}
+  }else{
+    if(add){a=rnd(1,19);b=rnd(1,20-a);ans=a+b;sign="+";}
+    else{a=rnd(2,20);b=rnd(1,a);ans=a-b;sign="-";}
+  }
   const opts=new Set([ans]);
-  while(opts.size<4)opts.add(Math.max(0,ans+rnd(-3,3)));
+  while(opts.size<4){
+    let d=ans+rnd(-5,5);
+    if(d<0)d=Math.abs(d);
+    if(d>max)d=max-Math.abs(rnd(0,3));
+    opts.add(d);
+  }
   const arr=[...opts].sort(()=>Math.random()-0.5);
   document.getElementById("calgame").innerHTML=`
     <div class="qprompt">算一算： <span style="font-size:40px;color:#4FB8FF">${a} ${sign} ${b} = ?</span></div>
@@ -849,63 +814,10 @@ function calRound(){
     <div style="margin-top:14px"><button class="btn ghost" onclick="renderNumbers()">返回</button></div>`;
   document.querySelectorAll("#calopt button").forEach(b=>b.onclick=()=>{
     if(b.dataset.done)return;b.dataset.done="1";
-    if(+b.dataset.v===ans){b.classList.add("correct");reward({mod:"numbers",pBase:3,pPerfect:6});setTimeout(()=>setNum("加减法"),1000);}
+    if(+b.dataset.v===ans){b.classList.add("correct");reward({mod:"numbers",pBase:3,pPerfect:6});setTimeout(()=>setNum(numMode),1000);}
     else{b.classList.add("wrong");wrongTap();toast("再算算～");b.dataset.done="";}
   });
 }
-function countRound(){
-  startQ();
-  const n=rnd(1,10);
-  const opts=new Set([n]);
-  while(opts.size<4)opts.add(rnd(1,10));
-  const arr=[...opts].sort(()=>Math.random()-0.5);
-  document.getElementById("countgame").innerHTML=`
-    <div class="qprompt">数一数，有几个圆点？</div>
-    <div class="dots">${dots(n)}</div>
-    <div class="opt" id="copt">${arr.map(o=>`<button data-v="${o}">${o}</button>`).join("")}</div>
-    <div style="margin-top:14px"><button class="btn ghost" onclick="renderNumbers()">返回</button></div>`;
-  document.querySelectorAll("#copt button").forEach(b=>b.onclick=()=>{
-    if(b.dataset.done)return;b.dataset.done="1";
-    if(+b.dataset.v===n){b.classList.add("correct");reward({mod:"numbers",pBase:3,pPerfect:6});setTimeout(()=>setNum("数一数"),1000);}
-    else{b.classList.add("wrong");wrongTap();toast("再数一次～");b.dataset.done="";}
-  });
-}
-
-/* ============== 逻辑挑战 ============== */
-function renderLogic(){
-  C.innerHTML=`
-  <div class="topbar"><h1>🧩 逻辑挑战</h1>
-    <div class="pill" style="margin-left:auto">${ICONS.star} 答对得星星</div></div>
-  <div class="game" id="logicbody"></div>`;
-  logicRound();
-}
-function logicRound(){
-  const q=LOGIC[Math.floor(Math.random()*LOGIC.length)];
-  let seqHtml="";
-  if(q.type==="pattern"){seqHtml=`<div class="seq">${q.seq.map(s=>`<div class="slot">${shape(s.t,s.c)}</div>`).join("")}<div class="slot qm">?</div></div>`;}
-  else if(q.type==="match"){seqHtml=`<div class="seq"><div class="slot" style="border:3px solid ${q.target.c}">${shape(q.target.t,q.target.c)}</div><div class="slot qm">=</div></div>`;}
-  else if(q.type==="compare"||q.type==="order"){seqHtml="";}
-  const optHtml=q.type==="compare"||q.type==="order"
-    ? q.options.map(o=>`<button data-v="${o}">${o}</button>`).join("")
-    : q.options.map(o=>`<button data-sh="${JSON.stringify(o)}">${shape(o.t,o.c)}</button>`).join("");
-  document.getElementById("logicbody").innerHTML=`
-    <div class="qprompt">${q.prompt}</div>
-    ${seqHtml}
-    <div class="opt" id="lopt">${optHtml}</div>
-    <div style="margin-top:16px"><button class="btn ghost" onclick="renderLogic()">返回</button></div>`;
-  let done_lo=false;
-  document.querySelectorAll("#lopt button").forEach(b=>{
-    b.onclick=()=>{
-      if(done_lo)return;
-      let ok=false;
-      if(q.type==="compare"||q.type==="order")ok=(b.dataset.v===q.options[q.answer]);
-      else ok=(JSON.stringify(JSON.parse(b.dataset.sh))===JSON.stringify(q.options[q.answer]));
-      if(ok){done_lo=true;b.classList.add("correct");reward({mod:"logic",pBase:3,pPerfect:6});setTimeout(renderLogic,1000);}
-      else{b.classList.add("wrong");wrongTap();toast("想一想～");}
-    };
-  });
-}
-
 /* ============== 闯关冒险 ============== */
 function renderAdventure(){
   const a=state.adv;
@@ -945,13 +857,11 @@ function startAdv(){
 }
 function buildRound(){
   // 5 道混合题
-  const qTypes=["py","letter","cal","logic","count"];
+  const qTypes=["py","letter","cal"];
   return qTypes.map(t=>{
     if(t==="py"){const all=[];Object.values(PINYIN).forEach(a=>a.forEach(x=>all.push(x)));const r=all[Math.floor(Math.random()*all.length)];const opts=new Set([r]);while(opts.size<4)opts.add(all[Math.floor(Math.random()*all.length)]);return{type:"py",right:r,opts:[...opts].sort(()=>Math.random()-.5)};}
     if(t==="letter"){const L=LETTERS[Math.floor(Math.random()*LETTERS.length)];const opts=new Set([L]);while(opts.size<4)opts.add(LETTERS[Math.floor(Math.random()*LETTERS.length)]);return{type:"letter",right:L,opts:[...opts].sort(()=>Math.random()-.5)};}
     if(t==="cal"){const add=Math.random()<.5;let a,b,ans,sign;if(add){a=rnd(1,9);b=rnd(1,10-a);ans=a+b;sign="+";}else{a=rnd(2,10);b=rnd(1,a);ans=a-b;sign="-";}const opts=new Set([ans]);while(opts.size<4)opts.add(Math.max(0,ans+rnd(-3,3)));return{type:"cal",a,b,sign,ans,opts:[...opts].sort(()=>Math.random()-.5)};}
-    if(t==="logic"){return{type:"logic",q:LOGIC[Math.floor(Math.random()*LOGIC.length)]};}
-    if(t==="count"){const n=rnd(1,10);const opts=new Set([n]);while(opts.size<4)opts.add(rnd(1,10));return{type:"count",n,opts:[...opts].sort(()=>Math.random()-.5)};}
   });
 }
 function advRound(){
@@ -971,17 +881,6 @@ function advRound(){
     body.innerHTML=`<div class="qprompt">${r.a} ${r.sign} ${r.b} = ?</div>
       <div class="opt" id="ao">${r.opts.map(o=>`<button data-p="${o}">${o}</button>`).join("")}</div>`;
     bindAdv("#ao",b=>+b.dataset.p===r.ans);
-  }else if(r.type==="logic"){
-    const q=r.q;let seq="";
-    if(q.type==="pattern")seq=`<div class="seq">${q.seq.map(s=>`<div class="slot">${shape(s.t,s.c)}</div>`).join("")}<div class="slot qm">?</div></div>`;
-    else if(q.type==="match")seq=`<div class="seq"><div class="slot" style="border:3px solid ${q.target.c}">${shape(q.target.t,q.target.c)}</div><div class="slot qm">=</div></div>`;
-    const optHtml=(q.type==="compare"||q.type==="order")?q.options.map(o=>`<button data-v="${o}">${o}</button>`).join(""):q.options.map(o=>`<button data-sh="${JSON.stringify(o)}">${shape(o.t,o.c)}</button>`).join("");
-    body.innerHTML=`<div class="qprompt">${q.prompt}</div>${seq}<div class="opt" id="ao">${optHtml}</div>`;
-    bindAdv("#ao",b=>{if(q.type==="compare"||q.type==="order")return b.dataset.v===q.options[q.answer];return JSON.stringify(JSON.parse(b.dataset.sh))===JSON.stringify(q.options[q.answer]);});
-  }else if(r.type==="count"){
-    body.innerHTML=`<div class="qprompt">数一数有几个？</div><div class="dots">${dots(r.n)}</div>
-      <div class="opt" id="ao">${r.opts.map(o=>`<button data-p="${o}">${o}</button>`).join("")}</div>`;
-    bindAdv("#ao",b=>+b.dataset.p===r.n);
   }
 }
 function bindAdv(sel,check){
@@ -1083,67 +982,42 @@ function addPrize(){
 function delPrize(i){state.shop.splice(i,1);save("shop",state.shop);openShopManage();}
 
 
-/* ============== 写字板（标准拼音笔顺） ============== */
-const STROKE_GRID=200;
-const STROKE_MARGIN=0.85;
-function strokeForChar(ch){
-  const d=STROKE_DATA[ch];
-  if(d)return d;
-  // fallback 简单笔画
-  return {guide:"跟着数字顺序写哦！",strokes:[{path:"M 70 80 L 130 150",num:[100,115]}]};
+/* ============== 写字板：上方笔顺大图 + 下方描红 ============== */
+function strokeTip(ch){return (STROKE_TIPS[ch]||{guide:"跟着笔顺描一描",nums:[]});}
+function renderStrokeDiagram(ch){
+  const tip=strokeTip(ch);
+  const nums=tip.nums;
+  let circles=nums.map(([x,y],i)=>{
+    const n=i+1;
+    return `<circle cx="${x}" cy="${y}" r="14" fill="#fff" stroke="#A98BF5" stroke-width="2.5"/><text x="${x}" y="${y+1}" text-anchor="middle" dominant-baseline="middle" fill="#7A4E86" font-size="15" font-weight="bold">${n}</text>`;
+  }).join("");
+  // 上二线、基线虚线
+  const lines=`<line x1="10" y1="34" x2="190" y2="34" stroke="#E0D6F0" stroke-width="1.5" stroke-dasharray="6,6"/><line x1="10" y1="92" x2="190" y2="92" stroke="#E0D6F0" stroke-width="1.5" stroke-dasharray="6,6"/>`;
+  return `<svg class="stroke-diagram" viewBox="0 0 200 120">${lines}<text x="100" y="86" text-anchor="middle" font-size="82" font-family="'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" fill="#C8B8E8" font-weight="600">${ch}</text>${circles}</svg>`;
 }
-function getStrokes(txt,w,h){
-  const cellW=w/txt.length;
-  const scale=Math.min(cellW,h)/STROKE_GRID*STROKE_MARGIN;
-  const offsetY=(h-STROKE_GRID*scale)/2;
-  const out=[];
-  for(let i=0;i<txt.length;i++){
-    const ch=txt[i];
-    const d=strokeForChar(ch);
-    const offsetX=i*cellW+(cellW-STROKE_GRID*scale)/2;
-    d.strokes.forEach((s,idx)=>{
-      out.push({
-        ch,chIdx:i,strokeIdx:idx,
-        d:s.path,
-        num:[offsetX+s.num[0]*scale, offsetY+s.num[1]*scale],
-        ox:offsetX, oy:offsetY, scale,
-        desc:s.desc||(d.strokes.length>1?"第"+(idx+1)+"笔":"一笔写成")
-      });
-    });
-  }
-  return out;
-}
-function pathPoints(d){
-  const ns="http://www.w3.org/2000/svg";
-  const p=document.createElementNS(ns,"path");
-  p.setAttribute("d",d);
-  const len=p.getTotalLength();
-  return {len, get:t=>p.getPointAtLength(Math.max(0,Math.min(len,t)))};
-}
-let padCtx=null,padDrawing=false,padAnim=null,padTxt="",padStrokes=[];
+let padCtx=null,padDrawing=false,padTxt="";
 function openTracing(txt){
-  padTxt=txt;
-  const d=strokeForChar(txt.length===1?txt:txt[0]);
+  padTxt=txt.length===1?txt:txt[0];
+  const tip=strokeTip(padTxt);
   showModal(`
-    <h3>✏️ 描红写一写：${txt}</h3>
-    <div class="trace-tip">${d.guide} 数字 1、2、3… 是笔顺哦</div>
+    <h3>✏️ 描红写一写：${padTxt}</h3>
+    <div class="trace-tip">${tip.guide}</div>
+    <div class="stroke-diagram-wrap">${renderStrokeDiagram(padTxt)}</div>
     <canvas id="pad"></canvas>
     <div class="row" style="justify-content:center">
-      <button class="btn yellow" onclick="traceDemo('${txt}')">👀 看示范</button>
       <button class="btn" onclick="clearPad()">清除</button>
       <button class="btn ghost" onclick="closeModal()">完成</button>
     </div>`);
-  initPad(txt);
+  initPad(padTxt);
 }
-function initPad(txt){
+function initPad(ch){
   const cv=document.getElementById("pad");if(!cv)return;
   const rect=cv.getBoundingClientRect();
-  const w=Math.max(260,rect.width||320),h=220;
+  const w=Math.max(260,rect.width||320),h=200;
   cv.width=w*2;cv.height=h*2;
   const ctx=cv.getContext("2d");ctx.setTransform(2,0,0,2,0,0);
   padCtx=ctx;
-  padStrokes=getStrokes(txt,w,h);
-  drawGuide(txt,new Set());
+  drawPadGray(ch);
   const pos=e=>{const r=cv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};};
   const start=e=>{e.preventDefault();cancelAnim();padDrawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);};
   const move=e=>{if(!padDrawing)return;e.preventDefault();const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();};
@@ -1151,84 +1025,26 @@ function initPad(txt){
   cv.addEventListener("mousedown",start);cv.addEventListener("mousemove",move);window.addEventListener("mouseup",end);
   cv.addEventListener("touchstart",start,{passive:false});cv.addEventListener("touchmove",move,{passive:false});cv.addEventListener("touchend",end);
 }
-function drawGuide(txt,done){
+function drawPadGray(ch){
   const ctx=padCtx;const cv=document.getElementById("pad");if(!ctx||!cv)return;
   const w=cv.width/2,h=cv.height/2;
   ctx.clearRect(0,0,w,h);
-  // 浅灰色虚线：上二线、基线
-  ctx.save();
-  ctx.strokeStyle="#E0D6F0";ctx.lineWidth=1.5;ctx.setLineDash([6,6]);
-  const topY=padStrokes[0]?padStrokes[0].oy+STROKE_GRID*padStrokes[0].scale*0.30:(h-160)/2+48;
-  const baseY=padStrokes[0]?padStrokes[0].oy+STROKE_GRID*padStrokes[0].scale*0.80:(h-160)/2+160;
+  // 虚线格
+  ctx.save();ctx.strokeStyle="#E0D6F0";ctx.lineWidth=1.5;ctx.setLineDash([6,6]);
+  const topY=h*0.30,baseY=h*0.78;
   ctx.beginPath();ctx.moveTo(0,topY);ctx.lineTo(w,topY);ctx.stroke();
   ctx.beginPath();ctx.moveTo(0,baseY);ctx.lineTo(w,baseY);ctx.stroke();
   ctx.restore();
-  // 灰色描红路径
-  padStrokes.forEach((s,i)=>{
-    ctx.save();
-    ctx.translate(s.ox,s.oy);ctx.scale(s.scale,s.scale);
-    const p=new Path2D(s.d);
-    ctx.lineWidth=18/s.scale;ctx.lineCap="round";ctx.lineJoin="round";
-    ctx.strokeStyle="#C8B8E8";ctx.stroke(p);
-    ctx.restore();
-  });
-  // 数字笔顺标记
-  padStrokes.forEach((s,i)=>{
-    const n=i+1;const x=s.num[0],y=s.num[1];
-    ctx.beginPath();ctx.arc(x,y,15,0,7);
-    ctx.fillStyle=done.has(n)?"#4FD38A":"#fff";ctx.fill();
-    ctx.lineWidth=2.5;ctx.strokeStyle=done.has(n)?"#2faf6a":"#A98BF5";ctx.stroke();
-    ctx.fillStyle=done.has(n)?"#fff":"#7A4E86";ctx.font="bold 16px sans-serif";ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.fillText(n,x,y);
-  });
+  // 灰色大字描红
+  ctx.save();
+  ctx.fillStyle="#E7DEFB";
+  ctx.textAlign="center";ctx.textBaseline="alphabetic";
+  ctx.font=`600 ${Math.min(w,h)*0.78}px "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif`;
+  ctx.fillText(ch,w/2,baseY+4);
+  ctx.restore();
 }
-function cancelAnim(){if(padAnim){cancelAnimationFrame(padAnim);padAnim=null;}}
-function traceDemo(txt){
-  const cv=document.getElementById("pad");if(!cv||!padCtx||!padStrokes.length)return;
-  cancelAnim();
-  const ctx=padCtx;const done=new Set();
-  let idx=0;
-  function step(){
-    if(idx>=padStrokes.length){padAnim=null;toast("示范完成，轮到你啦！");return;}
-    const s=padStrokes[idx];
-    const info=pathPoints(s.d);
-    const dur=Math.max(500,info.len*4);
-    const t0=performance.now();
-    function anim(){
-      const t=Math.min(1,(performance.now()-t0)/dur);
-      drawGuide(txt,done);
-      // 已完成的描成粉色
-      ctx.save();ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#FF7FA9";ctx.lineWidth=10;
-      for(let k=0;k<idx;k++){
-        const ps=padStrokes[k];ctx.save();ctx.translate(ps.ox,ps.oy);ctx.scale(ps.scale,ps.scale);
-        ctx.stroke(new Path2D(ps.d));ctx.restore();
-      }
-      ctx.restore();
-      // 当前进度：采样点画到当前位置
-      ctx.save();ctx.translate(s.ox,s.oy);ctx.scale(s.scale,s.scale);
-      ctx.beginPath();ctx.strokeStyle="#FF7FA9";ctx.lineWidth=10;ctx.lineCap="round";ctx.lineJoin="round";
-      const samples=Math.max(2,Math.floor(40*t));
-      for(let j=0;j<=samples;j++){
-        const pt=info.get((j/40)*info.len);
-        if(j===0)ctx.moveTo(pt.x,pt.y);else ctx.lineTo(pt.x,pt.y);
-      }
-      ctx.stroke();
-      // 笔尖
-      const cur=info.get(t*info.len);
-      ctx.beginPath();ctx.arc(cur.x,cur.y,7,0,7);ctx.fillStyle="#fff";ctx.fill();
-      ctx.lineWidth=2.5;ctx.strokeStyle="#FF7FA9";ctx.stroke();
-      ctx.restore();
-      if(t<1){padAnim=requestAnimationFrame(anim);}
-      else{done.add(idx+1);idx++;padAnim=requestAnimationFrame(()=>setTimeout(step,220));}
-    }
-    padAnim=requestAnimationFrame(anim);
-  }
-  step();
-}
-function clearPad(){
-  if(!padCtx)return;cancelAnim();
-  drawGuide(padTxt,new Set());
-}
+function cancelAnim(){}
+function clearPad(){if(!padCtx)return;drawPadGray(padTxt);}
 
 function openSettings(){
   showModal(`
@@ -1289,7 +1105,7 @@ function clearAll(){
   localStorage.removeItem(PREFIX+"stars");localStorage.removeItem(PREFIX+"counts");localStorage.removeItem(PREFIX+"badges");
   localStorage.removeItem(PREFIX+"adv");localStorage.removeItem(PREFIX+"today");
   localStorage.removeItem(PREFIX+"points");localStorage.removeItem(PREFIX+"shop");
-  state={stars:0,counts:{pinyin:0,letters:0,poems:0,numbers:0,logic:0,adventure:0},badges:[],sound:state.sound,today:{date:"",n:0},adv:{level:1,score:0,q:0,done:[]},pin:state.pin,points:0,shop:DEFAULT_SHOP};
+  state={stars:0,counts:{pinyin:0,letters:0,poems:0,numbers:0,adventure:0},badges:[],sound:state.sound,today:{date:"",n:0},adv:{level:1,score:0,q:0,done:[]},pin:state.pin,points:0,shop:DEFAULT_SHOP};
   refreshStars();updatePointsUI();buildNav();toast("已清空");closeModal();render();
 }
 
