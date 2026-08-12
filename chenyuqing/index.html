@@ -271,6 +271,52 @@ body{
 }
 .stroke-diagram-wrap{text-align:center;margin:8px 0 12px;}
 .stroke-diagram{width:100%;max-width:320px;height:auto;background:#fff;border-radius:16px;box-shadow:var(--shadow);}
+/* ============== 宠物乐园 ============== */
+.pet-tabs{display:flex;gap:8px;margin:6px 0 12px}
+.pet-tab{flex:1;padding:12px 4px;border:none;border-radius:14px;background:#fff;color:#7A4E86;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(180,140,220,.12)}
+.pet-tab.on{background:linear-gradient(135deg,#FF9EC4,#A98BF5);color:#fff}
+.sign-card{text-align:center;padding:20px}
+.flame{font-size:54px;line-height:1}
+.flame.off{filter:grayscale(1) opacity(.45)}
+.sign-streak{font-size:20px;font-weight:800;margin:10px 0 6px}
+.sign-tip{color:#7A4E86;font-size:14px;line-height:1.6;margin-bottom:14px}
+.sign-done{color:#4FD38A;font-weight:800;font-size:16px;margin:8px 0}
+.makeup{margin-top:10px;color:#9a8aa0;font-size:13px}
+.btn.big{padding:16px;font-size:18px;width:100%;margin-top:6px}
+.pet-card{text-align:center;padding:18px}
+.pet-stage{display:inline-block;background:#FFF0F7;color:#E0568F;font-weight:800;padding:6px 14px;border-radius:14px;font-size:14px}
+.pet-img-wrap{position:relative;width:170px;height:170px;margin:14px auto 6px}
+.pet-img{width:100%;height:100%;object-fit:contain;border-radius:24px}
+.pet-glow{position:absolute;inset:-12px;border-radius:34px;z-index:-1;filter:blur(10px);opacity:.55}
+.pet-costume{position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:64px;height:64px}
+.pet-name{font-weight:800;font-size:18px;color:#5A3E6E}
+.companions{display:flex;gap:8px;justify-content:center;margin:10px 0}
+.comp{width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(180,140,220,.18);padding:5px}
+.comp svg{width:100%;height:100%}
+.mood-row{font-size:15px;margin:6px 0}
+.hunger-bar{height:16px;background:#EFE7F7;border-radius:9px;overflow:hidden;margin:6px 0}
+.hunger-fill{height:100%;border-radius:9px;transition:width .4s}
+.hunger-label{font-size:13px;color:#9a8aa0;margin-bottom:10px}
+.gacha-tip-big{font-size:18px;font-weight:800;text-align:center}
+.gacha-sub{color:#7A4E86;font-size:14px;text-align:center;margin:8px 0 14px;line-height:1.6}
+.album-title{font-weight:800;color:#5A3E6E;margin:16px 0 8px;text-align:center}
+.album-item{background:#fff;border-radius:14px;padding:10px 4px;text-align:center;box-shadow:0 2px 8px rgba(180,140,220,.12);cursor:pointer;opacity:.5;border:3px solid transparent}
+.album-item.got{opacity:1}
+.album-item.on{border-color:#FF9EC4}
+.ai-ic{width:40px;height:40px;margin:0 auto}
+.ai-ic svg{width:100%;height:100%}
+.qm{font-size:26px;color:#ccc;font-weight:800}
+.ai-nm{font-size:11px;color:#7A4E86;margin-top:4px}
+.gacha-box{width:130px;height:130px;margin:10px auto;border-radius:22px;background:linear-gradient(135deg,#FFD86B,#FF9EC4);display:flex;align-items:center;justify-content:center;font-size:60px;box-shadow:0 6px 18px rgba(255,140,200,.4)}
+.gacha-box.shake{animation:gachaShake .5s ease-in-out infinite}
+@keyframes gachaShake{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.06)}}
+.gacha-pop{text-align:center;padding:10px}
+.gacha-tip{color:#7A4E86;margin-top:8px}
+.gacha-result{text-align:center}
+.gr-title{font-size:24px;font-weight:800;color:#E0568F;margin:10px 0 4px}
+.gr-sub{color:#7A4E86;font-size:15px;margin-bottom:8px}
+.gr-new{display:inline-block;background:#FFE9A8;color:#B8860B;font-weight:800;padding:4px 12px;border-radius:12px;margin-bottom:12px}
+.sign-modal{text-align:center;padding:10px}
 </style>
 </head>
 <body>
@@ -313,6 +359,7 @@ const DEFAULT_SHOP=[
   {n:"买一个小玩具",c:120,i:"toy"}
 ];
 const SHOP_ICON_KEYS=["gift","tv","cookie","tablet","park","toy","game","star2","book"];
+const DEF_PET={growth:0,level:1,fedToday:false,hunger:0,lastFed:"",equipped:{skin:null,costume:null,companions:[]},name:"小彩虹"};
 let state={
   stars:load("stars",0),
   counts:load("counts",{pinyin:0,letters:0,poems:0,numbers:0,adventure:0}),
@@ -322,8 +369,12 @@ let state={
   adv:load("adv",{level:1,score:0,q:0,done:[]}),
   pin:load("pin","1234"),
   points:load("points",0),
-  shop:load("shop",DEFAULT_SHOP)
+  shop:load("shop",DEFAULT_SHOP),
+  pet:load("pet",JSON.parse(JSON.stringify(DEF_PET))),
+  checkin:load("checkin",{last:"",streak:0,tickets:0,makeup:0}),
+  album:load("album",[])
 };
+let UNICORN_SRC="";
 function todayKey(){const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
 function addStars(n){
   state.stars+=n;
@@ -331,6 +382,7 @@ function addStars(n){
   if(state.today.date!==k){state.today={date:k,n:0};}
   state.today.n+=n;
   save("stars",state.stars);save("today",state.today);
+  state.pet.growth+=n;save("pet",state.pet);
   checkBadges();refreshStars();
 }
 function bump(mod){state.counts[mod]=(state.counts[mod]||0)+1;save("counts",state.counts);checkBadges();}
@@ -494,7 +546,10 @@ const ICONS={
   toy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="9" cy="11" r="1.5" fill="currentColor"/><circle cx="15" cy="11" r="1.5" fill="currentColor"/><path d="M9 15c1.5 1 3 1 4.5 0"/><circle cx="18" cy="7" r="2" fill="currentColor"/><path d="M17 8l-2 2"/></svg>',
   game:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="4"/><path d="M7 12h4M9 10v4M15 12h0M17 11v2"/></svg>',
   star2:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.5 7 7.5 1-5.5 5 1.5 7.5L12 18l-7 4.5 1.5-7.5L1 10l7.5-1z"/></svg>',
-  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a4 4 0 014-4h10v14H8a4 4 0 00-4 4V6z"/><path d="M20 6v14"/></svg>'
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a4 4 0 014-4h10v14H8a4 4 0 00-4 4V6z"/><path d="M20 6v14"/></svg>',
+  paw:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="10" r="2.4"/><circle cx="10" cy="6.5" r="2.4"/><circle cx="14" cy="6.5" r="2.4"/><circle cx="18" cy="10" r="2.4"/><path d="M12 12c-3.2 0-6 2.4-6 5.2 0 1.6 1.4 2.8 3 2.8 1 0 1.6-.4 2-.9.5.5 1.1.9 2.1.9 1 0 1.6-.4 2-.9.5.5 1.1.9 2.1.9 1.6 0 3-1.2 3-2.8 0-2.8-2.8-5.2-6-5.2z"/></svg>',
+  flame:'<svg viewBox="0 0 24 24" fill="#FF7A3C"><path d="M12 2c2 3-1 5 1 7 1.6 1.6 1 4-1 4 2 2 5 1 5 5a6 6 0 11-12 0c0-4 4-6 5-9 .6-1.8 1.4-4 1-7z"/></svg>',
+  ticket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 000 4v3H4v-3a2 2 0 000-4z"/><path d="M14 7v10" stroke-dasharray="2 2"/></svg>'
 };
 const MODULES=[
  {id:"home",name:"我的乐园",icon:"home"},
@@ -503,7 +558,7 @@ const MODULES=[
  {id:"poems",name:"古诗花园",icon:"poems"},
  {id:"numbers",name:"数字王国",icon:"numbers"},
  {id:"adventure",name:"闯关冒险",icon:"adventure"},
- {id:"shop",name:"奖励商店",icon:"gift"}
+ {id:"shop",name:"宠物乐园",icon:"paw"}
 ];
 let current="home";
 function buildNav(){
@@ -561,7 +616,7 @@ function renderHome(){
     <div class="stat"><div class="n">${earned}/${BADGES.length}</div><div class="l">勋章墙 🏅</div></div>
     <div class="stat"><div class="n">${state.adv.level}</div><div class="l">闯关层数 🚩</div></div>
   </div>
-  <div class="rule-banner">🪙 答对得 <b>3 分</b>，一次就对得 <b>6 分（完美）</b>！积分可以在「奖励商店」换礼物哦～</div>
+  <div class="rule-banner">🪙 答对得 <b>3 分</b>，一次就对得 <b>6 分（完美）</b>！积分可以喂养「我的宠物」，连续签到还能抽盲盒🎁</div>
   <div class="module-title">${ICONS.star} 去玩什么？</div>
   <div class="module-cards">
     ${MODULES.filter(m=>m.id!=="home").map(m=>`
@@ -572,14 +627,15 @@ function renderHome(){
       </div>`).join("")}
   </div>
   <div style="margin-top:18px;display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap">
-    <button class="btn yellow" onclick="go('shop')">🎁 奖励商店</button>
+    <button class="btn yellow" onclick="go('shop')">🐾 我的宠物乐园</button>
     <button class="btn ghost" onclick="openSettings()">${ICONS.gear} 家长设置</button>
   </div>`;
   C.querySelectorAll(".mcard").forEach(el=>el.onclick=()=>go(el.dataset.g));
+  try{UNICORN_SRC=document.querySelector(".mascot").src;}catch(e){}
 }
 const MOD_DESC={
   pinyin:"读一读·写一写·玩一玩",letters:"26个字母·大小写配对",poems:"30首古诗·点读朗读",
-  numbers:"10以内·20以内加减法",adventure:"综合闯关·赢星星",shop:"用积分换礼物"
+  numbers:"10以内·20以内加减法",adventure:"综合闯关·赢星星",shop:"养宠物·签到抽盲盒"
 };
 
 /* ============== 拼音迷宫 ============== */
@@ -913,35 +969,221 @@ function finishAdv(){
 }
 
 /* ============== 奖励商店 ============== */
-function renderShop(){
-  const items=state.shop;
-  C.innerHTML=`
-  <div class="topbar"><h1>🎁 奖励商店</h1>
-    <div class="pill" style="margin-left:auto">🪙 <span class="pointsnum">${state.points}</span> 分</div></div>
-  <div class="rule-banner">用积分换喜欢的奖励吧！积分靠「答对题、完美通关」获得，<b>一次就对最划算</b>～</div>
-  <div class="grid c2" id="shopgrid"></div>
-  <div style="margin-top:16px;text-align:center;color:#9a8aa0;font-size:14px">礼物不够？让爸爸妈妈在「家长设置」里添加哦 💡</div>`;
-  const g=document.getElementById("shopgrid");
-  if(!items.length){g.innerHTML=`<div class="card" style="text-align:center;color:#9a8aa0">还没有奖励，请家长去设置里添加～</div>`;return;}
-  items.forEach((it,idx)=>{
-    const can=state.points>=it.c;
-    const iconKey=it.i||"gift";
-    const svg=ICONS[iconKey]||ICONS.gift;
-    const el=document.createElement("div");
-    el.className="shop-item"+(can?" can":"");
-    el.innerHTML=`<div class="si-emoji">${svg}</div><div class="si-name">${it.n}</div><div class="si-cost">🪙 ${it.c} 分</div>
-      <button class="btn ${can?"":"ghost"}" ${can?"":"disabled style='opacity:.5;cursor:not-allowed'"} onclick="redeem(${idx})">${can?"兑换":"积分不够"}</button>`;
-    g.appendChild(el);
-  });
+/* ============== 宠物乐园 / 签到 / 抽盲盒 ============== */
+const PET_ITEMS={
+  skin_star:{kind:"skin",name:"星空皮肤",color:"#6C5CE7",icon:"skin",desc:"宠物披上星空外衣✨"},
+  skin_candy:{kind:"skin",name:"糖果皮肤",color:"#FF7FA9",icon:"skin",desc:"甜甜的糖果色"},
+  skin_ocean:{kind:"skin",name:"海洋皮肤",color:"#4FB8FF",icon:"skin",desc:"清凉海洋蓝"},
+  costume_crown:{kind:"costume",name:"小皇冠",icon:"crown",desc:"戴上皇冠像小公主"},
+  costume_bow:{kind:"costume",name:"蝴蝶结",icon:"bow",desc:"粉粉的蝴蝶结"},
+  costume_wand:{kind:"costume",name:"魔法杖",icon:"wand",desc:"挥一挥变魔法"},
+  friend_star:{kind:"friend",name:"小星星伙伴",icon:"starfriend",desc:"陪你一起发光"},
+  friend_cloud:{kind:"friend",name:"小云朵伙伴",icon:"cloud",desc:"软软的云朵"},
+  friend_rabbit:{kind:"friend",name:"小兔子伙伴",icon:"rabbit",desc:"蹦蹦跳跳好朋友"},
+  friend_dino:{kind:"friend",name:"小恐龙伙伴",icon:"dino",desc:"勇敢的小恐龙"}
+};
+const GACHA=[
+  {id:"points",w:30,type:"points",val:20},
+  {id:"makeup",w:10,type:"makeup"},
+  {id:"skin_star",w:7,type:"item"},{id:"skin_candy",w:7,type:"item"},{id:"skin_ocean",w:7,type:"item"},
+  {id:"costume_crown",w:6,type:"item"},{id:"costume_bow",w:6,type:"item"},{id:"costume_wand",w:5,type:"item"},
+  {id:"friend_star",w:4,type:"item"},{id:"friend_cloud",w:4,type:"item"},{id:"friend_rabbit",w:4,type:"item"},{id:"friend_dino",w:3,type:"item"}
+];
+const EGG_SVG='<svg viewBox="0 0 120 150"><ellipse cx="60" cy="84" rx="46" ry="58" fill="#FFF3C4" stroke="#FFD86B" stroke-width="4"/><circle cx="44" cy="74" r="7" fill="#FFC1D8"/><circle cx="74" cy="92" r="9" fill="#BFE3FF"/><circle cx="58" cy="110" r="6" fill="#FFD1A6"/><path d="M38 56 L48 64 L58 54 L68 66 L82 54" fill="none" stroke="#E0A0C0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+const FALLBACK_UNICORN='<svg viewBox="0 0 120 120"><path d="M30 90 Q30 50 60 50 Q92 50 92 92 L92 104 L80 104 L80 92 Q80 64 60 64 Q42 64 42 92 L42 104 L30 104 Z" fill="#FFD1E8" stroke="#E085B6" stroke-width="3"/><path d="M60 50 L60 26" stroke="#E085B6" stroke-width="4" stroke-linecap="round"/><path d="M60 30 L72 20 L62 32 Z" fill="#FFC83C"/><circle cx="52" cy="78" r="3" fill="#5A3E6E"/><circle cx="68" cy="78" r="3" fill="#5A3E6E"/></svg>';
+function ymdToDate(s){const p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
+function daysBetween(a,b){return Math.round((ymdToDate(b)-ymdToDate(a))/86400000);}
+function addDays(s,n){const d=ymdToDate(s);d.setDate(d.getDate()+n);return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+function petLevel(){const g=state.pet.growth;if(g<10)return 1;if(g<30)return 2;if(g<70)return 3;return 4;}
+function petStageName(l){return ["蛋宝宝","破壳幼崽","成长独角兽","闪耀独角兽"][l-1];}
+function computeHunger(){
+  const tk=todayKey();
+  if(state.pet.lastFed!==tk){
+    state.pet.fedToday=false;
+    if(state.pet.lastFed){state.pet.hunger=Math.min(100,state.pet.hunger+daysBetween(state.pet.lastFed,tk)*35);}
+    else{state.pet.hunger=Math.min(100,state.pet.hunger+35);}
+    save("pet",state.pet);
+  }
 }
+function itemIcon(key){
+  const m={
+    crown:'<svg viewBox="0 0 24 24" fill="#FFC83C" stroke="#E0A200" stroke-width="1.4" stroke-linejoin="round"><path d="M3 8l4 4 5-7 5 7 4-4v9H3z"/><circle cx="12" cy="6" r="1.4" fill="#FF7FA9"/></svg>',
+    bow:'<svg viewBox="0 0 24 24" fill="#FF8FBF" stroke="#E85CA0" stroke-width="1.2"><path d="M12 12L4 7v10zM12 12l8-5v10z"/><circle cx="12" cy="12" r="2.4" fill="#E85CA0"/></svg>',
+    wand:'<svg viewBox="0 0 24 24" fill="none" stroke="#A98BF5" stroke-width="2" stroke-linecap="round"><path d="M5 19L16 8"/><path d="M15 5l1.2 2.8L19 9l-2.8 1.2L15 13l-1.2-2.8L11 9l2.8-1.2z" fill="#FFC83C" stroke="#E0A200"/></svg>',
+    starfriend:'<svg viewBox="0 0 24 24" fill="#FFC83C" stroke="#E0A200" stroke-width="1"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 6.9L12 17.8 5.8 21l1.4-6.9L2 9.3l7-.8z"/></svg>',
+    cloud:'<svg viewBox="0 0 24 24" fill="#CFE8FF" stroke="#7FB8E8" stroke-width="1.2"><path d="M7 18a4 4 0 010-8 5 5 0 019-1 3.5 3.5 0 01-1 7z"/></svg>',
+    rabbit:'<svg viewBox="0 0 24 24" fill="#FFF" stroke="#E0A0C0" stroke-width="1.4"><ellipse cx="9" cy="9" rx="2.4" ry="6"/><ellipse cx="15" cy="9" rx="2.4" ry="6"/><circle cx="12" cy="16" r="5"/><circle cx="10.5" cy="15" r=".9" fill="#555"/><circle cx="13.5" cy="15" r=".9" fill="#555"/></svg>',
+    dino:'<svg viewBox="0 0 24 24" fill="#8FE3A8" stroke="#3FB36B" stroke-width="1.3"><path d="M5 19c0-6 3-11 8-11 3 0 4 2 4 4 3 0 3 3 0 3-1 3-3 5-7 5-2 0-3-1-5-1z"/><circle cx="15" cy="11" r="1" fill="#234"/></svg>',
+    skin:'<svg viewBox="0 0 24 24" fill="#A98BF5"><path d="M12 2l4 5-4 15-4-15z"/></svg>'
+  };
+  return m[key]||ICONS.gift;
+}
+let petTab="pet";
+function renderShop(){
+  const tk=todayKey();
+  const signedToday=state.checkin.last===tk;
+  const streak=state.checkin.streak||0;
+  const tickets=state.checkin.tickets||0;
+  C.innerHTML=`
+  <div class="topbar"><h1>🐾 我的宠物乐园</h1>
+    <div class="pill" style="margin-left:auto">🔥 连击 <b>${streak}</b> · 🎟️ ${tickets}</div></div>
+  <div class="pet-tabs">
+    <button class="pet-tab ${petTab==='sign'?'on':''}" onclick="petTab='sign';renderShop()">📅 签到</button>
+    <button class="pet-tab ${petTab==='pet'?'on':''}" onclick="petTab='pet';renderShop()">🐾 宠物</button>
+    <button class="pet-tab ${petTab==='gacha'?'on':''}" onclick="petTab='gacha';renderShop()">🎁 抽盲盒</button>
+  </div>
+  ${petTab==='sign'?renderSignHTML(signedToday,streak,tickets):''}
+  ${petTab==='pet'?renderPetHTML():''}
+  ${petTab==='gacha'?renderGachaHTML(tickets):''}
+  `;
+}
+function renderSignHTML(signed,streak,tickets){
+  const tk=todayKey();
+  const gap = state.checkin.last ? daysBetween(state.checkin.last,tk) : 99;
+  let extra="";
+  if(!signed && gap>1 && (state.checkin.makeup||0)>0){
+    extra=`<button class="btn ghost" onclick="useMakeup()">🛠️ 用补签卡补签（剩 ${state.checkin.makeup} 张）</button>`;
+  }
+  return `<div class="card sign-card">
+    <div class="flame ${signed?'lit':'off'}">🔥</div>
+    <div class="sign-streak">连续签到 <b>${streak}</b> 天</div>
+    <div class="sign-tip">每天都要来签到哦，断了火焰会熄灭🔥<br>每签到 1 天得 1 张抽卡券，满 7 天再送 4 张，满 30 天送 20 张！</div>
+    ${signed?`<div class="sign-done">今天已签到 ✓ 明天再来吧</div>`:`<button class="btn yellow big" onclick="signToday()">✨ 今日签到领抽卡券</button>`}
+    ${extra}
+    ${(state.checkin.makeup||0)>0?`<div class="makeup">你有补签卡 ${state.checkin.makeup} 张</div>`:''}
+  </div>`;
+}
+function renderPetHTML(){
+  computeHunger();
+  const lvl=petLevel();
+  const hunger=state.pet.hunger;
+  const mood=hunger<30?"开心 😊":hunger<65?"还行 🙂":"有点饿 😋";
+  const eq=state.pet.equipped;
+  const skinColor=eq.skin?PET_ITEMS[eq.skin].color:"#FFB3D1";
+  const costIcon=eq.costume?itemIcon(PET_ITEMS[eq.costume].icon):"";
+  const compHTML=eq.companions.map(id=>`<div class="comp">${itemIcon(PET_ITEMS[id].icon)}</div>`).join("");
+  const petImg=lvl===1?EGG_SVG:`<img class="pet-img" src="${UNICORN_SRC||FALLBACK_UNICORN}" alt="宠物">`;
+  return `<div class="card pet-card">
+    <div class="pet-stage">Lv.${lvl} · ${petStageName(lvl)}</div>
+    <div class="pet-img-wrap">
+      <div class="pet-glow" style="background:${skinColor}"></div>
+      ${petImg}
+      ${costIcon?`<div class="pet-costume">${costIcon}</div>`:''}
+    </div>
+    <div class="pet-name">${state.pet.name}</div>
+    <div class="companions">${compHTML||'<span style="color:#bba;font-size:13px">抽盲盒解锁小伙伴</span>'}</div>
+    <div class="mood-row">心情：<b>${mood}</b></div>
+    <div class="hunger-bar"><div class="hunger-fill" style="width:${100-hunger}%;background:${hunger<30?'#4FD38A':hunger<65?'#FFC83C':'#FF8A8A'}"></div></div>
+    <div class="hunger-label">饱食度 ${100-hunger}%</div>
+    <button class="btn pink big" onclick="feedPet()">🍬 用 10 分喂饱它</button>
+    <button class="btn ghost" onclick="showRedeemModal()">🎁 用积分换真实小奖励</button>
+  </div>`;
+}
+function renderGachaHTML(tickets){
+  return `<div class="card">
+    <div class="gacha-tip-big">🎟️ 你有 <b>${tickets}</b> 张抽卡券</div>
+    <div class="gacha-sub">连续签到就能得券，盲盒里有积分、补签卡、宠物皮肤 / 服饰 / 小伙伴！</div>
+    <button class="btn yellow big" ${tickets<1?'disabled style="opacity:.5"':''} onclick="drawGacha()">${tickets<1?'券不够，去签到':'🎁 抽一次盲盒'}</button>
+    <div class="album-title">📖 我的图鉴（${state.album.length}/${Object.keys(PET_ITEMS).length}）</div>
+    <div class="grid c4" id="albumGrid">${renderAlbumHTML()}</div>
+  </div>`;
+}
+function renderAlbumHTML(){
+  return Object.keys(PET_ITEMS).map(id=>{
+    const it=PET_ITEMS[id];const got=state.album.includes(id);
+    const on=(it.kind==="skin"&&state.pet.equipped.skin===id)||(it.kind==="costume"&&state.pet.equipped.costume===id)||(it.kind==="friend"&&state.pet.equipped.companions.includes(id));
+    return `<div class="album-item ${got?'got':''} ${on?'on':''}" onclick="equipToggle('${id}')" title="${got?it.name:'未收集'}">
+      <div class="ai-ic">${got?itemIcon(it.icon):'<span class="qm">?</span>'}</div>
+      <div class="ai-nm">${got?it.name:'？？？'}</div>
+    </div>`;
+  }).join("");
+}
+function signToday(){
+  const tk=todayKey();
+  if(state.checkin.last===tk){toast("今天已经签到啦");return;}
+  const yest=addDays(tk,-1);
+  if(state.checkin.last===yest)state.checkin.streak++; else state.checkin.streak=1;
+  state.checkin.last=tk;
+  state.checkin.tickets=(state.checkin.tickets||0)+1;
+  let bonus=0;
+  if(state.checkin.streak%7===0){state.checkin.tickets+=4;bonus=4;}
+  if(state.checkin.streak%30===0){state.checkin.tickets+=20;bonus=20;}
+  save("checkin",state.checkin);
+  playChime(true);celebrate(true);
+  toast("签到成功！连击 "+state.checkin.streak+" 天 🎟️+1"+(bonus?" 里程碑+"+bonus:""));
+  renderShop();
+}
+function useMakeup(){
+  if((state.checkin.makeup||0)<1){toast("没有补签卡");return;}
+  state.checkin.makeup--;
+  state.checkin.last=addDays(todayKey(),-1);
+  save("checkin",state.checkin);
+  toast("已补签，明天签到连击不断🔥");
+  renderShop();
+}
+function feedPet(){
+  if(state.points<10){toast("积分不够喂宠物，去做题赚分吧🪙");return;}
+  state.points-=10;save("points",state.points);updatePointsUI();
+  const tk=todayKey();state.pet.hunger=Math.max(0,state.pet.hunger-45);state.pet.fedToday=true;state.pet.lastFed=tk;save("pet",state.pet);
+  playChime(true);celebrate(false);
+  toast("宠物吃饱啦，心情变好咯🐾");
+  renderShop();
+}
+function pickGacha(){
+  let tot=GACHA.reduce((s,g)=>s+g.w,0),r=Math.random()*tot;
+  for(const g of GACHA){if((r-=g.w)<0)return g;}
+  return GACHA[0];
+}
+function drawGacha(){
+  if((state.checkin.tickets||0)<1){toast("抽卡券不够，去签到领取吧🎟️");return;}
+  state.checkin.tickets--;save("checkin",state.checkin);
+  const item=pickGacha();
+  showModal(`<div class="gacha-pop"><div class="gacha-box" id="gb">🎁</div><div class="gacha-tip">正在打开盲盒…</div></div>`);
+  document.getElementById("gb").classList.add("shake");
+  setTimeout(()=>gachaReveal(item),850);
+}
+function gachaReveal(item){
+  let title,sub,iconBig;
+  if(item.type==="points"){addPoints(item.val);title="积分 +"+item.val;sub="攒积分喂养宠物吧🪙";iconBig=ICONS.star2;}
+  else if(item.type==="makeup"){state.checkin.makeup=(state.checkin.makeup||0)+1;save("checkin",state.checkin);title="补签卡 +1";sub="断了签到也能补救🔥";iconBig=ICONS.ticket;}
+  else{
+    const it=PET_ITEMS[item.id];const wasNew=!state.album.includes(item.id);
+    if(wasNew)state.album.push(item.id);
+    if(it.kind==="skin")state.pet.equipped.skin=item.id;
+    else if(it.kind==="costume")state.pet.equipped.costume=item.id;
+    else{if(!state.pet.equipped.companions.includes(item.id))state.pet.equipped.companions.push(item.id);}
+    save("pet",state.pet);save("album",state.album);
+    title=it.name;sub=it.desc;iconBig=itemIcon(it.icon);
+  }
+  playChime(true);celebrate(true);
+  showModal(`<div class="gacha-pop"><div class="gacha-result"><div class="ai-ic" style="width:84px;height:84px;margin:0 auto">${iconBig}</div><div class="gr-title">${title}</div><div class="gr-sub">${sub}</div>${(item.type==="points"||item.type==="makeup")?'':'<div class="gr-new">✨ 新收集！</div>'}<button class="btn yellow" onclick="closeModal();renderShop()">收下啦</button></div></div>`);
+}
+function equipToggle(id){
+  if(!state.album.includes(id)){toast("还没收集到哦，去抽盲盒吧");return;}
+  const it=PET_ITEMS[id];
+  if(it.kind==="skin"){state.pet.equipped.skin=state.pet.equipped.skin===id?null:id;}
+  else if(it.kind==="costume"){state.pet.equipped.costume=state.pet.equipped.costume===id?null:id;}
+  else{const a=state.pet.equipped.companions;const i=a.indexOf(id);if(i>=0)a.splice(i,1);else a.push(id);}
+  save("pet",state.pet);renderShop();
+}
+function showRedeemModal(){
+  const items=state.shop;
+  const list=items.length?items.map((it,i)=>`<div class="shop-man"><span>${ICONS[it.i||'gift']} ${it.n} · ${it.c}分</span><button class="btn ${state.points>=it.c?'':'ghost'}" ${state.points>=it.c?'':'disabled style="opacity:.5"'} onclick="redeem(${i});renderShop()">${state.points>=it.c?'兑换':'不够'}</button></div>`).join(""):"<div style='color:#9a8aa0'>家长还没设置奖励，去家长设置添加</div>";
+  showModal(`<h3>🎁 用积分换真实小奖励</h3><div style="display:flex;flex-direction:column;gap:8px;max-height:40vh;overflow:auto">${list}</div><div class="row" style="justify-content:center;margin-top:12px"><button class="btn ghost" onclick="closeModal()">关闭</button></div>`);
+}
+function showSignModal(){
+  if(state.checkin.last===todayKey())return;
+  showModal(`<div class="sign-modal"><div class="flame lit">🔥</div><div style="font-size:20px;font-weight:800">今天还没签到哦！</div><div style="color:#7A4E86;margin:6px 0">签到领抽卡券，连续签到火焰不灭🔥</div><button class="btn yellow big" onclick="signToday();closeModal()">✨ 今日签到</button></div>`);
+}
+function maybePromptSign(){if(state.checkin.last!==todayKey() && !sessionStorage.getItem("cyq_signed")){sessionStorage.setItem("cyq_signed","1");setTimeout(showSignModal,500);}}
 function redeem(idx){
   const it=state.shop[idx];
   if(state.points<it.c){toast("积分还不够哦，再接再厉！");return;}
-  if(!confirm("确定用 "+it.c+" 分兑换「"+it.n+"」吗？\n（兑换后记得告诉爸爸妈妈来兑现哦）"))return;
+  if(!confirm("确定用 "+it.c+" 分兑换「"+it.n+"」吗？\\n（兑换后记得告诉爸爸妈妈来兑现哦）"))return;
   state.points-=it.c;save("points",state.points);updatePointsUI();
   playChime(true);celebrate(true);
   toast("兑换成功！🎉 记得找爸爸妈妈兑现～");
-  renderShop();
+  if(current==="shop")renderShop();
 }
 let selectedPrizeIcon="gift";
 function openShopManage(){
@@ -1073,7 +1315,7 @@ function verifyPin(){
     </div>`);
 }
 function exportData(){
-  const data={stars:state.stars,counts:state.counts,badges:state.badges,adv:state.adv,today:state.today,points:state.points,shop:state.shop};
+  const data={stars:state.stars,counts:state.counts,badges:state.badges,adv:state.adv,today:state.today,points:state.points,shop:state.shop,pet:state.pet,checkin:state.checkin,album:state.album};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="chenyuqing-backup.json";a.click();
   toast("已导出备份");
@@ -1089,7 +1331,10 @@ function importData(e){
       if(d.today)state.today=d.today;
       if(typeof d.points==="number")state.points=d.points;
       if(Array.isArray(d.shop))state.shop=d.shop;
-      save("stars",state.stars);save("counts",state.counts);save("badges",state.badges);save("adv",state.adv);save("today",state.today);save("points",state.points);save("shop",state.shop);
+      if(d.pet)state.pet=d.pet;
+      if(d.checkin)state.checkin=d.checkin;
+      if(Array.isArray(d.album))state.album=d.album;
+      save("stars",state.stars);save("counts",state.counts);save("badges",state.badges);save("adv",state.adv);save("today",state.today);save("points",state.points);save("shop",state.shop);save("pet",state.pet);save("checkin",state.checkin);save("album",state.album);
       refreshStars();updatePointsUI();buildNav();toast("恢复成功！");closeModal();render();
     }catch(err){toast("文件格式不对");}
   };
@@ -1104,8 +1349,8 @@ function clearAll(){
   if(!confirm("确定要清空所有星星、勋章和闯关进度吗？此操作不可恢复！"))return;
   localStorage.removeItem(PREFIX+"stars");localStorage.removeItem(PREFIX+"counts");localStorage.removeItem(PREFIX+"badges");
   localStorage.removeItem(PREFIX+"adv");localStorage.removeItem(PREFIX+"today");
-  localStorage.removeItem(PREFIX+"points");localStorage.removeItem(PREFIX+"shop");
-  state={stars:0,counts:{pinyin:0,letters:0,poems:0,numbers:0,adventure:0},badges:[],sound:state.sound,today:{date:"",n:0},adv:{level:1,score:0,q:0,done:[]},pin:state.pin,points:0,shop:DEFAULT_SHOP};
+  localStorage.removeItem(PREFIX+"points");localStorage.removeItem(PREFIX+"shop");localStorage.removeItem(PREFIX+"pet");localStorage.removeItem(PREFIX+"checkin");localStorage.removeItem(PREFIX+"album");
+  state={stars:0,counts:{pinyin:0,letters:0,poems:0,numbers:0,adventure:0},badges:[],sound:state.sound,today:{date:"",n:0},adv:{level:1,score:0,q:0,done:[]},pin:state.pin,points:0,shop:DEFAULT_SHOP,pet:JSON.parse(JSON.stringify(DEF_PET)),checkin:{last:"",streak:0,tickets:0,makeup:0},album:[]};
   refreshStars();updatePointsUI();buildNav();toast("已清空");closeModal();render();
 }
 
@@ -1121,9 +1366,11 @@ document.getElementById("soundBtn").onclick=()=>{state.sound=!state.sound;save("
 
 /* ============== 启动 ============== */
 updateSoundBtn();
+computeHunger();
 buildNav();
 render();
 updatePointsUI();
+maybePromptSign();
 /* 背景漂浮泡泡 */
 (function(){
   const bg=document.getElementById("bg");if(!bg)return;
