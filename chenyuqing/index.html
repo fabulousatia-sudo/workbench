@@ -287,12 +287,18 @@ body{
 .pet-stage{display:inline-block;background:#FFF0F7;color:#E0568F;font-weight:800;padding:6px 14px;border-radius:14px;font-size:14px}
 .pet-img-wrap{position:relative;width:170px;height:170px;margin:14px auto 6px}
 .pet-img{width:100%;height:100%;object-fit:contain;border-radius:24px}
-.pet-glow{position:absolute;inset:-12px;border-radius:34px;z-index:-1;filter:blur(10px);opacity:.55}
+.pet-glow{position:absolute;inset:-14px;border-radius:34px;z-index:-1;filter:blur(14px);opacity:.7}
 .pet-costume{position:absolute;top:-16px;left:50%;transform:translateX(-50%);width:64px;height:64px}
 .pet-name{font-weight:800;font-size:18px;color:#5A3E6E}
 .companions{display:flex;gap:8px;justify-content:center;margin:10px 0}
 .comp{width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(180,140,220,.18);padding:5px}
 .comp svg{width:100%;height:100%}
+.skin-ring{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);width:160px;height:64px;z-index:-1;pointer-events:none}
+.skin-sp{position:absolute;width:14px;height:14px;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);animation:sparkFloat 2.4s ease-in-out infinite}
+.skin-sp.sp1{top:0;left:6px}
+.skin-sp.sp2{top:26px;right:-2px;width:10px;height:10px;animation-delay:.8s}
+.skin-sp.sp3{bottom:6px;left:0;width:11px;height:11px;animation-delay:1.5s}
+@keyframes sparkFloat{0%,100%{transform:scale(.8);opacity:.55}50%{transform:scale(1.2) translateY(-5px);opacity:1}}
 .mood-row{font-size:15px;margin:6px 0}
 .hunger-bar{height:16px;background:#EFE7F7;border-radius:9px;overflow:hidden;margin:6px 0}
 .hunger-fill{height:100%;border-radius:9px;transition:width .4s}
@@ -989,7 +995,22 @@ const GACHA=[
   {id:"costume_crown",w:6,type:"item"},{id:"costume_bow",w:6,type:"item"},{id:"costume_wand",w:5,type:"item"},
   {id:"friend_star",w:4,type:"item"},{id:"friend_cloud",w:4,type:"item"},{id:"friend_rabbit",w:4,type:"item"},{id:"friend_dino",w:3,type:"item"}
 ];
-const EGG_SVG='<svg viewBox="0 0 120 150"><ellipse cx="60" cy="84" rx="46" ry="58" fill="#FFF3C4" stroke="#FFD86B" stroke-width="4"/><circle cx="44" cy="74" r="7" fill="#FFC1D8"/><circle cx="74" cy="92" r="9" fill="#BFE3FF"/><circle cx="58" cy="110" r="6" fill="#FFD1A6"/><path d="M38 56 L48 64 L58 54 L68 66 L82 54" fill="none" stroke="#E0A0C0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+function makeEgg(c){
+  return '<svg viewBox="0 0 120 150">'
+   +'<ellipse cx="60" cy="86" rx="44" ry="56" fill="'+c+'"/>'
+   +'<ellipse cx="46" cy="62" rx="14" ry="20" fill="#FFFFFF" opacity=".4"/>'
+   +'<circle cx="80" cy="80" r="6" fill="#FFFFFF" opacity=".5"/>'
+   +'<circle cx="56" cy="114" r="5" fill="#FFFFFF" opacity=".4"/>'
+   +'<circle cx="84" cy="106" r="4" fill="#FFFFFF" opacity=".4"/>'
+   +'<path d="M44 38 L52 46 L60 38 L68 46 L76 38" fill="none" stroke="'+c+'" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>'
+   +'<ellipse cx="48" cy="90" rx="5.5" ry="7.5" fill="#5A3E6E"/><ellipse cx="72" cy="90" rx="5.5" ry="7.5" fill="#5A3E6E"/>'
+   +'<circle cx="50" cy="87" r="2" fill="#fff"/><circle cx="74" cy="87" r="2" fill="#fff"/>'
+   +'<circle cx="39" cy="102" r="5" fill="#FF6FA5" opacity=".5"/><circle cx="81" cy="102" r="5" fill="#FF6FA5" opacity=".5"/>'
+   +'<path d="M53 103 Q60 111 67 103" fill="none" stroke="#5A3E6E" stroke-width="2.6" stroke-linecap="round"/>'
+   +'<path d="M90 50 l1.8 4.6 4.6 1.8 -4.6 1.8 -1.8 4.6 -1.8 -4.6 -4.6 -1.8 4.6 -1.8z" fill="#FFE08A"/>'
+   +'</svg>';
+}
+const EGG_SVG=makeEgg("#FFC2E0");
 const FALLBACK_UNICORN='<svg viewBox="0 0 120 120"><path d="M30 90 Q30 50 60 50 Q92 50 92 92 L92 104 L80 104 L80 92 Q80 64 60 64 Q42 64 42 92 L42 104 L30 104 Z" fill="#FFD1E8" stroke="#E085B6" stroke-width="3"/><path d="M60 50 L60 26" stroke="#E085B6" stroke-width="4" stroke-linecap="round"/><path d="M60 30 L72 20 L62 32 Z" fill="#FFC83C"/><circle cx="52" cy="78" r="3" fill="#5A3E6E"/><circle cx="68" cy="78" r="3" fill="#5A3E6E"/></svg>';
 function ymdToDate(s){const p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
 function daysBetween(a,b){return Math.round((ymdToDate(b)-ymdToDate(a))/86400000);}
@@ -1010,13 +1031,22 @@ function itemIcon(key){
     crown:'<svg viewBox="0 0 24 24" fill="#FFC83C" stroke="#E0A200" stroke-width="1.4" stroke-linejoin="round"><path d="M3 8l4 4 5-7 5 7 4-4v9H3z"/><circle cx="12" cy="6" r="1.4" fill="#FF7FA9"/></svg>',
     bow:'<svg viewBox="0 0 24 24" fill="#FF8FBF" stroke="#E85CA0" stroke-width="1.2"><path d="M12 12L4 7v10zM12 12l8-5v10z"/><circle cx="12" cy="12" r="2.4" fill="#E85CA0"/></svg>',
     wand:'<svg viewBox="0 0 24 24" fill="none" stroke="#A98BF5" stroke-width="2" stroke-linecap="round"><path d="M5 19L16 8"/><path d="M15 5l1.2 2.8L19 9l-2.8 1.2L15 13l-1.2-2.8L11 9l2.8-1.2z" fill="#FFC83C" stroke="#E0A200"/></svg>',
-    starfriend:'<svg viewBox="0 0 24 24" fill="#FFC83C" stroke="#E0A200" stroke-width="1"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 6.9L12 17.8 5.8 21l1.4-6.9L2 9.3l7-.8z"/></svg>',
-    cloud:'<svg viewBox="0 0 24 24" fill="#CFE8FF" stroke="#7FB8E8" stroke-width="1.2"><path d="M7 18a4 4 0 010-8 5 5 0 019-1 3.5 3.5 0 01-1 7z"/></svg>',
-    rabbit:'<svg viewBox="0 0 24 24" fill="#FFF" stroke="#E0A0C0" stroke-width="1.4"><ellipse cx="9" cy="9" rx="2.4" ry="6"/><ellipse cx="15" cy="9" rx="2.4" ry="6"/><circle cx="12" cy="16" r="5"/><circle cx="10.5" cy="15" r=".9" fill="#555"/><circle cx="13.5" cy="15" r=".9" fill="#555"/></svg>',
-    dino:'<svg viewBox="0 0 24 24" fill="#8FE3A8" stroke="#3FB36B" stroke-width="1.3"><path d="M5 19c0-6 3-11 8-11 3 0 4 2 4 4 3 0 3 3 0 3-1 3-3 5-7 5-2 0-3-1-5-1z"/><circle cx="15" cy="11" r="1" fill="#234"/></svg>',
-    skin:'<svg viewBox="0 0 24 24" fill="#A98BF5"><path d="M12 2l4 5-4 15-4-15z"/></svg>'
+    starfriend:'<svg viewBox="0 0 24 24" fill="#FFC83C" stroke="#E0A200" stroke-width="1"><path d="M12 2l3 6.5 7 .8-5.2 4.8 1.4 6.9L12 17.8 5.8 21l1.4-6.9L2 9.3l7-.8z"/><circle cx="11" cy="12.5" r="1" fill="#fff"/><circle cx="14" cy="12.5" r="1" fill="#fff"/><path d="M11 14.5 Q12.5 16 14 14.5" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round"/></svg>',
+    cloud:'<svg viewBox="0 0 24 24" fill="#CFE8FF" stroke="#7FB8E8" stroke-width="1.2"><path d="M7 18a4 4 0 010-8 5 5 0 019-1 3.5 3.5 0 01-1 7z"/><circle cx="10.5" cy="13" r="1" fill="#5A7FA8"/><circle cx="14" cy="13" r="1" fill="#5A7FA8"/><path d="M10.5 15 Q12.2 16.6 14 15" fill="none" stroke="#5A7FA8" stroke-width="1" stroke-linecap="round"/><circle cx="8.5" cy="15.5" r="1.2" fill="#FF9CCB" opacity=".5"/><circle cx="16" cy="15.5" r="1.2" fill="#FF9CCB" opacity=".5"/></svg>',
+    rabbit:'<svg viewBox="0 0 24 24" fill="#FFF" stroke="#E0A0C0" stroke-width="1.4"><ellipse cx="9" cy="9" rx="2.4" ry="6"/><ellipse cx="15" cy="9" rx="2.4" ry="6"/><circle cx="12" cy="16" r="5"/><circle cx="10.5" cy="15" r=".9" fill="#555"/><circle cx="13.5" cy="15" r=".9" fill="#555"/><circle cx="9.5" cy="17.5" r="1.1" fill="#FF9CCB" opacity=".6"/><circle cx="14.5" cy="17.5" r="1.1" fill="#FF9CCB" opacity=".6"/></svg>',
+    dino:'<svg viewBox="0 0 24 24" fill="#8FE3A8" stroke="#3FB36B" stroke-width="1.3"><path d="M5 19c0-6 3-11 8-11 3 0 4 2 4 4 3 0 3 3 0 3-1 3-3 5-7 5-2 0-3-1-5-1z"/><circle cx="15" cy="11" r="1" fill="#234"/><circle cx="11" cy="14" r="1.1" fill="#FF6FA5" opacity=".55"/><circle cx="17" cy="14" r="1.1" fill="#FF6FA5" opacity=".55"/><path d="M13 15.5 Q15 17 17 15.5" fill="none" stroke="#234" stroke-width=".9" stroke-linecap="round"/></svg>',
+    skin:'<svg viewBox="0 0 24 24" fill="#A98BF5"><circle cx="12" cy="13" r="8"/><circle cx="9" cy="10" r="2.5" fill="#fff" opacity=".4"/></svg>'
   };
   return m[key]||ICONS.gift;
+}
+function skinDecor(c){
+  return '<svg class="skin-ring" viewBox="0 0 200 200"><ellipse cx="100" cy="172" rx="60" ry="13" fill="none" stroke="'+c+'" stroke-width="5" opacity=".75"/></svg>'
+   +'<span class="skin-sp sp1" style="background:'+c+'"></span>'
+   +'<span class="skin-sp sp2" style="background:'+c+'"></span>'
+   +'<span class="skin-sp sp3" style="background:'+c+'"></span>';
+}
+function skinIcon(c){
+  return '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="14" rx="8" ry="9" fill="'+c+'"/><ellipse cx="9" cy="10" rx="2.5" ry="3.5" fill="#fff" opacity=".4"/><circle cx="9.4" cy="14" r="1.25" fill="#5A3E6E"/><circle cx="14.6" cy="14" r="1.25" fill="#5A3E6E"/><circle cx="8" cy="17" r="1.4" fill="#FF6FA5" opacity=".5"/><circle cx="16" cy="17" r="1.4" fill="#FF6FA5" opacity=".5"/><path d="M10 18 Q12 20.4 14 18" fill="none" stroke="#5A3E6E" stroke-width="1.1" stroke-linecap="round"/></svg>';
 }
 let petTab="pet";
 function renderShop(){
@@ -1062,12 +1092,15 @@ function renderPetHTML(){
   const skinColor=eq.skin?PET_ITEMS[eq.skin].color:"#FFB3D1";
   const costIcon=eq.costume?itemIcon(PET_ITEMS[eq.costume].icon):"";
   const compHTML=eq.companions.map(id=>`<div class="comp">${itemIcon(PET_ITEMS[id].icon)}</div>`).join("");
-  const petImg=lvl===1?EGG_SVG:`<img class="pet-img" src="${UNICORN_SRC||FALLBACK_UNICORN}" alt="宠物">`;
+  const eggMode=lvl===1;
+  const petImg=eggMode?makeEgg(skinColor):`<img class="pet-img" src="${UNICORN_SRC||FALLBACK_UNICORN}" alt="宠物">`;
+  const decor=(!eggMode&&eq.skin)?skinDecor(skinColor):"";
   return `<div class="card pet-card">
     <div class="pet-stage">Lv.${lvl} · ${petStageName(lvl)}</div>
     <div class="pet-img-wrap">
       <div class="pet-glow" style="background:${skinColor}"></div>
       ${petImg}
+      ${decor}
       ${costIcon?`<div class="pet-costume">${costIcon}</div>`:''}
     </div>
     <div class="pet-name">${state.pet.name}</div>
@@ -1093,7 +1126,7 @@ function renderAlbumHTML(){
     const it=PET_ITEMS[id];const got=state.album.includes(id);
     const on=(it.kind==="skin"&&state.pet.equipped.skin===id)||(it.kind==="costume"&&state.pet.equipped.costume===id)||(it.kind==="friend"&&state.pet.equipped.companions.includes(id));
     return `<div class="album-item ${got?'got':''} ${on?'on':''}" onclick="equipToggle('${id}')" title="${got?it.name:'未收集'}">
-      <div class="ai-ic">${got?itemIcon(it.icon):'<span class="qm">?</span>'}</div>
+      <div class="ai-ic">${got?(it.kind==="skin"?skinIcon(it.color):itemIcon(it.icon)):'<span class="qm">?</span>'}</div>
       <div class="ai-nm">${got?it.name:'？？？'}</div>
     </div>`;
   }).join("");
@@ -1153,7 +1186,7 @@ function gachaReveal(item){
     else if(it.kind==="costume")state.pet.equipped.costume=item.id;
     else{if(!state.pet.equipped.companions.includes(item.id))state.pet.equipped.companions.push(item.id);}
     save("pet",state.pet);save("album",state.album);
-    title=it.name;sub=it.desc;iconBig=itemIcon(it.icon);
+    title=it.name;sub=it.desc;iconBig=it.kind==="skin"?skinIcon(it.color):itemIcon(it.icon);
   }
   playChime(true);celebrate(true);
   showModal(`<div class="gacha-pop"><div class="gacha-result"><div class="ai-ic" style="width:84px;height:84px;margin:0 auto">${iconBig}</div><div class="gr-title">${title}</div><div class="gr-sub">${sub}</div>${(item.type==="points"||item.type==="makeup")?'':'<div class="gr-new">✨ 新收集！</div>'}<button class="btn yellow" onclick="closeModal();renderShop()">收下啦</button></div></div>`);
