@@ -303,6 +303,18 @@ body{
 .sign-card2{text-align:center;padding:20px;}
 .flame2{font-size:54px;line-height:1}
 .flame2.off{filter:grayscale(1) opacity(.45)}
+/* ============== 备忘录 ============== */
+.memo-add{margin:12px 0;}
+.memo-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.memo-item{display:flex;align-items:flex-start;gap:10px;background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 3px 10px rgba(180,140,200,.14)}
+.memo-item.done{opacity:.6}
+.memo-check{border:none;background:none;font-size:22px;cursor:pointer;line-height:1;padding:0;flex:0 0 auto}
+.memo-text{flex:1;font-size:15px;color:#4A3A52;font-weight:600;line-height:1.5;word-break:break-word;white-space:pre-wrap}
+.memo-item.done .memo-text{text-decoration:line-through}
+.memo-meta{flex:0 0 auto;font-size:11px;color:#B0A0BC;margin-top:2px}
+.memo-del{border:none;background:none;font-size:18px;cursor:pointer;opacity:.55;padding:0;flex:0 0 auto}
+.memo-del:hover{opacity:1}
+.memo-empty{text-align:center;color:#B0A0BC;font-weight:700;padding:24px}
 </style>
 </head>
 <body>
@@ -360,7 +372,8 @@ let state={
   checkin:load("checkin",{last:"",streak:0,tickets:0,makeup:0}),
   album:load("album",[]),
   cards:load("cards",[]),
-  daily:load("daily",{date:"",earned:0})
+  daily:load("daily",{date:"",earned:0}),
+  memo:load("memo",[])
 };
 let UNICORN_SRC="";
 function todayKey(){const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
@@ -548,7 +561,8 @@ const ICONS={
   book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6a4 4 0 014-4h10v14H8a4 4 0 00-4 4V6z"/><path d="M20 6v14"/></svg>',
   paw:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="10" r="2.4"/><circle cx="10" cy="6.5" r="2.4"/><circle cx="14" cy="6.5" r="2.4"/><circle cx="18" cy="10" r="2.4"/><path d="M12 12c-3.2 0-6 2.4-6 5.2 0 1.6 1.4 2.8 3 2.8 1 0 1.6-.4 2-.9.5.5 1.1.9 2.1.9 1 0 1.6-.4 2-.9.5.5 1.1.9 2.1.9 1.6 0 3-1.2 3-2.8 0-2.8-2.8-5.2-6-5.2z"/></svg>',
   flame:'<svg viewBox="0 0 24 24" fill="#FF7A3C"><path d="M12 2c2 3-1 5 1 7 1.6 1.6 1 4-1 4 2 2 5 1 5 5a6 6 0 11-12 0c0-4 4-6 5-9 .6-1.8 1.4-4 1-7z"/></svg>',
-  ticket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 000 4v3H4v-3a2 2 0 000-4z"/><path d="M14 7v10" stroke-dasharray="2 2"/></svg>'
+  ticket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 7h16v3a2 2 0 000 4v3H4v-3a2 2 0 000-4z"/><path d="M14 7v10" stroke-dasharray="2 2"/></svg>',
+  note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v10l-5 5H5z"/><path d="M14 19v-5h5"/><path d="M8 9h8M8 12h5"/></svg>'
 };
 const MODULES=[
  {id:"home",name:"我的乐园",icon:"home"},
@@ -557,7 +571,8 @@ const MODULES=[
  {id:"poems",name:"古诗花园",icon:"poems"},
  {id:"numbers",name:"数字王国",icon:"numbers"},
  {id:"adventure",name:"闯关冒险",icon:"adventure"},
- {id:"shop",name:"盲盒收藏册",icon:"gift"}
+ {id:"shop",name:"盲盒收藏册",icon:"gift"},
+ {id:"memo",name:"小备忘录",icon:"note"}
 ];
 let current="home";
 function buildNav(){
@@ -590,6 +605,7 @@ function render(){
   if(current==="numbers")return renderNumbers();
   if(current==="adventure")return renderAdventure();
   if(current==="shop")return renderShop();
+  if(current==="memo")return renderMemo();
 }
 
 /* ============== 首页 ============== */
@@ -634,7 +650,8 @@ function renderHome(){
 }
 const MOD_DESC={
   pinyin:"读一读·写一写·玩一玩",letters:"26个字母·大小写配对",poems:"30首古诗·点读朗读",
-  numbers:"10以内·20以内加减法",adventure:"综合闯关·赢星星",shop:"抽水果手办卡·签到攒积分"
+  numbers:"10以内·20以内加减法",adventure:"综合闯关·赢星星",  shop:"抽水果手办卡·签到攒积分",
+  memo:"记一记·随时看"
 };
 
 /* ============== 拼音迷宫 ============== */
@@ -1116,6 +1133,54 @@ function showSignModal(){
   showModal(`<div class="sign-modal"><div class="flame lit">🔥</div><div style="font-size:20px;font-weight:800">今天还没签到哦！</div><div style="color:#7A4E86;margin:6px 0">签到 +5 积分，连续签到火焰不灭🔥</div><button class="btn yellow big" onclick="signToday2();closeModal()">✨ 今日签到</button></div>`);
 }
 function maybePromptSign(){if(state.checkin.last!==todayKey() && !sessionStorage.getItem("cyq_signed")){sessionStorage.setItem("cyq_signed","1");setTimeout(showSignModal,500);}}
+/* ============== 备忘录 ============== */
+function renderMemo(){
+  const list=(state.memo||[]).slice().sort((a,b)=>b.t-a.t);
+  C.innerHTML=`
+  <div class="topbar"><h1>📝 小备忘录</h1>
+    <div class="pill" style="margin-left:auto">已记 ${list.length} 条</div></div>
+  <div class="card memo-add">
+    <textarea id="memoInput" placeholder="记点什么吧～（例如：想学的字、想画的水果、周末想去哪）" rows="3" style="width:100%;border:none;border-radius:14px;padding:12px;font-size:15px;font-family:inherit;resize:none;box-shadow:0 2px 8px rgba(180,140,220,.12)"></textarea>
+    <button class="btn yellow big" style="margin-top:10px;width:100%" onclick="addMemo()">➕ 加一条</button>
+  </div>
+  <div class="memo-list">
+    ${list.length?list.map(m=>memoItemHTML(m)).join(''):'<div class="memo-empty">还没有备忘哦，写一条试试～</div>'}
+  </div>`;
+  const ta=document.getElementById('memoInput');
+  if(ta)ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey))addMemo();});
+}
+function memoItemHTML(m){
+  const d=new Date(m.t);
+  const ts=(d.getMonth()+1)+'月'+d.getDate()+'日 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  return `<div class="memo-item ${m.done?'done':''}">
+    <button class="memo-check" onclick="toggleMemo(${m.id})">${m.done?'✅':'⚪'}</button>
+    <div class="memo-text">${escapeHTML(m.text)}</div>
+    <div class="memo-meta">${ts}</div>
+    <button class="memo-del" onclick="delMemo(${m.id})" title="删除">🗑</button>
+  </div>`;
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function addMemo(){
+  const ta=document.getElementById('memoInput');
+  const t=(ta.value||'').trim();
+  if(!t){toast('写点内容再添加哦');return;}
+  state.memo=state.memo||[];
+  state.memo.push({id:Date.now(),text:t,t:Date.now(),done:false});
+  save('memo',state.memo);
+  renderMemo();
+  toast('记下啦 📝');
+}
+function toggleMemo(id){
+  state.memo=(state.memo||[]).map(m=>m.id===id?{...m,done:!m.done}:m);
+  save('memo',state.memo);
+  renderMemo();
+}
+function delMemo(id){
+  state.memo=(state.memo||[]).filter(m=>m.id!==id);
+  save('memo',state.memo);
+  renderMemo();
+}
+
 /* ============== 写字板：上方笔顺大图 + 下方描红 ============== */
 function strokeTip(ch){return (STROKE_TIPS[ch]||{guide:"跟着笔顺描一描",nums:[]});}
 function renderStrokeDiagram(ch){
@@ -1207,7 +1272,7 @@ function verifyPin(){
     </div>`);
 }
 function exportData(){
-  const data={stars:state.stars,counts:state.counts,badges:state.badges,adv:state.adv,today:state.today,points:state.points,shop:state.shop,pet:state.pet,checkin:state.checkin,album:state.album,cards:state.cards,daily:state.daily};
+  const data={stars:state.stars,counts:state.counts,badges:state.badges,adv:state.adv,today:state.today,points:state.points,shop:state.shop,pet:state.pet,checkin:state.checkin,album:state.album,cards:state.cards,daily:state.daily,memo:state.memo};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="chenyuqing-backup.json";a.click();
   toast("已导出备份");
@@ -1227,8 +1292,9 @@ function importData(e){
       if(d.checkin)state.checkin=d.checkin;
       if(Array.isArray(d.album))state.album=d.album;
       if(Array.isArray(d.cards))state.cards=d.cards;
+      if(Array.isArray(d.memo))state.memo=d.memo;
       if(d.daily)state.daily=d.daily;
-      save("stars",state.stars);save("counts",state.counts);save("badges",state.badges);save("adv",state.adv);save("today",state.today);save("points",state.points);save("shop",state.shop);save("pet",state.pet);save("checkin",state.checkin);save("album",state.album);save("cards",state.cards);save("daily",state.daily);
+      save("stars",state.stars);save("counts",state.counts);save("badges",state.badges);save("adv",state.adv);save("today",state.today);save("points",state.points);save("shop",state.shop);save("pet",state.pet);save("checkin",state.checkin);save("album",state.album);save("cards",state.cards);save("daily",state.daily);save("memo",state.memo);
       refreshStars();updatePointsUI();buildNav();toast("恢复成功！");closeModal();render();
     }catch(err){toast("文件格式不对");}
   };
@@ -1243,8 +1309,8 @@ function clearAll(){
   if(!confirm("确定要清空所有星星、勋章和闯关进度吗？此操作不可恢复！"))return;
   localStorage.removeItem(PREFIX+"stars");localStorage.removeItem(PREFIX+"counts");localStorage.removeItem(PREFIX+"badges");
   localStorage.removeItem(PREFIX+"adv");localStorage.removeItem(PREFIX+"today");
-  localStorage.removeItem(PREFIX+"points");localStorage.removeItem(PREFIX+"shop");localStorage.removeItem(PREFIX+"pet");localStorage.removeItem(PREFIX+"checkin");localStorage.removeItem(PREFIX+"album");localStorage.removeItem(PREFIX+"cards");localStorage.removeItem(PREFIX+"cards");localStorage.removeItem(PREFIX+"cards");
-  state={stars:0,counts:{pinyin:0,letters:0,poems:0,numbers:0,adventure:0},badges:[],sound:state.sound,today:{date:"",n:0},adv:{level:1,score:0,q:0,done:[]},pin:state.pin,points:0,shop:DEFAULT_SHOP,pet:JSON.parse(JSON.stringify(DEF_PET)),checkin:{last:"",streak:0,tickets:0,makeup:0},album:[],cards:[]};
+  localStorage.removeItem(PREFIX+"points");localStorage.removeItem(PREFIX+"shop");localStorage.removeItem(PREFIX+"pet");localStorage.removeItem(PREFIX+"checkin");localStorage.removeItem(PREFIX+"album");localStorage.removeItem(PREFIX+"cards");localStorage.removeItem(PREFIX+"cards");localStorage.removeItem(PREFIX+"cards");localStorage.removeItem(PREFIX+"memo");
+  state={stars:0,counts:{pinyin:0,letters:0,poems:0,numbers:0,adventure:0},badges:[],sound:state.sound,today:{date:"",n:0},adv:{level:1,score:0,q:0,done:[]},pin:state.pin,points:0,shop:DEFAULT_SHOP,pet:JSON.parse(JSON.stringify(DEF_PET)),checkin:{last:"",streak:0,tickets:0,makeup:0},album:[],cards:[],memo:[]};
   refreshStars();updatePointsUI();buildNav();toast("已清空");closeModal();render();
 }
 
